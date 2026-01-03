@@ -47,6 +47,12 @@
       <None Update="Nunit\SimplePipeline\simple_stage_pipeline.yaml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+      <None Update="Nunit\SimpleTemplates\simple_pipeline_with_step_template.yaml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Nunit\SimpleTemplates\build-template.yml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

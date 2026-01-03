@@ -40,12 +40,20 @@ public class PipelineTester
 
         var parseResult = PipelineParser.Parse(_pipelinePath);
 
+        var stagesWithResolvedTemplates = parseResult.Stages.Select(ResolveTemplates);
+        var evaluatedStages = stagesWithResolvedTemplates.Select(stage => Evaluate(stage, _parameters, _variables)).ToList();
+        
         return new PipelineTestResult
         {
             Triggers = parseResult.Triggers,
             AgentPool = parseResult.AgentPool,
-            Stages = parseResult.Stages.Select(stage => Evaluate(stage, _parameters, _variables)).ToList()
+            Stages = evaluatedStages 
         };
+    }
+
+    private RawPipelineStage ResolveTemplates(RawPipelineStage stageWithTemplates)
+    {
+        return stageWithTemplates;
     }
 
     private PipelineStage Evaluate(RawPipelineStage stage, Dictionary<string, object> parameters, Dictionary<string, object> variables)
