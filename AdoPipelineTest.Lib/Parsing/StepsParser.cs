@@ -1,4 +1,5 @@
 using AdoPipelineTest.Parsing.RawModel;
+using AdoPipelineTest.Utils;
 using YamlDotNet.RepresentationModel;
 
 namespace AdoPipelineTest.Parsing;
@@ -17,9 +18,9 @@ internal static class StepsParser
             throw new FormatException("Stage node is not a mapping node");
         }
 
-        var displayName = (stageMappingNode.Children["displayName"] as YamlScalarNode)?.Value;
+        var displayName = stageMappingNode.GetChildIfExists<YamlScalarNode>("displayName")?.Value;
         
-        if (stageMappingNode.Children.TryGetValue("steps", out var stepsNode) && stepsNode is YamlSequenceNode stepsSequence)
+        if (stageMappingNode.TryGetChild<YamlSequenceNode>("steps", out var stepsNode))
         {
             return new RawPipelineStage
             {
@@ -28,18 +29,18 @@ internal static class StepsParser
                 [
                     new RawPipelineJob
                     {
-                        Steps = ParseSteps(stepsSequence, pipelinePath)
+                        Steps = ParseSteps(stepsNode, pipelinePath)
                     }
                 ]
             };
         }
 
-        if (stageMappingNode.Children.TryGetValue("jobs", out var jobsNode) && jobsNode is YamlSequenceNode jobsSequence)
+        if (stageMappingNode.TryGetChild<YamlSequenceNode>("jobs", out var jobsNode))
         {
             return new RawPipelineStage
             {
                 DisplayName = displayName,
-                Jobs = ParseJobs(jobsSequence, pipelinePath)
+                Jobs = ParseJobs(jobsNode, pipelinePath)
             };
         }
 
@@ -63,7 +64,7 @@ internal static class StepsParser
             throw new FormatException("Steps node is not a sequence node");
         }
 
-        var displayName = (jobMappingNode.Children["displayName"] as YamlScalarNode)?.Value;
+        var displayName = jobMappingNode.GetChildIfExists<YamlScalarNode>("displayName")?.Value;;
 
         return new RawPipelineJob
         {
@@ -84,31 +85,22 @@ internal static class StepsParser
             throw new FormatException("Step node is not a mapping node");
         }
 
-        string? displayName = null;
-        if (stepMappingNode.Children.TryGetValue("displayName", out var displayNameNode))
+        var displayName = stepMappingNode.GetChildIfExists<YamlScalarNode>("displayName")?.Value;;
+        var continueOnError = stepMappingNode.GetChildIfExists<YamlScalarNode>("continueOnError")?.Value;
+
+        if (stepMappingNode.TryGetChild<YamlScalarNode>("task", out var taskNode))
         {
-            displayName = (displayNameNode as YamlScalarNode)?.Value;
+            return ParseTaskStep(displayName, continueOnError, taskNode, stepMappingNode);
         }
 
-        string? continueOnError = null;
-        if (stepMappingNode.Children.TryGetValue("continueOnError", out var continueOnErrorNode))
+        if (stepMappingNode.TryGetChild<YamlScalarNode>("script", out var scriptNode))
         {
-            continueOnError = (continueOnErrorNode as YamlScalarNode)?.Value;
+            return ParseScriptStep(displayName, continueOnError, scriptNode, stepMappingNode);
         }
 
-        if (stepMappingNode.Children.TryGetValue("task", out var taskNode) && taskNode is YamlScalarNode taskScalar)
+        if (stepMappingNode.TryGetChild<YamlScalarNode>("template", out var templateNode))
         {
-            return ParseTaskStep(displayName, continueOnError, taskScalar, stepMappingNode);
-        }
-
-        if (stepMappingNode.Children.TryGetValue("script", out var scriptNode) && scriptNode is YamlScalarNode scriptScalar)
-        {
-            return ParseScriptStep(displayName, continueOnError, scriptScalar, stepMappingNode);
-        }
-
-        if (stepMappingNode.Children.TryGetValue("template", out var templateNode) && templateNode is YamlScalarNode templateScalar)
-        {
-            return ParseTemplateStep(templateScalar, stepMappingNode, pipelinePath);
+            return ParseTemplateStep(templateNode, stepMappingNode, pipelinePath);
         }
             
         throw new InvalidDataException("unknown step type"); 
@@ -116,33 +108,22 @@ internal static class StepsParser
 
     private static RawPipelineStep ParseTemplateStep(YamlScalarNode templateNode, YamlMappingNode stepMappingNode, string pipelinePath)
     {
-        if (templateNode.Value == null)
+        return new RawTemplateStep
         {
-            throw new FormatException("script node has no value");
-        }
-        
-        return new RawTemplateStep { Template = templateNode.Value, ReferencedBy = pipelinePath };
+            Template = templateNode.Value ?? throw new InvalidDataException("template node has no value"), 
+            ReferencedBy = pipelinePath
+        };
     }
 
     private static RawScriptStep ParseScriptStep(string? displayName, string? continueOnError,
         YamlScalarNode scriptNode, YamlMappingNode stepNode)
     {
-        if (scriptNode.Value == null)
-        {
-            throw new FormatException("script node has no value");
-        }
-        
         return new RawScriptStep { DisplayName = displayName, ContinueOnError = continueOnError, Script = scriptNode.Value};
     }
 
     private static RawTaskStep ParseTaskStep(string? displayName, string? continueOnError, YamlScalarNode taskNode,
         YamlMappingNode stepNode)
     {
-        if (taskNode.Value == null)
-        {
-            throw new FormatException("Task node has no value");
-        }
-        
         return new RawTaskStep { DisplayName = displayName, ContinueOnError = continueOnError, TaskName = taskNode.Value};
     }
 }
