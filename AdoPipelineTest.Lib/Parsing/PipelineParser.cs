@@ -24,7 +24,7 @@ internal class PipelineParser
         
         var triggers = TriggerParser.ParseTriggers(rootNode);
         var agentPool = PoolParser.ParseAgentPool(rootNode);
-        var stages = ParseStages(rootNode);
+        var stages = ParseStages(rootNode, yamlPath);
 
         return new PipelineParseResult
         {
@@ -35,23 +35,23 @@ internal class PipelineParser
     }
     
     
-    private static IList<RawPipelineStage> ParseStages(YamlMappingNode rootNode)
+    private static IList<RawPipelineStage> ParseStages(YamlMappingNode rootNode, string pipelinePath)
     {
         if (rootNode.Children.TryGetValue("steps", out var stepsInRoot) && stepsInRoot is YamlSequenceNode stepsInRootSequence)
         {
-            var steps = StepsParser.ParseSteps(stepsInRootSequence);
+            var steps = StepsParser.ParseSteps(stepsInRootSequence, pipelinePath);
             return [new RawPipelineStage { Jobs = [new RawPipelineJob { Steps = steps }] }];
         }
 
         if (rootNode.Children.TryGetValue("jobs", out var jobsInRoot) && jobsInRoot is YamlSequenceNode jobsInRootSequence)
         {
-            var jobs = StepsParser.ParseJobs(jobsInRootSequence);
+            var jobs = StepsParser.ParseJobs(jobsInRootSequence, pipelinePath);
             return [new RawPipelineStage { Jobs = jobs }];
         }
 
         if (rootNode.Children.TryGetValue("stages", out var stagesInRoot) && stagesInRoot is YamlSequenceNode stagesInRootSequence)
         {
-            var stages = StepsParser.ParseStages(stagesInRootSequence);
+            var stages = StepsParser.ParseStages(stagesInRootSequence, pipelinePath);
             return stages;
         }
 
