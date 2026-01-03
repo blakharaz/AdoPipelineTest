@@ -1,7 +1,7 @@
 using AdoPipelineTest.Model;
 using YamlDotNet.RepresentationModel;
 
-namespace AdoPipelineTest.Parsers;
+namespace AdoPipelineTest.Parsing;
 
 internal static class TriggerParser
 {
