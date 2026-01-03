@@ -53,7 +53,7 @@ public class PipelineTester
 
     private RawPipelineStage ResolveTemplates(RawPipelineStage stageWithTemplates)
     {
-        return stageWithTemplates;
+        return TemplateResolver.ResolveStage(stageWithTemplates);
     }
 
     private PipelineStage Evaluate(RawPipelineStage stage, Dictionary<string, object> parameters, Dictionary<string, object> variables)

@@ -1,7 +1,15 @@
 namespace AdoPipelineTest.Parsing.RawModel;
 
-public class RawPipelineStage
+internal class RawPipelineStage
 {
-    public IList<RawPipelineJob> Jobs { get; init; } = [];
-    public string? DisplayName { get; init; }
+    internal RawPipelineStage() {}
+
+    internal RawPipelineStage(RawPipelineStage other)
+    {
+        Jobs = other.Jobs;
+        DisplayName = other.DisplayName;
+    }
+
+    internal IList<RawPipelineJob> Jobs { get; init; } = [];
+    internal string? DisplayName { get; init; }
 }
