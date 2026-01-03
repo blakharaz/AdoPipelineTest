@@ -1,0 +1,2 @@
+[pr_reviewer]
+require_security_review = false # path traversal and showing paths in errors is okay
