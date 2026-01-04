@@ -1,0 +1,23 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+  debugSymbols: true
+  dotnetVersion: '8.0.x'
+
+steps:
+- task: UseDotNet@2
+  displayName: 'Use .NET'
+  inputs:
+    packageType: 'sdk'
+    version: '$(dotnetVersion)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Build'
+  inputs:
+    command: 'build'
+    arguments: '--configuration $(buildConfiguration)'

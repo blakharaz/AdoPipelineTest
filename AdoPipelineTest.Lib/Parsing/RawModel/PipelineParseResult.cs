@@ -8,6 +8,8 @@ internal class PipelineParseResult
 
     public PipelineAgentPool? AgentPool { get; init; }
     
+    public IList<RawPipelineVariable> Variables { get; init; } = [];
+    
     public IList<RawPipelineStage> Stages { get; init; } = [];
     
 }
