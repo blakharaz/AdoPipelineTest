@@ -1,5 +1,7 @@
 ﻿using AdoPipelineTest.Evaluation;
+using AdoPipelineTest.Model;
 using AdoPipelineTest.Parsing;
+using AdoPipelineTest.Parsing.RawModel;
 
 namespace AdoPipelineTest;
 
@@ -36,14 +38,50 @@ public class PipelineTester
 
         var parseResult = PipelineParser.Parse(_pipelinePath);
 
+        // Merge parsed variable defaults with user-provided variables
+        // User-provided variables take precedence over defaults
+        var mergedVariables = MergeVariables(parseResult.Variables, _variables);
+
         var stagesWithResolvedTemplates = parseResult.Stages.Select(stageWithTemplates => TemplateResolver.ResolveStage(stageWithTemplates));
-        var evaluatedStages = stagesWithResolvedTemplates.Select(stage => PipelineEvaluator.EvaluateStage(stage, _parameters, _variables)).ToList();
+        var evaluatedStages = stagesWithResolvedTemplates.Select(stage => PipelineEvaluator.EvaluateStage(stage, _parameters, mergedVariables)).ToList();
         
         return new PipelineTestResult
         {
             Triggers = parseResult.Triggers,
             AgentPool = parseResult.AgentPool,
+            Variables = ConvertVariables(parseResult.Variables),
             Stages = evaluatedStages 
         };
+    }
+
+    private static List<PipelineVariable> ConvertVariables(IList<RawPipelineVariable> rawVariables)
+    {
+        return rawVariables.Select(rawVar => new PipelineVariable
+        {
+            Name = rawVar.Name,
+            DefaultValue = rawVar.DefaultValue
+        }).ToList();
+    }
+
+    private static Dictionary<string, object> MergeVariables(IList<RawPipelineVariable> defaultVariables, Dictionary<string, object> userVariables)
+    {
+        var merged = new Dictionary<string, object>();
+
+        // First, add all default values from the pipeline
+        foreach (var variable in defaultVariables)
+        {
+            if (variable.DefaultValue != null)
+            {
+                merged[variable.Name] = variable.DefaultValue;
+            }
+        }
+
+        // Then, override with user-provided variables
+        foreach (var kvp in userVariables)
+        {
+            merged[kvp.Key] = kvp.Value;
+        }
+
+        return merged;
     }
 }
