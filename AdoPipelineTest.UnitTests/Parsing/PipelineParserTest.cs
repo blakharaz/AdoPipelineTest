@@ -63,4 +63,45 @@ public class PipelineParserTest
             Assert.That(step3.ContinueOnError, Is.EqualTo("true"));
         }
     }
+
+    [Test]
+    public void PipelineWithVariables()
+    {
+        var pipeline = PipelineParser.Parse("test_data/pipeline_parser/pipeline_with_variables.yaml");
+
+        Assert.That(pipeline, Is.Not.Null);
+
+        // Verify variables exist
+        Assert.That(pipeline.Variables, Has.Count.EqualTo(3));
+
+        // Verify buildConfiguration variable
+        var buildConfigVar = pipeline.Variables.FirstOrDefault(v => v.Name == "buildConfiguration");
+        Assert.That(buildConfigVar, Is.Not.Null);
+        Assert.That(buildConfigVar!.DefaultValue, Is.EqualTo("Release"));
+
+        // Verify debugSymbols variable (boolean)
+        var debugSymbolsVar = pipeline.Variables.FirstOrDefault(v => v.Name == "debugSymbols");
+        Assert.That(debugSymbolsVar, Is.Not.Null);
+        Assert.That(debugSymbolsVar!.DefaultValue, Is.EqualTo("true"));
+
+        // Verify dotnetVersion variable
+        var dotnetVersionVar = pipeline.Variables.FirstOrDefault(v => v.Name == "dotnetVersion");
+        Assert.That(dotnetVersionVar, Is.Not.Null);
+        Assert.That(dotnetVersionVar!.DefaultValue, Is.EqualTo("8.0.x"));
+
+        // Verify triggers
+        Assert.That(pipeline.Triggers, Is.Not.Null);
+        Assert.That(pipeline.Triggers.IncludedBranches, Has.Count.EqualTo(1));
+        Assert.That(pipeline.Triggers.IncludedBranches, Does.Contain("main"));
+
+        // Verify pool
+        Assert.That(pipeline.AgentPool, Is.Not.Null);
+        Assert.That(pipeline.AgentPool.VmImage, Is.EqualTo("ubuntu-latest"));
+
+        // Verify steps
+        Assert.That(pipeline.Stages, Has.Count.EqualTo(1));
+        Assert.That(pipeline.Stages[0].Jobs, Has.Count.EqualTo(1));
+        var steps = pipeline.Stages[0].Jobs[0].Steps;
+        Assert.That(steps, Has.Count.EqualTo(2));
+    }
 }

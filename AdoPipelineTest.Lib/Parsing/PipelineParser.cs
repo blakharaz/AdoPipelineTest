@@ -24,12 +24,14 @@ internal class PipelineParser
         
         var triggers = TriggerParser.ParseTriggers(rootNode);
         var agentPool = PoolParser.ParseAgentPool(rootNode);
+        var variables = VariablesParser.ParseVariables(rootNode);
         var stages = ParseStages(rootNode, yamlPath);
 
         return new PipelineParseResult
         {
             Triggers = triggers,
             AgentPool = agentPool,
+            Variables = variables,
             Stages = stages
         };
     }
