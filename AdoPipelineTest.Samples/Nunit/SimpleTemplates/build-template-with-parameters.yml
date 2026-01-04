@@ -1,0 +1,21 @@
+parameters:
+  - name: configuration
+    type: string
+    default: 'Release'
+
+steps:
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'build'
+      projects: '**/*.csproj'
+      arguments: '--configuration ${{ parameters.configuration }}'
+    displayName: 'Build .NET Project'
+
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'publish'
+      projects: '**/*.csproj'
+      arguments: '--configuration ${{ parameters.configuration }} --output $(Build.ArtifactStagingDirectory)'
+      publishWebProjects: false
+    displayName: 'Publish Build Output'
+

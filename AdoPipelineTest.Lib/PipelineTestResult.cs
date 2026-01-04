@@ -8,5 +8,7 @@ public class PipelineTestResult
 
     public PipelineAgentPool? AgentPool { get; init; }
     
+    public IList<PipelineVariable> Variables { get; init; } = [];
+    
     public IList<PipelineStage> Stages { get; init; } = [];
 }
