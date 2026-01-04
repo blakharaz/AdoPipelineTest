@@ -28,6 +28,9 @@
       <None Update="test_data\template_resolver_step_templates\two_steps_template.yaml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+      <None Update="test_data\pipeline_parser\simple_pipeline_just_steps.yaml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>
