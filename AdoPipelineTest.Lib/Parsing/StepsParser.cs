@@ -1,3 +1,4 @@
+using AdoPipelineTest.Model;
 using AdoPipelineTest.Parsing.RawModel;
 using AdoPipelineTest.Utils;
 using YamlDotNet.RepresentationModel;
@@ -124,6 +125,12 @@ internal static class StepsParser
     private static RawTaskStep ParseTaskStep(string? displayName, string? continueOnError, YamlScalarNode taskNode,
         YamlMappingNode stepNode)
     {
-        return new RawTaskStep { DisplayName = displayName, ContinueOnError = continueOnError, TaskName = taskNode.Value};
+        return new RawTaskStep
+        {
+            DisplayName = displayName, 
+            ContinueOnError = continueOnError, 
+            TaskName = taskNode.Value ?? throw new InvalidPipelineException("task node must have value"),
+            Inputs = stepNode.GetChildIfExists<YamlMappingNode>("inputs")?.ToDictionary()
+        };
     }
 }

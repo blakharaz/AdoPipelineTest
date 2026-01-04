@@ -1,7 +1,7 @@
 ﻿using AdoPipelineTest.Evaluation;
 using AdoPipelineTest.Parsing.RawModel;
 
-namespace AdoPipelineTest.UnitTests;
+namespace AdoPipelineTest.UnitTests.Evaluation;
 
 public class TemplateResolverTest
 {
