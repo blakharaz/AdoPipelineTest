@@ -1,0 +1,75 @@
+parameters:
+  # String parameter
+  - name: projectName
+    type: string
+    default: 'MySampleProject'
+    displayName: 'Project Name'
+  
+  # Boolean parameter
+  - name: enableTests
+    type: boolean
+    default: true
+    displayName: 'Enable Unit Tests'
+  
+  # Number parameter
+  - name: timeoutMinutes
+    type: number
+    default: 30
+    displayName: 'Timeout in Minutes'
+  
+  # String with allowed values
+  - name: buildConfiguration
+    type: string
+    default: 'Release'
+    values:
+      - 'Debug'
+      - 'Release'
+      - 'CI'
+    displayName: 'Build Configuration'
+  
+  # String with default value from environment
+  - name: outputDirectory
+    type: string
+    default: '$(Build.ArtifactStagingDirectory)'
+    displayName: 'Output Directory'
+  
+  # Object parameter (complex configuration)
+  - name: buildSettings
+    type: object
+    default: {}
+    displayName: 'Build Settings'
+
+jobs:
+  - job: BuildAndTest
+    displayName: 'Build and Test Job'
+    steps:
+      - script: |
+          echo "Building project: ${{ parameters.projectName }}"
+          echo "Configuration: ${{ parameters.buildConfiguration }}"
+          echo "Enable Tests: ${{ parameters.enableTests }}"
+          echo "Timeout: ${{ parameters.timeoutMinutes }} minutes"
+          echo "Output Directory: ${{ parameters.outputDirectory }}"
+          echo "Build Settings: ${{ parameters.buildSettings }}"
+        displayName: 'Display Parameter Values'
+      
+      - task: DotNetCoreCLI@2
+        inputs:
+          command: 'build'
+          projects: '**/*.csproj'
+          arguments: '--configuration ${{ parameters.buildConfiguration }}'
+        displayName: 'Build .NET Project'
+      
+      - task: DotNetCoreCLI@2
+        inputs:
+          command: 'test'
+          projects: '**/*Tests.csproj'
+          arguments: '--configuration ${{ parameters.buildConfiguration }}'
+        displayName: 'Run Unit Tests'
+      
+      - script: |
+          echo "Pipeline completed successfully"
+          echo "Project: ${{ parameters.projectName }}"
+          echo "Configuration: ${{ parameters.buildConfiguration }}"
+          echo "Tests Enabled: ${{ parameters.enableTests }}"
+          echo "Timeout: ${{ parameters.timeoutMinutes }} minutes"
+        displayName: 'Pipeline Summary'
