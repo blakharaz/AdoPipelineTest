@@ -11,4 +11,7 @@ public class PipelineTestResult
     public IList<PipelineVariable> Variables { get; init; } = [];
     
     public IList<PipelineStage> Stages { get; init; } = [];
+
+    public IDictionary<string, PipelineParameter> Parameters { get; init; } =
+        new Dictionary<string, PipelineParameter>();
 }

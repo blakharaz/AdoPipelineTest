@@ -7,7 +7,7 @@ namespace AdoPipelineTest;
 
 public class PipelineTester
 {
-    private Dictionary<string, object> _parameters = [];
+    private readonly Dictionary<string, object> _parameters = [];
     private Dictionary<string, object> _variables = [];
     private string? _pipelinePath;
 
@@ -17,9 +17,18 @@ public class PipelineTester
         return this;
     }
 
+    public PipelineTester WithParameter(string name, object value)
+    {
+        _parameters[name] = value;
+        return this;
+    }
+
     public PipelineTester WithParameters(Dictionary<string, object> parameters)
     {
-        _parameters = new Dictionary<string, object>(parameters);
+        foreach (var kvp in parameters)
+        {
+            _parameters[kvp.Key] = kvp.Value;
+        }
         return this;
     }
 
@@ -37,6 +46,8 @@ public class PipelineTester
         }
 
         var parseResult = PipelineParser.Parse(_pipelinePath);
+        
+        var parameters = ParameterEvaluator.EvaluateParameters(parseResult.Parameters, _parameters);
 
         // Merge parsed variable defaults with user-provided variables
         // User-provided variables take precedence over defaults
@@ -49,6 +60,7 @@ public class PipelineTester
         {
             Triggers = parseResult.Triggers,
             AgentPool = parseResult.AgentPool,
+            Parameters = parameters.ToDictionary(item => item.Name),
             Variables = ConvertVariables(parseResult.Variables),
             Stages = evaluatedStages 
         };

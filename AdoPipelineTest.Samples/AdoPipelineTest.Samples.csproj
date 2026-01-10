@@ -56,6 +56,9 @@
       <None Update="Nunit\Variables\pipeline_with_variables.yaml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+      <None Update="Nunit\Parameters\pipeline_with_parameters.yaml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>
