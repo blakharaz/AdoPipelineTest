@@ -37,6 +37,9 @@
       <None Update="test_data\pipeline_parser\pipeline_with_complex_variables.yaml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+      <None Update="test_data\pipeline_parser\pipeline_with_parameters.yaml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

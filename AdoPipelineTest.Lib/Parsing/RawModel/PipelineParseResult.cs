@@ -11,5 +11,6 @@ internal class PipelineParseResult
     public IList<RawPipelineVariable> Variables { get; init; } = [];
     
     public IList<RawPipelineStage> Stages { get; init; } = [];
-    
+
+    public IList<RawPipelineParameter> Parameters { get; init; } = [];
 }
