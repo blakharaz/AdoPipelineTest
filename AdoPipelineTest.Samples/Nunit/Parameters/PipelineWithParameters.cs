@@ -14,6 +14,7 @@ public class PipelineWithParameters
     {
         var result = new PipelineTester()
             .WithPipeline(YamlPath)
+            .WithParameter("targetFile", "myfile.txt") // no default set, must define
             .Run();
 
         Assert.That(result, Is.Not.Null);
@@ -35,6 +36,7 @@ public class PipelineWithParameters
     {
         var result = new PipelineTester()
             .WithPipeline(YamlPath)
+            .WithParameter("targetFile", "myfile.txt") // no default set, must define
             .Run();
 
         var parameters = result.Parameters;
@@ -84,5 +86,24 @@ public class PipelineWithParameters
             Assert.That(parameters["enableTests"].Value, Is.EqualTo(false));
             Assert.That(parameters["buildConfiguration"].Value, Is.EqualTo("Debug"));
         }
+    }
+
+    [Test]
+    public void VerifyUndefinedParameterIsNotAllowed()
+    {
+        var tester = new PipelineTester()
+            .WithPipeline(YamlPath);
+        
+        Assert.Throws<InvalidOperationException>(() => tester.Run());
+    }
+
+    [Test]
+    public void VerifyAllUndefinedParameterSet()
+    {
+        var tester = new PipelineTester()
+            .WithPipeline(YamlPath)
+            .WithParameter("targetFile", "output.txt");
+
+        Assert.DoesNotThrow(() => tester.Run());
     }
 }

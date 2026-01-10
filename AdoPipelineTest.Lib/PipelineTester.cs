@@ -49,6 +49,12 @@ public class PipelineTester
         
         var parameters = ParameterEvaluator.EvaluateParameters(parseResult.Parameters, _parameters);
 
+        var undefinedParameters = parameters.Where(p => p.Value == null).Select(p => p.Name).ToList();
+        if (undefinedParameters.Count > 0)
+        {
+            throw new InvalidOperationException($"Parameter(s) {string.Join(',', undefinedParameters)} were not provided.");
+        }
+
         // Merge parsed variable defaults with user-provided variables
         // User-provided variables take precedence over defaults
         var mergedVariables = MergeVariables(parseResult.Variables, _variables);
