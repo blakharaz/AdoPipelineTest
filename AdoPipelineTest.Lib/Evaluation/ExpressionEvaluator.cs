@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace AdoPipelineTest.Evaluation;
 
 internal static class ExpressionEvaluator
@@ -29,7 +31,42 @@ internal static class ExpressionEvaluator
     
     internal static string EvaluateString(string str, Dictionary<string, object> parameters, Dictionary<string, object> variables)
     {
-        return EvaluateVariables(str, variables);
+        var strWithEvaluatedParameters = EvaluateCompileTimeExpressions(str, parameters);
+        return EvaluateVariables(strWithEvaluatedParameters, variables);
+    }
+
+    internal static string EvaluateCompileTimeExpressions(string str, Dictionary<string, object> parameters)
+    {
+        var cteRegex = new Regex(@"\$\{\{\s*(.+?)\s*\}\}");
+
+        var matches = cteRegex.Matches(str).DistinctBy(m => m.Value);
+
+        foreach (var match in matches)
+        {
+            var expression = match.Groups[1].Value;
+            
+            var evaluatedExpression = EvaluateParametersInCompileTimeExpression(expression, parameters);
+
+            str = str.Replace(match.Value, evaluatedExpression);
+        }
+
+        return str;
+    }
+
+    internal static string EvaluateParametersInCompileTimeExpression(string str, Dictionary<string, object> parameters)
+    {
+        var parameterRegex = new Regex(@"parameters\.([a-zA-Z_][a-zA-Z0-9_]*)");
+
+        var matches = parameterRegex.Matches(str).DistinctBy(m => m.Value);
+
+        foreach (var match in matches)
+        {
+            var parameterName = match.Groups[1].Value;
+            
+            str = str.Replace(match.Value, parameters[parameterName].ToString());
+        }
+
+        return str;
     }
 
     internal static string EvaluateVariables(string str, Dictionary<string, object> variables)

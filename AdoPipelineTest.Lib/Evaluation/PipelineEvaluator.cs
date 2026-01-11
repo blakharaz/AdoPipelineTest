@@ -42,21 +42,20 @@ internal static class PipelineEvaluator
     {
         return new TaskStep
         {
-            DisplayName = taskStep.DisplayName,
+            DisplayName = taskStep.DisplayName is null ? null : ExpressionEvaluator.EvaluateString(taskStep.DisplayName, parameters, variables),
             ContinueOnError = ExpressionEvaluator.EvaluateBool(taskStep.ContinueOnError, false),
             TaskName = taskStep.TaskName,
             Inputs = ExpressionEvaluator.EvaluateDictionaryValues(taskStep.Inputs, parameters, variables)
         };
     }
 
-
     internal static ScriptStep EvaluateStep(RawScriptStep scriptStep, Dictionary<string, object> parameters, Dictionary<string, object> variables)
     {
         return new ScriptStep
         {
-            DisplayName = scriptStep.DisplayName,
+            DisplayName = scriptStep.DisplayName is null ? null : ExpressionEvaluator.EvaluateString(scriptStep.DisplayName, parameters, variables),
             ContinueOnError = ExpressionEvaluator.EvaluateBool(scriptStep.ContinueOnError, false),
-            Script = scriptStep.Script,
+            Script = ExpressionEvaluator.EvaluateString(scriptStep.Script, parameters, variables),
             Variables = variables
         };
     }
