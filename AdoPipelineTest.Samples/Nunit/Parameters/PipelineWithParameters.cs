@@ -27,7 +27,7 @@ public class PipelineWithParameters
             Assert.That(result.Stages, Has.Count.EqualTo(1));
             var job = result.Stages[0].Jobs[0];
             Assert.That(job.DisplayName, Is.EqualTo("Build and Test Job"));
-            Assert.That(job.Steps, Has.Count.EqualTo(4));
+            Assert.That(job.Steps, Has.Count.EqualTo(2));
         }
     }
 

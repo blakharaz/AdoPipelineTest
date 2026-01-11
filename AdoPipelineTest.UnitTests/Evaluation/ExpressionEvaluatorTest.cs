@@ -1,3 +1,4 @@
+
 using AdoPipelineTest.Evaluation;
 
 namespace AdoPipelineTest.UnitTests.Evaluation;
@@ -16,7 +17,7 @@ public class ExpressionEvaluatorTest
             Assert.That(ExpressionEvaluator.EvaluateBool("false", false), Is.False);
         }
     }
-    
+
     [Test]
     public void EvaluateBoolean_UsesDefaultValuesForNullString()
     {
@@ -31,8 +32,163 @@ public class ExpressionEvaluatorTest
     public void EvaluateVariables_ReplacesVariableExpressions()
     {
         const string stringWithVariables = "hello $(foo) $(bar) world";
-        var variables = new Dictionary<string, object>{["foo"] = "to", ["bar"] = "the"};
-        
+        var variables = new Dictionary<string, object> { ["foo"] = "to", ["bar"] = "the" };
+
         Assert.That(ExpressionEvaluator.EvaluateVariables(stringWithVariables, variables), Is.EqualTo("hello to the world"));
+    }
+
+    [Test]
+    public void EvaluateCompileTimeExpression_WithNoParameters_ReturnsUnchangedString()
+    {
+        const string input = "hello world";
+        var parameters = new Dictionary<string, object>();
+
+        var result = ExpressionEvaluator.EvaluateCompileTimeExpressions(input, parameters);
+
+        Assert.That(result, Is.EqualTo("hello world"));
+    }
+
+    [Test]
+    public void EvaluateCompileTimeExpression_WithSingleParameter_ReplacesParameterReference()
+    {
+        const string input = "Project: ${{parameters.projectName}}";
+        var parameters = new Dictionary<string, object> { ["projectName"] = "MyProject" };
+
+        var result = ExpressionEvaluator.EvaluateCompileTimeExpressions(input, parameters);
+
+        Assert.That(result, Is.EqualTo("Project: MyProject"));
+    }
+
+    [Test]
+    public void EvaluateCompileTimeExpression_WithSingleParameter_IgnoresWhitespaceInParameterExpressions()
+    {
+        const string input = "Project: ${{ parameters.projectName  }}";
+        var parameters = new Dictionary<string, object> { ["projectName"] = "MyProject" };
+
+        var result = ExpressionEvaluator.EvaluateCompileTimeExpressions(input, parameters);
+
+        Assert.That(result, Is.EqualTo("Project: MyProject"));
+    }
+
+    [Test]
+    public void EvaluateCompileTimeExpression_WithMultipleParameters_ReplacesAllReferences()
+    {
+        const string input = "Building ${{parameters.projectName}} with ${{parameters.buildConfig}} configuration";
+        var parameters = new Dictionary<string, object>
+        {
+            ["projectName"] = "MyProject",
+            ["buildConfig"] = "Release"
+        };
+
+        var result = ExpressionEvaluator.EvaluateCompileTimeExpressions(input, parameters);
+
+        Assert.That(result, Is.EqualTo("Building MyProject with Release configuration"));
+    }
+
+    [Test]
+    public void EvaluateCompileTimeExpression_WithRepeatedParameterReference_ReplacesAllOccurrences()
+    {
+        const string input = "${{parameters.artifact}}-${{parameters.version}}-${{parameters.artifact}}.zip";
+        var parameters = new Dictionary<string, object>
+        {
+            ["artifact"] = "build",
+            ["version"] = "1.0.0"
+        };
+
+        var result = ExpressionEvaluator.EvaluateCompileTimeExpressions(input, parameters);
+
+        Assert.That(result, Is.EqualTo("build-1.0.0-build.zip"));
+    }
+
+    [Test]
+    public void EvaluateCompileTimeExpression_WithNumericParameterValue_ConvertsToString()
+    {
+        const string input = "Timeout: ${{parameters.timeoutMinutes}} minutes";
+        var parameters = new Dictionary<string, object> { ["timeoutMinutes"] = 30 };
+
+        var result = ExpressionEvaluator.EvaluateCompileTimeExpressions(input, parameters);
+
+        Assert.That(result, Is.EqualTo("Timeout: 30 minutes"));
+    }
+
+    [Test]
+    public void EvaluateCompileTimeExpression_WithBooleanParameterValue_ConvertsToString()
+    {
+        const string input = "Enabled: ${{parameters.enableFeature}}";
+        var parameters = new Dictionary<string, object> { ["enableFeature"] = true };
+
+        var result = ExpressionEvaluator.EvaluateCompileTimeExpressions(input, parameters);
+
+        Assert.That(result, Is.EqualTo("Enabled: True"));
+    }
+
+    [Test]
+    public void EvaluateCompileTimeExpression_WithEmptyParameterName_IsNotReplaced()
+    {
+        const string input = "Value: ${{}}";
+        var parameters = new Dictionary<string, object> { [""] = "empty" };
+
+        var result = ExpressionEvaluator.EvaluateCompileTimeExpressions(input, parameters);
+
+        Assert.That(result, Is.EqualTo("Value: ${{}}"));
+    }
+
+    [Test]
+    public void EvaluateCompileTimeExpression_WithSpecialCharactersInValue_PreservesCharacters()
+    {
+        const string input = "Path: ${{parameters.buildPath}}";
+        var parameters = new Dictionary<string, object> { ["buildPath"] = "/home/user/build-output_v2.0" };
+
+        var result = ExpressionEvaluator.EvaluateCompileTimeExpressions(input, parameters);
+
+        Assert.That(result, Is.EqualTo("Path: /home/user/build-output_v2.0"));
+    }
+
+    [Test]
+    public void EvaluateCompileTimeExpression_WithParameterValueContainingParameterSyntax_DoesNotRecurse()
+    {
+        const string input = "Template: ${{parameters.templateName}}";
+        var parameters = new Dictionary<string, object> { ["templateName"] = "${{parameters.someOtherParam}}" };
+
+        var result = ExpressionEvaluator.EvaluateCompileTimeExpressions(input, parameters);
+
+        Assert.That(result, Is.EqualTo("Template: ${{parameters.someOtherParam}}"));
+    }
+
+    [Test]
+    public void EvaluateCompileTimeExpression_WithEmptyString_ReturnsEmpty()
+    {
+        const string input = "";
+        var parameters = new Dictionary<string, object> { ["param"] = "value" };
+
+        var result = ExpressionEvaluator.EvaluateCompileTimeExpressions(input, parameters);
+
+        Assert.That(result, Is.Empty);
+    }
+
+    [Test]
+    public void EvaluateCompileTimeExpression_WithOnlyParameterReference_ReplacesWithValue()
+    {
+        const string input = "${{parameters.projectName}}";
+        var parameters = new Dictionary<string, object> { ["projectName"] = "MyProject" };
+
+        var result = ExpressionEvaluator.EvaluateCompileTimeExpressions(input, parameters);
+
+        Assert.That(result, Is.EqualTo("MyProject"));
+    }
+
+    [Test]
+    public void EvaluateCompileTimeExpression_WithAdjacentParameterReferences_ReplacesCorrectly()
+    {
+        const string input = "${{parameters.owner}}/${{parameters.repo}}";
+        var parameters = new Dictionary<string, object>
+        {
+            ["owner"] = "Microsoft",
+            ["repo"] = "azure-pipelines"
+        };
+
+        var result = ExpressionEvaluator.EvaluateCompileTimeExpressions(input, parameters);
+
+        Assert.That(result, Is.EqualTo("Microsoft/azure-pipelines"));
     }
 }

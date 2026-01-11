@@ -59,8 +59,8 @@ public class PipelineTester
         // User-provided variables take precedence over defaults
         var mergedVariables = MergeVariables(parseResult.Variables, _variables);
 
-        var stagesWithResolvedTemplates = parseResult.Stages.Select(stageWithTemplates => TemplateResolver.ResolveStage(stageWithTemplates));
-        var evaluatedStages = stagesWithResolvedTemplates.Select(stage => PipelineEvaluator.EvaluateStage(stage, _parameters, mergedVariables)).ToList();
+        var stagesWithResolvedTemplates = parseResult.Stages.Select(TemplateResolver.ResolveStage);
+        var evaluatedStages = stagesWithResolvedTemplates.Select(stage => PipelineEvaluator.EvaluateStage(stage, parameters.ToDictionary(item => item.Name, item => item.Value!), mergedVariables)).ToList();
         
         return new PipelineTestResult
         {
@@ -68,7 +68,7 @@ public class PipelineTester
             AgentPool = parseResult.AgentPool,
             Parameters = parameters.ToDictionary(item => item.Name),
             Variables = ConvertVariables(parseResult.Variables),
-            Stages = evaluatedStages 
+            Stages = evaluatedStages
         };
     }
 
