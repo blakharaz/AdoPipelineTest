@@ -37,20 +37,11 @@ internal static class ExpressionEvaluator
 
     internal static string EvaluateCompileTimeExpressions(string str, Dictionary<string, object> parameters)
     {
-        var cteRegex = new Regex(@"\$\{\{\s*(.+?)\s*\}\}");
-
-        var matches = cteRegex.Matches(str).DistinctBy(m => m.Value);
-
-        foreach (var match in matches)
+        return CteRegex.Replace(str, match =>
         {
             var expression = match.Groups[1].Value;
-            
-            var evaluatedExpression = EvaluateParametersInCompileTimeExpression(expression, parameters);
-
-            str = str.Replace(match.Value, evaluatedExpression);
-        }
-
-        return str;
+            return EvaluateParametersInCompileTimeExpression(expression, parameters);
+        });
     }
 
     internal static string EvaluateParametersInCompileTimeExpression(string str, Dictionary<string, object> parameters)
