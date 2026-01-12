@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace AdoPipelineTest.Evaluation;
 
-internal static class ExpressionEvaluator
+internal static partial class ExpressionEvaluator
 {
     internal static bool EvaluateBool(string? expression, bool defaultValue)
     {
@@ -37,7 +37,9 @@ internal static class ExpressionEvaluator
 
     internal static string EvaluateCompileTimeExpressions(string str, Dictionary<string, object> parameters)
     {
-        return CteRegex.Replace(str, match =>
+        var cteRegex = CompileTimeExpressionRegex();
+        
+        return cteRegex.Replace(str, match =>
         {
             var expression = match.Groups[1].Value;
             return EvaluateParametersInCompileTimeExpression(expression, parameters);
@@ -46,7 +48,7 @@ internal static class ExpressionEvaluator
 
     internal static string EvaluateParametersInCompileTimeExpression(string str, Dictionary<string, object> parameters)
     {
-        var parameterRegex = new Regex(@"parameters\.([a-zA-Z_][a-zA-Z0-9_]*)");
+        var parameterRegex = ParametersInCompileTimeExpressionRegex();
 
         var matches = parameterRegex.Matches(str).DistinctBy(m => m.Value);
 
@@ -71,4 +73,10 @@ internal static class ExpressionEvaluator
 
         return result;
     }
+
+    [GeneratedRegex(@"parameters\.([a-zA-Z_][a-zA-Z0-9_]*)")]
+    private static partial Regex ParametersInCompileTimeExpressionRegex();
+
+    [GeneratedRegex(@"\$\{\{\s*(.+?)\s*\}\}")]
+    private static partial Regex CompileTimeExpressionRegex();
 }
