@@ -1,5 +1,5 @@
 using AdoPipelineTest.Evaluation;
-using AdoPipelineTest.Parsing.RawModel;
+using AdoPipelineTest.Parsing.Ast;
 
 namespace AdoPipelineTest.UnitTests.Evaluation;
 
@@ -10,7 +10,7 @@ public class ParameterEvaluatorTest
     public void EvaluateParameters_WithDefaultValues_UsesDefaults()
     {
         // Arrange
-        var rawParameters = new List<RawPipelineParameter>
+        var rawParameters = new List<PipelineParameterElement>
         {
             new()
             {
@@ -54,7 +54,7 @@ public class ParameterEvaluatorTest
     public void EvaluateParameters_WithSuppliedValues_OverridesDefaults()
     {
         // Arrange
-        var rawParameters = new List<RawPipelineParameter>
+        var rawParameters = new List<PipelineParameterElement>
         {
             new()
             {
@@ -99,7 +99,7 @@ public class ParameterEvaluatorTest
     public void EvaluateParameters_WithNumericDefaults_PreservesType()
     {
         // Arrange
-        var rawParameters = new List<RawPipelineParameter>
+        var rawParameters = new List<PipelineParameterElement>
         {
             new()
             {
@@ -130,7 +130,7 @@ public class ParameterEvaluatorTest
     {
         // Arrange
         var allowedConfigs = new List<object> { "Debug", "Release", "CI" };
-        var rawParameters = new List<RawPipelineParameter>
+        var rawParameters = new List<PipelineParameterElement>
         {
             new()
             {
@@ -162,7 +162,7 @@ public class ParameterEvaluatorTest
     {
         // Arrange
         var defaultSettings = new Dictionary<object, object>();
-        var rawParameters = new List<RawPipelineParameter>
+        var rawParameters = new List<PipelineParameterElement>
         {
             new()
             {
@@ -189,7 +189,7 @@ public class ParameterEvaluatorTest
     public void EvaluateParameters_WithEnvironmentVariableDefault_PreservesAsString()
     {
         // Arrange
-        var rawParameters = new List<RawPipelineParameter>
+        var rawParameters = new List<PipelineParameterElement>
         {
             new()
             {
@@ -212,7 +212,7 @@ public class ParameterEvaluatorTest
     public void EvaluateParameters_WithMixedProvidedAndDefault_UsesCorrectValues()
     {
         // Arrange
-        var rawParameters = new List<RawPipelineParameter>
+        var rawParameters = new List<PipelineParameterElement>
         {
             new()
             {
@@ -259,7 +259,7 @@ public class ParameterEvaluatorTest
     public void EvaluateParameters_WithNullDefault_ValueIsNull()
     {
         // Arrange
-        var rawParameters = new List<RawPipelineParameter>
+        var rawParameters = new List<PipelineParameterElement>
         {
             new()
             {
@@ -286,7 +286,7 @@ public class ParameterEvaluatorTest
     public void EvaluateParameters_WithEmptyParameterList_ReturnsEmpty()
     {
         // Arrange
-        var rawParameters = new List<RawPipelineParameter>();
+        var rawParameters = new List<PipelineParameterElement>();
         var parameterValues = new Dictionary<string, object>();
 
         // Act
@@ -300,7 +300,7 @@ public class ParameterEvaluatorTest
     public void EvaluateParameters_PreservesDisplayName()
     {
         // Arrange
-        var rawParameters = new List<RawPipelineParameter>
+        var rawParameters = new List<PipelineParameterElement>
         {
             new()
             {

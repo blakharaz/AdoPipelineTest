@@ -1,7 +1,7 @@
 ﻿using AdoPipelineTest.Evaluation;
 using AdoPipelineTest.Model;
 using AdoPipelineTest.Parsing;
-using AdoPipelineTest.Parsing.RawModel;
+using AdoPipelineTest.Parsing.Ast;
 
 namespace AdoPipelineTest;
 
@@ -72,7 +72,7 @@ public class PipelineTester
         };
     }
 
-    private static List<PipelineVariable> ConvertVariables(IList<RawPipelineVariable> rawVariables)
+    private static List<PipelineVariable> ConvertVariables(IList<PipelineVariableElement> rawVariables)
     {
         return rawVariables.Select(rawVar => new PipelineVariable
         {
@@ -81,7 +81,7 @@ public class PipelineTester
         }).ToList();
     }
 
-    private static Dictionary<string, object> MergeVariables(IList<RawPipelineVariable> defaultVariables, Dictionary<string, object> userVariables)
+    private static Dictionary<string, object> MergeVariables(IList<PipelineVariableElement> defaultVariables, Dictionary<string, object> userVariables)
     {
         var merged = new Dictionary<string, object>();
 

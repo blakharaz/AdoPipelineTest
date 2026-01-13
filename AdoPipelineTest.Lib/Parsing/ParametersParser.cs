@@ -1,14 +1,14 @@
+using AdoPipelineTest.Parsing.Ast;
 using AdoPipelineTest.Utils;
-using AdoPipelineTest.Parsing.RawModel;
 using YamlDotNet.RepresentationModel;
 
 namespace AdoPipelineTest.Parsing;
 
 internal static class ParametersParser
 {
-    internal static List<RawPipelineParameter> ParseParameters(YamlMappingNode pipelineRoot)
+    internal static List<PipelineParameterElement> ParseParameters(YamlMappingNode pipelineRoot)
     {
-        var result = new List<RawPipelineParameter>();
+        var result = new List<PipelineParameterElement>();
         
         if (!pipelineRoot.TryGetChild("parameters", out YamlSequenceNode parametersSequence))
         {
@@ -27,7 +27,7 @@ internal static class ParametersParser
         return result;
     }
 
-    private static RawPipelineParameter? ParseParameter(YamlMappingNode paramMapping)
+    private static PipelineParameterElement? ParseParameter(YamlMappingNode paramMapping)
     {
         var name = GetScalarValue(paramMapping, "name");
         var type = GetScalarValue(paramMapping, "type");
@@ -37,7 +37,7 @@ internal static class ParametersParser
             return null;
         }
 
-        return new RawPipelineParameter
+        return new PipelineParameterElement
         {
             Name = name,
             Type = type,

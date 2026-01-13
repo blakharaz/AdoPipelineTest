@@ -1,6 +1,6 @@
-namespace AdoPipelineTest.Parsing.RawModel;
+namespace AdoPipelineTest.Parsing.Ast;
 
-public class RawPipelineStep
+public class PipelineStepElement
 {
     public string? DisplayName { get; init; }
     public string? ContinueOnError { get; init; }

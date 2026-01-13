@@ -1,6 +1,6 @@
-namespace AdoPipelineTest.Parsing.RawModel;
+namespace AdoPipelineTest.Parsing.Ast;
 
-internal class RawTemplateStep : RawPipelineStep
+internal class TemplateStepElement : PipelineStepElement
 {
     public required string Template { get; init; }
     public required string ReferencedBy { get; init; }

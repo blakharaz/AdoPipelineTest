@@ -1,5 +1,5 @@
 using AdoPipelineTest.Parsing;
-using AdoPipelineTest.Parsing.RawModel;
+using AdoPipelineTest.Parsing.Ast;
 
 namespace AdoPipelineTest.UnitTests.Parsing;
 
@@ -31,7 +31,7 @@ public class PipelineParserTest
         Assert.That(steps, Has.Count.EqualTo(3));
 
         // Verify step 1 - NodeTool task
-        var step1 = steps[0] as RawTaskStep;
+        var step1 = steps[0] as TaskStepElement;
         Assert.That(step1, Is.Not.Null);
         using (Assert.EnterMultipleScope())
         {
@@ -46,7 +46,7 @@ public class PipelineParserTest
         }
 
         // Verify step 2 - npm install and build script
-        var step2 = steps[1] as RawScriptStep;
+        var step2 = steps[1] as ScriptStepElement;
         Assert.That(step2, Is.Not.Null);
         using (Assert.EnterMultipleScope())
         {
@@ -55,7 +55,7 @@ public class PipelineParserTest
         }
 
         // Verify step 3 - npm test script with continueOnError
-        var step3 = steps[2] as RawScriptStep;
+        var step3 = steps[2] as ScriptStepElement;
         Assert.That(step3, Is.Not.Null);
         using (Assert.EnterMultipleScope())
         {

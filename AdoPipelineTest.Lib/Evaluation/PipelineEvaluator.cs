@@ -1,12 +1,12 @@
 using AdoPipelineTest.Model;
 using AdoPipelineTest.Model.Steps;
-using AdoPipelineTest.Parsing.RawModel;
+using AdoPipelineTest.Parsing.Ast;
 
 namespace AdoPipelineTest.Evaluation;
 
 internal static class PipelineEvaluator
 {
-    internal static PipelineStage EvaluateStage(RawPipelineStage stage, Dictionary<string, object> parameters, Dictionary<string, object> variables)
+    internal static PipelineStage EvaluateStage(PipelineStageElement stage, Dictionary<string, object> parameters, Dictionary<string, object> variables)
     {
         return new PipelineStage
         {
@@ -14,7 +14,7 @@ internal static class PipelineEvaluator
         };
     }
 
-    internal static PipelineJob EvaluateJob(RawPipelineJob job, Dictionary<string, object> parameters, Dictionary<string, object> variables)
+    internal static PipelineJob EvaluateJob(PipelineJobElement job, Dictionary<string, object> parameters, Dictionary<string, object> variables)
     {
         return new PipelineJob
         {
@@ -23,14 +23,14 @@ internal static class PipelineEvaluator
         };
     }
     
-    internal static PipelineStep EvaluateStep(RawPipelineStep step, Dictionary<string, object> parameters, Dictionary<string, object> variables)
+    internal static PipelineStep EvaluateStep(PipelineStepElement step, Dictionary<string, object> parameters, Dictionary<string, object> variables)
     {
-        if (step is RawTaskStep taskStep)
+        if (step is TaskStepElement taskStep)
         {
             return EvaluateStep(taskStep, parameters, variables);
         }
 
-        if (step is RawScriptStep scriptStep)
+        if (step is ScriptStepElement scriptStep)
         {
             return EvaluateStep(scriptStep, parameters, variables);
         }
@@ -38,7 +38,7 @@ internal static class PipelineEvaluator
         throw new ArgumentException($"Unknown step type: {step.GetType().Name}");
     }
 
-    internal static TaskStep EvaluateStep(RawTaskStep taskStep, Dictionary<string, object> parameters, Dictionary<string, object> variables)
+    internal static TaskStep EvaluateStep(TaskStepElement taskStep, Dictionary<string, object> parameters, Dictionary<string, object> variables)
     {
         return new TaskStep
         {
@@ -49,7 +49,7 @@ internal static class PipelineEvaluator
         };
     }
 
-    internal static ScriptStep EvaluateStep(RawScriptStep scriptStep, Dictionary<string, object> parameters, Dictionary<string, object> variables)
+    internal static ScriptStep EvaluateStep(ScriptStepElement scriptStep, Dictionary<string, object> parameters, Dictionary<string, object> variables)
     {
         return new ScriptStep
         {

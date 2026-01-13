@@ -1,6 +1,6 @@
-namespace AdoPipelineTest.Parsing.RawModel;
+namespace AdoPipelineTest.Parsing.Ast;
 
-internal class RawPipelineVariable
+internal class PipelineVariableElement
 {
     internal string Name { get; init; } = string.Empty;
     

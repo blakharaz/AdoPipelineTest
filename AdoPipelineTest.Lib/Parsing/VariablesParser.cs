@@ -1,13 +1,13 @@
-using AdoPipelineTest.Parsing.RawModel;
+using AdoPipelineTest.Parsing.Ast;
 using YamlDotNet.RepresentationModel;
 
 namespace AdoPipelineTest.Parsing;
 
 internal static class VariablesParser
 {
-    internal static List<RawPipelineVariable> ParseVariables(YamlMappingNode rootNode)
+    internal static List<PipelineVariableElement> ParseVariables(YamlMappingNode rootNode)
     {
-        var variables = new List<RawPipelineVariable>();
+        var variables = new List<PipelineVariableElement>();
 
         if (!rootNode.Children.TryGetValue("variables", out var variablesNode))
         {
@@ -29,7 +29,7 @@ internal static class VariablesParser
 
             var defaultValue = ExtractValue(kvp.Value);
 
-            variables.Add(new RawPipelineVariable
+            variables.Add(new PipelineVariableElement
             {
                 Name = name,
                 DefaultValue = defaultValue
