@@ -1,11 +1,11 @@
-using AdoPipelineTest.Parsing.RawModel;
+using AdoPipelineTest.Parsing.Ast;
 using YamlDotNet.RepresentationModel;
 
 namespace AdoPipelineTest.Parsing;
 
 internal class PipelineParser
 {
-    internal static PipelineParseResult Parse(string yamlPath)
+    internal static PipelineSyntaxTree Parse(string yamlPath)
     {
         // Set up the input
         using TextReader input = File.OpenText(yamlPath);
@@ -28,7 +28,7 @@ internal class PipelineParser
         var variables = VariablesParser.ParseVariables(rootNode);
         var stages = ParseStages(rootNode, yamlPath);
 
-        return new PipelineParseResult
+        return new PipelineSyntaxTree
         {
             Triggers = triggers,
             AgentPool = agentPool,
@@ -39,18 +39,18 @@ internal class PipelineParser
     }
     
     
-    private static IList<RawPipelineStage> ParseStages(YamlMappingNode rootNode, string pipelinePath)
+    private static IList<PipelineStageElement> ParseStages(YamlMappingNode rootNode, string pipelinePath)
     {
         if (rootNode.Children.TryGetValue("steps", out var stepsInRoot) && stepsInRoot is YamlSequenceNode stepsInRootSequence)
         {
             var steps = StepsParser.ParseSteps(stepsInRootSequence, pipelinePath);
-            return [new RawPipelineStage { Jobs = [new RawPipelineJob { Steps = steps }] }];
+            return [new PipelineStageElement { Jobs = [new PipelineJobElement { Steps = steps }] }];
         }
 
         if (rootNode.Children.TryGetValue("jobs", out var jobsInRoot) && jobsInRoot is YamlSequenceNode jobsInRootSequence)
         {
             var jobs = StepsParser.ParseJobs(jobsInRootSequence, pipelinePath);
-            return [new RawPipelineStage { Jobs = jobs }];
+            return [new PipelineStageElement { Jobs = jobs }];
         }
 
         if (rootNode.Children.TryGetValue("stages", out var stagesInRoot) && stagesInRoot is YamlSequenceNode stagesInRootSequence)

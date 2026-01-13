@@ -1,5 +1,5 @@
 using AdoPipelineTest.Parsing;
-using AdoPipelineTest.Parsing.RawModel;
+using AdoPipelineTest.Parsing.Ast;
 using AdoPipelineTest.Utils;
 using YamlDotNet.RepresentationModel;
 
@@ -7,7 +7,7 @@ namespace AdoPipelineTest.Evaluation;
 
 internal static class TemplateResolver
 {
-    internal static IList<RawPipelineStep> ResolveStepTemplate(RawTemplateStep stepTemplate)
+    internal static IList<PipelineStepElement> ResolveStepTemplate(TemplateStepElement stepTemplate)
     {
         var templatePath = Path.Combine(Path.GetDirectoryName(stepTemplate.ReferencedBy) ?? string.Empty, stepTemplate.Template);
         
@@ -37,25 +37,25 @@ internal static class TemplateResolver
         return StepsParser.ParseSteps(stepsNode, templatePath);
     }
 
-    internal static RawPipelineStage ResolveStage(RawPipelineStage stageWithTemplates)
+    internal static PipelineStageElement ResolveStage(PipelineStageElement stageWithTemplates)
     {
-        return new RawPipelineStage(stageWithTemplates)
+        return new PipelineStageElement(stageWithTemplates)
         {
             Jobs = stageWithTemplates.Jobs.Select(ResolveJob).ToList()
         };
     }
 
-    private static RawPipelineJob ResolveJob(RawPipelineJob jobWithTemplates)
+    private static PipelineJobElement ResolveJob(PipelineJobElement jobWithTemplates)
     {
-        return new RawPipelineJob(jobWithTemplates)
+        return new PipelineJobElement(jobWithTemplates)
         {
             Steps = jobWithTemplates.Steps.SelectMany(ResolveStep).ToList()
         };
     }
 
-    private static IList<RawPipelineStep> ResolveStep(RawPipelineStep step)
+    private static IList<PipelineStepElement> ResolveStep(PipelineStepElement step)
     {
-        if (step is RawTemplateStep stepTemplate)
+        if (step is TemplateStepElement stepTemplate)
         {
             return ResolveStepTemplate(stepTemplate);
         }

@@ -1,5 +1,5 @@
 using AdoPipelineTest.Model;
-using AdoPipelineTest.Parsing.RawModel;
+using AdoPipelineTest.Parsing.Ast;
 using AdoPipelineTest.Utils;
 using YamlDotNet.RepresentationModel;
 
@@ -7,12 +7,12 @@ namespace AdoPipelineTest.Parsing;
 
 internal static class StepsParser
 {
-    internal static IList<RawPipelineStage> ParseStages(YamlSequenceNode stagesNode, string pipelinePath)
+    internal static IList<PipelineStageElement> ParseStages(YamlSequenceNode stagesNode, string pipelinePath)
     {
         return stagesNode.Select(stageNode => ParseStage(stageNode, pipelinePath)).ToList();
     }
 
-    private static RawPipelineStage ParseStage(YamlNode stageNode, string pipelinePath)
+    private static PipelineStageElement ParseStage(YamlNode stageNode, string pipelinePath)
     {
         if (stageNode is not YamlMappingNode stageMappingNode)
         {
@@ -23,12 +23,12 @@ internal static class StepsParser
         
         if (stageMappingNode.TryGetChild<YamlSequenceNode>("steps", out var stepsNode))
         {
-            return new RawPipelineStage
+            return new PipelineStageElement
             {
                 DisplayName = displayName,
                 Jobs =
                 [
-                    new RawPipelineJob
+                    new PipelineJobElement
                     {
                         Steps = ParseSteps(stepsNode, pipelinePath)
                     }
@@ -38,7 +38,7 @@ internal static class StepsParser
 
         if (stageMappingNode.TryGetChild<YamlSequenceNode>("jobs", out var jobsNode))
         {
-            return new RawPipelineStage
+            return new PipelineStageElement
             {
                 DisplayName = displayName,
                 Jobs = ParseJobs(jobsNode, pipelinePath)
@@ -48,12 +48,12 @@ internal static class StepsParser
         throw new FormatException("Neither steps nor jobs sequence node found");
     }
 
-    internal static IList<RawPipelineJob> ParseJobs(YamlSequenceNode jobsNode, string pipelinePath)
+    internal static IList<PipelineJobElement> ParseJobs(YamlSequenceNode jobsNode, string pipelinePath)
     {
         return jobsNode.Select(jobNode => ParseJob(jobNode, pipelinePath)).ToList();
     }
 
-    private static RawPipelineJob ParseJob(YamlNode jobNode, string pipelinePath)
+    private static PipelineJobElement ParseJob(YamlNode jobNode, string pipelinePath)
     {
         if (jobNode is not YamlMappingNode jobMappingNode)
         {
@@ -67,19 +67,19 @@ internal static class StepsParser
 
         var displayName = jobMappingNode.GetChildIfExists<YamlScalarNode>("displayName")?.Value;;
 
-        return new RawPipelineJob
+        return new PipelineJobElement
         {
             DisplayName = displayName,
             Steps = ParseSteps(stepsNode, pipelinePath)
         };
     }
 
-    internal static IList<RawPipelineStep> ParseSteps(YamlSequenceNode stepsNode, string pipelinePath)
+    internal static IList<PipelineStepElement> ParseSteps(YamlSequenceNode stepsNode, string pipelinePath)
     {
         return stepsNode.Select(stepNode => ParseStep(stepNode, pipelinePath)).ToList();
     }
 
-    private static RawPipelineStep ParseStep(YamlNode stepNode, string pipelinePath)
+    private static PipelineStepElement ParseStep(YamlNode stepNode, string pipelinePath)
     {
         if (stepNode is not YamlMappingNode stepMappingNode)
         {
@@ -107,25 +107,25 @@ internal static class StepsParser
         throw new InvalidDataException("unknown step type"); 
     }
 
-    private static RawPipelineStep ParseTemplateStep(YamlScalarNode templateNode, YamlMappingNode stepMappingNode, string pipelinePath)
+    private static PipelineStepElement ParseTemplateStep(YamlScalarNode templateNode, YamlMappingNode stepMappingNode, string pipelinePath)
     {
-        return new RawTemplateStep
+        return new TemplateStepElement
         {
             Template = templateNode.Value ?? throw new InvalidDataException("template node has no value"), 
             ReferencedBy = pipelinePath
         };
     }
 
-    private static RawScriptStep ParseScriptStep(string? displayName, string? continueOnError,
+    private static ScriptStepElement ParseScriptStep(string? displayName, string? continueOnError,
         YamlScalarNode scriptNode, YamlMappingNode stepNode)
     {
-        return new RawScriptStep { DisplayName = displayName, ContinueOnError = continueOnError, Script = scriptNode.Value};
+        return new ScriptStepElement { DisplayName = displayName, ContinueOnError = continueOnError, Script = scriptNode.Value};
     }
 
-    private static RawTaskStep ParseTaskStep(string? displayName, string? continueOnError, YamlScalarNode taskNode,
+    private static TaskStepElement ParseTaskStep(string? displayName, string? continueOnError, YamlScalarNode taskNode,
         YamlMappingNode stepNode)
     {
-        return new RawTaskStep
+        return new TaskStepElement
         {
             DisplayName = displayName, 
             ContinueOnError = continueOnError, 
