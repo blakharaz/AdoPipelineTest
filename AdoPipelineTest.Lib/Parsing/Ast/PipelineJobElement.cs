@@ -1,6 +1,6 @@
 namespace AdoPipelineTest.Parsing.Ast;
 
-internal class PipelineJobElement
+internal class PipelineJobElement : PipelineElement
 {
     internal PipelineJobElement()
     {

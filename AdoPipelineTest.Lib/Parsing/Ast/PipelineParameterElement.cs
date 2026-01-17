@@ -1,6 +1,6 @@
 namespace AdoPipelineTest.Parsing.Ast;
 
-public class PipelineParameterElement
+public class PipelineParameterElement : PipelineElement
 {
     public required string Name { get; init; }
     public required string Type { get; init; }
