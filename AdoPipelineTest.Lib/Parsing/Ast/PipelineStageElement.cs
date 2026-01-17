@@ -1,6 +1,6 @@
 namespace AdoPipelineTest.Parsing.Ast;
 
-internal class PipelineStageElement
+internal class PipelineStageElement : PipelineElement
 {
     internal PipelineStageElement() {}
 
