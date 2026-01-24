@@ -62,6 +62,12 @@
       <None Update="Nunit\Parameters\pipeline_with_simple_expressions.yaml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+      <None Update="Nunit\TemplateExpressions\simple_conditional_insertion.yml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Nunit\TemplateExpressions\ifelse_conditional_step_insertion.yml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

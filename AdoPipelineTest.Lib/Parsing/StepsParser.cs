@@ -76,7 +76,117 @@ internal static class StepsParser
 
     internal static IList<PipelineStepElement> ParseSteps(YamlSequenceNode stepsNode, string pipelinePath)
     {
-        return stepsNode.Select(stepNode => ParseStep(stepNode, pipelinePath)).ToList();
+        var steps = new List<PipelineStepElement>();
+        int i = 0;
+        
+        while (i < stepsNode.Count())
+        {
+            var stepNode = stepsNode.ElementAt(i);
+            
+            // Check if this is a conditional step
+            if (IsConditionalStep(stepNode, out var conditionalType))
+            {
+                var conditionalStep = ParseConditionalStep(stepsNode, ref i, pipelinePath);
+                steps.Add(conditionalStep);
+            }
+            else
+            {
+                steps.Add(ParseStep(stepNode, pipelinePath));
+                i++;
+            }
+        }
+        
+        return steps;
+    }
+
+    private static bool IsConditionalStep(YamlNode stepNode, out string? conditionalType)
+    {
+        conditionalType = null;
+        
+        if (stepNode is not YamlMappingNode mapping || mapping.Children.Count != 1)
+        {
+            return false;
+        }
+        
+        var key = mapping.Children.Keys.First() as YamlScalarNode;
+        var keyValue = key?.Value ?? "";
+        
+        if (keyValue.StartsWith("${{ if ") && keyValue.EndsWith(" }}"))
+        {
+            conditionalType = "if";
+            return true;
+        }
+        
+        if (keyValue.StartsWith("${{ else if ") && keyValue.EndsWith(" }}"))
+        {
+            conditionalType = "elseif";
+            return true;
+        }
+        
+        if (keyValue == "${{ else }}")
+        {
+            conditionalType = "else";
+            return true;
+        }
+        
+        return false;
+    }
+
+    private static ConditionalStepExpression ParseConditionalStep(
+        YamlSequenceNode stepsNode, 
+        ref int currentIndex, 
+        string pipelinePath)
+    {
+        var stepNode = stepsNode.ElementAt(currentIndex);
+        var mapping = stepNode as YamlMappingNode;
+        var key = mapping!.Children.Keys.First() as YamlScalarNode;
+        var keyValue = key!.Value!;
+        
+        // Parse the condition
+        TemplateExpression? condition = null;
+        if (keyValue.StartsWith("${{ if ") || keyValue.StartsWith("${{ else if "))
+        {
+            var conditionText = keyValue
+                .Replace("${{ if ", "")
+                .Replace("${{ else if ", "")
+                .Replace(" }}", "")
+                .Trim();
+            
+            var expr = new TemplateExpressionParser(conditionText).ParseExpression();
+            condition = new TemplateExpression { Children = [expr] };
+        }
+        else // else without condition
+        {
+            // Create a "true" condition for else
+            condition = new TemplateExpression { Children = [new StringLiteral { Value = "true" }] };
+        }
+        
+        // Parse then branch
+        var value = mapping.Children.Values.First() as YamlSequenceNode;
+        var thenSteps = value?.Select(n => ParseStep(n, pipelinePath)).ToList() ?? [];
+        
+        currentIndex++;
+        
+        // Check for else-if or else
+        PipelineStepElement? elseBranch = null;
+        if (currentIndex < stepsNode.Count())
+        {
+            var nextNode = stepsNode.ElementAt(currentIndex);
+            
+            if (IsConditionalStep(nextNode, out var nextType) && 
+                (nextType == "elseif" || nextType == "else"))
+            {
+                // Recursively parse the else-if or else as nested conditional
+                elseBranch = ParseConditionalStep(stepsNode, ref currentIndex, pipelinePath);
+            }
+        }
+        
+        return new ConditionalStepExpression
+        {
+            Condition = condition,
+            ThenSteps = thenSteps,
+            ElseBranch = elseBranch
+        };
     }
 
     private static PipelineStepElement ParseStep(YamlNode stepNode, string pipelinePath)
@@ -103,7 +213,7 @@ internal static class StepsParser
         {
             return ParseTemplateStep(templateNode, stepMappingNode, pipelinePath);
         }
-            
+        
         throw new InvalidDataException("unknown step type"); 
     }
 

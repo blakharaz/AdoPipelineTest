@@ -116,15 +116,67 @@ public class PipelineParserTest
         Assert.That(ex, Is.Not.Null);
         Assert.That(ex?.Message, Does.Contain("script node has no content"));
     }
-    
+
     [Test]
     public void PipelineWithUnterminatedStringInTemplateExpression_ThrowsInvalidPipelineException()
     {
-        var ex = Assert.Throws<InvalidPipelineException>(
-            () => PipelineParser.Parse("test_data/pipeline_parser/pipeline_with_unterminated_string.yaml")
+        var ex = Assert.Throws<InvalidPipelineException>(() =>
+            PipelineParser.Parse("test_data/pipeline_parser/pipeline_with_unterminated_string.yaml")
         );
 
         Assert.That(ex, Is.Not.Null);
         Assert.That(ex?.Message, Does.Contain("Unterminated string"));
+    }
+
+    [Test]
+    public void PipelineWithConditionalStepInsertion1()
+    {
+        var pipeline = PipelineParser.Parse("test_data/pipeline_parser/simple_conditional_insertion.yaml");
+
+        Assert.That(pipeline, Is.Not.Null);
+
+        Assert.That(pipeline.Stages, Has.Count.EqualTo(1));
+        Assert.That(pipeline.Stages[0].Jobs, Has.Count.EqualTo(1));
+        
+        var steps = pipeline.Stages[0].Jobs[0].Steps;
+        Assert.That(steps, Has.Count.EqualTo(2));
+        
+        Assert.That(steps[0], Is.InstanceOf<ConditionalStepExpression>());
+        Assert.That(steps[1], Is.InstanceOf<ConditionalStepExpression>());
+    }
+
+    [Test]
+    public void PipelineWithConditionalStepInsertion2()
+    {
+        var pipeline = PipelineParser.Parse("test_data/pipeline_parser/ifelse_conditional_step_insertion.yaml");
+
+        Assert.That(pipeline, Is.Not.Null);
+
+        Assert.That(pipeline.Stages, Has.Count.EqualTo(1));
+        Assert.That(pipeline.Stages[0].Jobs, Has.Count.EqualTo(1));
+        
+        var steps = pipeline.Stages[0].Jobs[0].Steps;
+        
+        // Now we should have only 1 top-level conditional (the if-elseif-else chain)
+        Assert.That(steps, Has.Count.EqualTo(1));
+        Assert.That(steps[0], Is.InstanceOf<ConditionalStepExpression>());
+        
+        var ifStatement = steps[0] as ConditionalStepExpression;
+        Assert.That(ifStatement, Is.Not.Null);
+        
+        // Verify the "if" branch
+        Assert.That(ifStatement!.ThenSteps, Has.Count.EqualTo(1));
+        Assert.That(ifStatement.ThenSteps[0], Is.InstanceOf<TaskStepElement>());
+        
+        // Verify the "else if" branch (nested in ElseBranch)
+        Assert.That(ifStatement.ElseBranch, Is.InstanceOf<ConditionalStepExpression>());
+        var elseIfStatement = ifStatement.ElseBranch as ConditionalStepExpression;
+        Assert.That(elseIfStatement!.ThenSteps, Has.Count.EqualTo(3));
+        
+        // Verify the "else" branch (nested in the else-if's ElseBranch)
+        Assert.That(elseIfStatement.ElseBranch, Is.InstanceOf<ConditionalStepExpression>());
+        var elseStatement = elseIfStatement.ElseBranch as ConditionalStepExpression;
+        Assert.That(elseStatement!.ThenSteps, Has.Count.EqualTo(1));
+        Assert.That(elseStatement.ThenSteps[0], Is.InstanceOf<ScriptStepElement>());
     }
 }

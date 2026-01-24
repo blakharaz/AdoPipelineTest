@@ -1,0 +1,26 @@
+parameters:
+  - name: 'toolset'
+    default: vsbuild
+    type: string
+    values:
+      - vsbuild
+      - dotnet
+      - nothing
+
+steps:
+  # msbuild
+  - ${{ if eq(parameters.toolset, 'msbuild') }}:
+      - task: VSBuild@1
+      - task: VSTest@3
+  
+  # dotnet
+  - ${{ if eq(parameters.toolset, 'dotnet') }}:
+      - task: UseDotNet@2
+        inputs:
+          command: build
+      - task: UseDotNet@2
+        inputs:
+          command: test
+      - task: UseDotNet@2
+        inputs:
+          command: pack
