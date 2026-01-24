@@ -109,7 +109,7 @@ internal static class StepsParser
         }
         
         var key = mapping.Children.Keys.First() as YamlScalarNode;
-        var keyValue = key?.Value ?? "";
+        var keyValue = TrimTrailingColon(key?.Value ?? "");
         
         if (keyValue.StartsWith("${{ if ") && keyValue.EndsWith(" }}"))
         {
@@ -131,6 +131,11 @@ internal static class StepsParser
         
         return false;
     }
+    
+    private static string TrimTrailingColon(string value)
+    {
+        return value.EndsWith(":") ? value[..^1] : value;
+    }
 
     private static ConditionalStepExpression ParseConditionalStep(
         YamlSequenceNode stepsNode, 
@@ -140,7 +145,7 @@ internal static class StepsParser
         var stepNode = stepsNode.ElementAt(currentIndex);
         var mapping = stepNode as YamlMappingNode;
         var key = mapping!.Children.Keys.First() as YamlScalarNode;
-        var keyValue = key!.Value!;
+        var keyValue = TrimTrailingColon(key!.Value!);
         
         // Parse the condition
         TemplateExpression? condition = null;
