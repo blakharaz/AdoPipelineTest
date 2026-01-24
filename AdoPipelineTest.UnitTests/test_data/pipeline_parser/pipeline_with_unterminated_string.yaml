@@ -1,0 +1,19 @@
+parameters:
+  # Boolean parameter
+  - name: enableTests
+    type: boolean
+    default: true
+    displayName: 'Enable Unit Tests'
+  
+steps:
+  - task: DotNetCoreCLI@2
+    enabled: $${{ eq(parameters.enableTests, "true) }}
+    inputs:
+      command: 'test'
+      projects: '**/*Tests.csproj'
+    displayName: 'Run Unit Tests'
+  
+  - script: |
+      echo "Pipeline completed successfully"
+      echo "Tests Enabled: ${{ parameters.enableTests }}"
+    displayName: 'Pipeline Summary'

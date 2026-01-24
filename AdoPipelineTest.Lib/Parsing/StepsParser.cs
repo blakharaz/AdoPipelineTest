@@ -132,9 +132,12 @@ internal static class StepsParser
     private static TaskStepElement ParseTaskStep(string? displayName, string? continueOnError, YamlScalarNode taskNode,
         YamlMappingNode stepNode)
     {
+        var enabled = stepNode.GetChildIfExists<YamlScalarNode>("enabled");
+        
         return new TaskStepElement
         {
-            DisplayName = displayName, 
+            DisplayName = displayName,
+            Enabled = enabled?.Value is null ? null : ExpressionParser.ParseStringExpression(enabled.Value),
             ContinueOnError = continueOnError, 
             TaskName = taskNode.Value ?? throw new InvalidPipelineException("task node must have value"),
             Inputs = stepNode.GetChildIfExists<YamlMappingNode>("inputs")?.ToDictionary()
