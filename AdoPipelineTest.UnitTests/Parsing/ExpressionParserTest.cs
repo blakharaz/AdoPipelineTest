@@ -1,4 +1,5 @@
 using System.Reflection.Metadata;
+using AdoPipelineTest.Model;
 using AdoPipelineTest.Parsing;
 using AdoPipelineTest.Parsing.Ast;
 
@@ -149,5 +150,15 @@ public class ExpressionParserTest
             Assert.That(secondChild?.Children, Has.Count.EqualTo(1));
             Assert.That((secondChild?.Children[0] as ParameterExpression)?.ParameterName, Is.EqualTo("Bar"));
         }
+    }
+
+    [Test]
+    public void ParseStringExpression_WithUnterminatedStringInTemplateExpression_ThrowsInvalidPipelineException()
+    {
+        var ex = Assert.Throws<InvalidPipelineException>(
+            () => ExpressionParser.ParseStringExpression("${{ \"unterminated }}")
+        );
+
+        Assert.That(ex?.Message, Does.Contain("Unterminated string"));
     }
 }

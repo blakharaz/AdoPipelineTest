@@ -43,6 +43,9 @@
       <None Update="test_data\pipeline_parser\pipeline_with_empty_script.yaml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+      <None Update="test_data\pipeline_parser\pipeline_with_unterminated_string.yaml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

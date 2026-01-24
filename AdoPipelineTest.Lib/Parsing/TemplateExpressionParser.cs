@@ -1,4 +1,5 @@
 using System.Text;
+using AdoPipelineTest.Model;
 using AdoPipelineTest.Parsing.Ast;
 
 namespace AdoPipelineTest.Parsing;
@@ -6,11 +7,13 @@ namespace AdoPipelineTest.Parsing;
 internal class TemplateExpressionParser
 {
     private readonly string _text;
+    private readonly string _filePath;
     private int _pos;
 
-    internal TemplateExpressionParser(string text)
+    internal TemplateExpressionParser(string text, string filePath = "")
     {
         _text = text;
+        _filePath = filePath;
     }
 
     internal Expression ParseExpression()
@@ -82,6 +85,7 @@ internal class TemplateExpressionParser
     {
         var quote = Next();
         var builder = new StringBuilder();
+        var startPos = _pos - 1;
 
         while (!IsAtEnd())
         {
@@ -89,7 +93,7 @@ internal class TemplateExpressionParser
 
             if (ch == quote)
             {
-                break;
+                return new StringLiteral { Value = builder.ToString() };
             }
 
             if (ch == '\\' && !IsAtEnd())
@@ -102,7 +106,7 @@ internal class TemplateExpressionParser
             builder.Append(ch);
         }
 
-        return new StringLiteral { Value = builder.ToString() };
+        throw new InvalidPipelineException($"Unterminated string starting at position {startPos}.", _filePath, 0, startPos);
     }
 
     private string ParseIdentifier()
