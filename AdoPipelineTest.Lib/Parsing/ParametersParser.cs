@@ -99,7 +99,7 @@ internal static class ParametersParser
         {
             var value = item switch
             {
-                YamlScalarNode scalar => (object)scalar.Value,
+                YamlScalarNode scalar => (object?)(scalar.Value ?? string.Empty),
                 YamlMappingNode mapping => ConvertMappingToObject(mapping),
                 YamlSequenceNode sequence => ConvertSequenceToList(sequence),
                 _ => null
@@ -123,7 +123,7 @@ internal static class ParametersParser
             var key = kvp.Key is YamlScalarNode keyNode ? keyNode.Value : kvp.Key.ToString();
             var value = kvp.Value switch
             {
-                YamlScalarNode scalar => (object)scalar.Value,
+                YamlScalarNode scalar => (object?)(scalar.Value ?? string.Empty),
                 YamlMappingNode mapping => ConvertMappingToObject(mapping),
                 YamlSequenceNode sequence => ConvertSequenceToList(sequence),
                 _ => null

@@ -42,8 +42,8 @@ public class PipelineParserTest
 
             // Verify step 1 inputs
             Assert.That(step1.Inputs, Is.Not.Null);
-            Assert.That(step1.Inputs, Does.ContainKey("versionSpec"));
-            Assert.That(step1.Inputs["versionSpec"], Is.EqualTo("20.x"));
+            Assert.That(step1.Inputs!, Does.ContainKey("versionSpec"));
+            Assert.That(step1.Inputs!["versionSpec"], Is.EqualTo("20.x"));
         }
 
         // Verify step 2 - npm install and build script
