@@ -241,13 +241,15 @@ internal static class StepsParser
             throw new InvalidPipelineException("script node has no content", "", scriptNode);
         }
         
-        return new ScriptStepElement { DisplayName = displayName, ContinueOnError = continueOnError, Script = scriptNode.Value};
+        return new ScriptStepElement { DisplayName = displayName, ContinueOnError = continueOnError, Script = script};
     }
 
     private static TaskStepElement ParseTaskStep(string? displayName, string? continueOnError, YamlScalarNode taskNode,
         YamlMappingNode stepNode)
     {
         var enabled = stepNode.GetChildIfExists<YamlScalarNode>("enabled");
+        var inputs = stepNode.GetChildIfExists<YamlMappingNode>("inputs");
+        var inputsDict = inputs is not null ? inputs.ToDictionary() : new Dictionary<string, string>();
         
         return new TaskStepElement
         {
@@ -255,7 +257,7 @@ internal static class StepsParser
             Enabled = enabled?.Value is null ? null : ExpressionParser.ParseStringExpression(enabled.Value),
             ContinueOnError = continueOnError, 
             TaskName = taskNode.Value ?? throw new InvalidPipelineException("task node must have value"),
-            Inputs = stepNode.GetChildIfExists<YamlMappingNode>("inputs")?.ToDictionary()
+            Inputs = inputsDict
         };
     }
 }

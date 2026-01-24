@@ -221,9 +221,10 @@ public class ExpressionEvaluatorTest
     {
         const string input = "parameters.missingParam";
         var parameters = new Dictionary<string, object>();
+        var nullableParams = parameters.Cast<KeyValuePair<string, object?>>().ToDictionary(x => x.Key, x => x.Value);
 
         var ex = Assert.Throws<InvalidOperationException>(() =>
-            ExpressionEvaluator.EvaluateParametersInCompileTimeExpression(input, parameters));
+            ExpressionEvaluator.EvaluateParametersInCompileTimeExpression(input, nullableParams));
 
         Assert.That(ex?.Message, Does.Contain("Parameter 'missingParam' not found"));
     }

@@ -31,7 +31,7 @@ internal static class YamlExtensions
     internal static Dictionary<string, string> ToDictionary(this YamlMappingNode mappingNode)
     {
         return mappingNode.ToDictionary(
-            entry => ((YamlScalarNode)entry.Key).Value!,
-            entry => ((YamlScalarNode)entry.Value).Value!);
+            entry => ((YamlScalarNode)entry.Key).Value ?? string.Empty,
+            entry => ((YamlScalarNode)entry.Value).Value ?? string.Empty);
     }
 }

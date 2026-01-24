@@ -87,7 +87,7 @@ public class ParametersParserTest
             Assert.That(buildSettingsParam.DisplayName, Is.EqualTo("Build Settings"));
             Assert.That(buildSettingsParam.DefaultValue, Is.Not.Null);
             Assert.That(buildSettingsParam.DefaultValue, Is.InstanceOf<Dictionary<object, object>>());
-            var settingsDict = (Dictionary<object, object>)buildSettingsParam.DefaultValue;
+            var settingsDict = (Dictionary<object, object>)buildSettingsParam.DefaultValue!;
             Assert.That(settingsDict, Is.Empty);
             Assert.That(buildSettingsParam.AllowedValues, Is.Null);
         }

@@ -60,7 +60,7 @@ public class PipelineWithParameters
             
             // Object parameter (empty dictionary)
             Assert.That(parameters["buildSettings"].Value, Is.InstanceOf<Dictionary<object, object>>());
-            var settingsDict = (Dictionary<object, object>)parameters["buildSettings"].Value;
+            var settingsDict = (Dictionary<object, object>)parameters["buildSettings"].Value!;
             Assert.That(settingsDict, Is.Empty);
         }
     }

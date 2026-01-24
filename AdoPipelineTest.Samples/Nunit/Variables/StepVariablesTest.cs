@@ -128,8 +128,8 @@ public class StepVariablesTest
             Assert.That(buildStep, Is.Not.Null);
             Assert.That(testStep, Is.Not.Null);
             
-            var buildArguments = buildStep.Inputs?["arguments"]?.ToString();
-            var testArguments = testStep.Inputs?["arguments"]?.ToString();
+            var buildArguments = buildStep!.Inputs?["arguments"]?.ToString();
+            var testArguments = testStep!.Inputs?["arguments"]?.ToString();
 
             Assert.That(buildArguments, Does.Contain("Debug"));
             Assert.That(testArguments, Does.Contain("Debug"));
@@ -147,7 +147,7 @@ public class StepVariablesTest
         var buildStep = steps[2] as TaskStep;
 
         // The default value from the pipeline should be used
-        var arguments = buildStep.Inputs?["arguments"]?.ToString();
+        var arguments = buildStep!.Inputs?["arguments"]?.ToString();
         Assert.That(arguments, Does.Contain("Release"));
     }
 
@@ -163,7 +163,7 @@ public class StepVariablesTest
         var buildStep = steps[2] as TaskStep;
 
         // The last set variable should be used
-        var arguments = buildStep.Inputs?["arguments"]?.ToString();
+        var arguments = buildStep!.Inputs?["arguments"]?.ToString();
         Assert.That(arguments, Does.Contain("Release"));
     }
 
