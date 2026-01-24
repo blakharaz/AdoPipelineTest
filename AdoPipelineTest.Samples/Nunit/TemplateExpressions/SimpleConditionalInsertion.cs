@@ -39,7 +39,7 @@ public class SimpleConditionalInsertion
     {
         var result = new PipelineTester()
             .WithPipeline(YamlPath)
-            .WithParameter("toolset", "msbuild")
+            .WithParameter("toolset", "dotnet")
             .Run();
 
         using (Assert.EnterMultipleScope())
