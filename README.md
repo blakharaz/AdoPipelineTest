@@ -92,6 +92,10 @@ Please see [CONTRIBUTING.md](CONTRIBUTING.md) for:
 - **YamlDotNet 16.x** - YAML parsing
 - **NUnit 4.x** - Testing framework
 
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
 ## Resources
 
 - [Azure DevOps Pipelines Documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/)
