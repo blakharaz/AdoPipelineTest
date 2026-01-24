@@ -191,4 +191,114 @@ public class ExpressionEvaluatorTest
 
         Assert.That(result, Is.EqualTo("Microsoft/azure-pipelines"));
     }
+
+    [Test]
+    public void EvaluateCompileTimeExpression_WithMissingParameter_ThrowsInvalidOperationException()
+    {
+        const string input = "Project: ${{parameters.projectName}}";
+        var parameters = new Dictionary<string, object>();
+
+        var ex = Assert.Throws<InvalidOperationException>(() =>
+            ExpressionEvaluator.EvaluateCompileTimeExpressions(input, parameters));
+
+        Assert.That(ex?.Message, Does.Contain("Parameter 'projectName' not found"));
+    }
+
+    [Test]
+    public void EvaluateCompileTimeExpression_WithMultipleParametersAndOneMissing_ThrowsInvalidOperationException()
+    {
+        const string input = "Building ${{parameters.projectName}} with ${{parameters.buildConfig}} configuration";
+        var parameters = new Dictionary<string, object> { ["projectName"] = "MyProject" };
+
+        var ex = Assert.Throws<InvalidOperationException>(() =>
+            ExpressionEvaluator.EvaluateCompileTimeExpressions(input, parameters));
+
+        Assert.That(ex?.Message, Does.Contain("Parameter 'buildConfig' not found"));
+    }
+
+    [Test]
+    public void EvaluateParametersInCompileTimeExpression_WithMissingParameter_ThrowsInvalidOperationException()
+    {
+        const string input = "parameters.missingParam";
+        var parameters = new Dictionary<string, object>();
+
+        var ex = Assert.Throws<InvalidOperationException>(() =>
+            ExpressionEvaluator.EvaluateParametersInCompileTimeExpression(input, parameters));
+
+        Assert.That(ex?.Message, Does.Contain("Parameter 'missingParam' not found"));
+    }
+
+    [Test]
+    public void EvaluateString_WithMissingParameter_ThrowsInvalidOperationException()
+    {
+        const string input = "Project: ${{parameters.projectName}}";
+        var parameters = new Dictionary<string, object>();
+        var variables = new Dictionary<string, object>();
+
+        var ex = Assert.Throws<InvalidOperationException>(() =>
+            ExpressionEvaluator.EvaluateString(input, parameters, variables));
+
+        Assert.That(ex?.Message, Does.Contain("Parameter 'projectName' not found"));
+    }
+
+    [Test]
+    public void EvaluateString_WithMissingVariable_DoesNotThrowButLeavesVariableUnreplaced()
+    {
+        // EvaluateVariables doesn't validate that variables exist, it just replaces
+        // the ones that are provided. Missing variables are left as-is.
+        const string input = "Value: $(missingVar)";
+        var parameters = new Dictionary<string, object>();
+        var variables = new Dictionary<string, object>();
+
+        var result = ExpressionEvaluator.EvaluateString(input, parameters, variables);
+
+        Assert.That(result, Is.EqualTo("Value: $(missingVar)"));
+    }
+
+    [Test]
+    public void EvaluateVariables_WithMissingVariable_DoesNotThrowButLeavesVariableUnreplaced()
+    {
+        // EvaluateVariables doesn't validate that variables exist, it just replaces
+        // the ones that are provided. Missing variables are left as-is.
+        const string input = "Value: $(missingVar)";
+        var variables = new Dictionary<string, object>();
+
+        var result = ExpressionEvaluator.EvaluateVariables(input, variables);
+
+        Assert.That(result, Is.EqualTo("Value: $(missingVar)"));
+    }
+
+    [Test]
+    public void EvaluateCompileTimeExpression_WithParameterReferencedMultipleTimesAndMissing_ThrowsOncePerParameter()
+    {
+        const string input = "Start ${{parameters.config}} middle ${{parameters.config}} end";
+        var parameters = new Dictionary<string, object>();
+
+        var ex = Assert.Throws<InvalidOperationException>(() =>
+            ExpressionEvaluator.EvaluateCompileTimeExpressions(input, parameters));
+
+        Assert.That(ex?.Message, Does.Contain("Parameter 'config' not found"));
+    }
+
+    [Test]
+    public void EvaluateCompileTimeExpression_WithNullParameterValue_ConvertsToEmptyString()
+    {
+        const string input = "Value: ${{parameters.nullParam}}";
+        var parameters = new Dictionary<string, object> { ["nullParam"] = null! };
+
+        var result = ExpressionEvaluator.EvaluateCompileTimeExpressions(input, parameters);
+
+        Assert.That(result, Is.EqualTo("Value: "));
+    }
+
+    [Test]
+    public void EvaluateCompileTimeExpression_WithEmptyStringParameterValue_ReplacesWithEmptyString()
+    {
+        const string input = "Value: '${{parameters.emptyParam}}'";
+        var parameters = new Dictionary<string, object> { ["emptyParam"] = "" };
+
+        var result = ExpressionEvaluator.EvaluateCompileTimeExpressions(input, parameters);
+
+        Assert.That(result, Is.EqualTo("Value: ''"));
+    }
 }
