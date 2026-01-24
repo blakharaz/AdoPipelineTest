@@ -119,6 +119,13 @@ internal static class StepsParser
     private static ScriptStepElement ParseScriptStep(string? displayName, string? continueOnError,
         YamlScalarNode scriptNode, YamlMappingNode stepNode)
     {
+        var script = scriptNode.Value;
+
+        if (string.IsNullOrEmpty(script))
+        {
+            throw new InvalidPipelineException("script node has no content", "", scriptNode);
+        }
+        
         return new ScriptStepElement { DisplayName = displayName, ContinueOnError = continueOnError, Script = scriptNode.Value};
     }
 

@@ -1,3 +1,4 @@
+using AdoPipelineTest.Model;
 using AdoPipelineTest.Parsing;
 using AdoPipelineTest.Parsing.Ast;
 
@@ -103,5 +104,16 @@ public class PipelineParserTest
         Assert.That(pipeline.Stages[0].Jobs, Has.Count.EqualTo(1));
         var steps = pipeline.Stages[0].Jobs[0].Steps;
         Assert.That(steps, Has.Count.EqualTo(2));
+    }
+
+    [Test]
+    public void PipelineWithEmptyScriptNode_ThrowsInvalidPipelineException()
+    {
+        var ex = Assert.Throws<InvalidPipelineException>(
+            () => PipelineParser.Parse("test_data/pipeline_parser/pipeline_with_empty_script.yaml")
+        );
+
+        Assert.That(ex, Is.Not.Null);
+        Assert.That(ex?.Message, Does.Contain("script node has no content"));
     }
 }
