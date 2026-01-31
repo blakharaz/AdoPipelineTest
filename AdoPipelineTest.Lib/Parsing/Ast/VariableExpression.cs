@@ -1,6 +1,11 @@
 namespace AdoPipelineTest.Parsing.Ast;
 
-public class VariableExpression : Expression
+public class VariableExpression(string name) : Expression
 {
-    public required string Name { get; init; }
+    public string Name { get; } = name;
+
+    public VariableExpression(IEnumerable<char> name)
+        : this(new string(name.ToArray()))
+    {
+    }
 }

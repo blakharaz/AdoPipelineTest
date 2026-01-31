@@ -78,7 +78,7 @@ internal static partial class ExpressionParser
         foreach (var match in matches)
         {
             var parameterName = match.Groups[1].Value;
-            result.Add(new ParameterExpression {ParameterName =  parameterName});
+            result.Add(new ParameterExpression(parameterName));
         }
 
         return result;
