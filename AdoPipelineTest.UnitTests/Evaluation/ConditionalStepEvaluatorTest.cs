@@ -23,15 +23,10 @@ public class ConditionalStepEvaluatorTest
     {
         // Condition: eq(parameters.toolset, 'msbuild')
         var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "eq",
-                FunctionParameters = new List<Expression>
-                {
-                    new ParameterExpression { ParameterName = "toolset" },
-                    new StringLiteral { Value = "msbuild" }
-                }
-            }
+            "eq", [
+                new ParameterExpression("toolset"),
+                new StringLiteral { Value = "msbuild" }
+            ]
         );
 
         _parameters["toolset"] = "msbuild";
@@ -44,16 +39,11 @@ public class ConditionalStepEvaluatorTest
     {
         // Condition: eq(parameters.toolset, 'msbuild')
         var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "eq",
-                FunctionParameters = new List<Expression>
-                {
-                    new ParameterExpression { ParameterName = "toolset" },
-                    new StringLiteral { Value = "msbuild" }
-                }
-            }
-        );
+            "eq",
+            [
+                new ParameterExpression("toolset"),
+                new StringLiteral { Value = "msbuild" }
+            ]);
 
         _parameters["toolset"] = "dotnet";
 
@@ -64,16 +54,11 @@ public class ConditionalStepEvaluatorTest
     public void EvaluateCondition_WithEqFunction_ComparesTwoStringLiterals()
     {
         // Condition: eq('value1', 'value1')
-        var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "eq",
-                FunctionParameters = new List<Expression>
-                {
-                    new StringLiteral { Value = "value1" },
-                    new StringLiteral { Value = "value1" }
-                }
-            }
+        var condition = CreateCondition("eq",
+            [
+                new StringLiteral { Value = "value1" },
+                new StringLiteral { Value = "value1" }
+            ]
         );
 
         Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.True);
@@ -84,16 +69,11 @@ public class ConditionalStepEvaluatorTest
     {
         // Condition: eq(parameters.a, parameters.b)
         var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "eq",
-                FunctionParameters = new List<Expression>
-                {
-                    new ParameterExpression { ParameterName = "a" },
-                    new ParameterExpression { ParameterName = "b" }
-                }
-            }
-        );
+            "eq",
+            [
+                new ParameterExpression("a"),
+                new ParameterExpression("b")
+            ]);
 
         _parameters["a"] = "same";
         _parameters["b"] = "same";
@@ -110,16 +90,11 @@ public class ConditionalStepEvaluatorTest
     {
         // Condition: ne(parameters.option, 'one')
         var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "ne",
-                FunctionParameters = new List<Expression>
-                {
-                    new ParameterExpression { ParameterName = "option" },
-                    new StringLiteral { Value = "one" }
-                }
-            }
-        );
+            "ne",
+            [
+                new ParameterExpression("option"),
+                new StringLiteral { Value = "one" }
+            ]);
 
         _parameters["option"] = "two";
 
@@ -131,16 +106,11 @@ public class ConditionalStepEvaluatorTest
     {
         // Condition: ne(parameters.option, 'one')
         var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "ne",
-                FunctionParameters = new List<Expression>
-                {
-                    new ParameterExpression { ParameterName = "option" },
-                    new StringLiteral { Value = "one" }
-                }
-            }
-        );
+            "ne",
+            [
+                new ParameterExpression("option"),
+                new StringLiteral { Value = "one" }
+            ]);
 
         _parameters["option"] = "one";
 
@@ -155,33 +125,19 @@ public class ConditionalStepEvaluatorTest
     public void EvaluateCondition_WithAndFunction_ReturnsTrueWhenBothTrue()
     {
         // Condition: and(eq(parameters.a, 'x'), eq(parameters.b, 'y'))
-        var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "and",
-                FunctionParameters = new List<Expression>
-                {
-                    new FunctionExpression
-                    {
-                        FunctionName = "eq",
-                        FunctionParameters = new List<Expression>
-                        {
-                            new ParameterExpression { ParameterName = "a" },
-                            new StringLiteral { Value = "x" }
-                        }
-                    },
-                    new FunctionExpression
-                    {
-                        FunctionName = "eq",
-                        FunctionParameters = new List<Expression>
-                        {
-                            new ParameterExpression { ParameterName = "b" },
-                            new StringLiteral { Value = "y" }
-                        }
-                    }
-                }
-            }
-        );
+        var condition = CreateCondition("and",
+        [
+            new FunctionExpression("eq", [
+                    new ParameterExpression("a"),
+                    new StringLiteral { Value = "x" }
+                ]
+            ),
+            new FunctionExpression("eq", [
+                    new ParameterExpression("b"),
+                    new StringLiteral { Value = "y" }
+                ]
+            )
+        ]);
 
         _parameters["a"] = "x";
         _parameters["b"] = "y";
@@ -194,32 +150,19 @@ public class ConditionalStepEvaluatorTest
     {
         // Condition: and(eq(parameters.a, 'x'), eq(parameters.b, 'y'))
         var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "and",
-                FunctionParameters = new List<Expression>
-                {
-                    new FunctionExpression
-                    {
-                        FunctionName = "eq",
-                        FunctionParameters = new List<Expression>
-                        {
-                            new ParameterExpression { ParameterName = "a" },
-                            new StringLiteral { Value = "x" }
-                        }
-                    },
-                    new FunctionExpression
-                    {
-                        FunctionName = "eq",
-                        FunctionParameters = new List<Expression>
-                        {
-                            new ParameterExpression { ParameterName = "b" },
-                            new StringLiteral { Value = "y" }
-                        }
-                    }
-                }
-            }
-        );
+            "and",
+            [
+                new FunctionExpression("eq", [
+                        new ParameterExpression("a"),
+                        new StringLiteral { Value = "x" }
+                    ]
+                ),
+                new FunctionExpression("eq", [
+                        new ParameterExpression("b"),
+                        new StringLiteral { Value = "y" }
+                    ]
+                )
+            ]);
 
         _parameters["a"] = "wrong";
         _parameters["b"] = "y";
@@ -232,32 +175,20 @@ public class ConditionalStepEvaluatorTest
     {
         // Condition: and(eq(parameters.a, 'x'), eq(parameters.b, 'y'))
         var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "and",
-                FunctionParameters = new List<Expression>
-                {
-                    new FunctionExpression
-                    {
-                        FunctionName = "eq",
-                        FunctionParameters = new List<Expression>
-                        {
-                            new ParameterExpression { ParameterName = "a" },
-                            new StringLiteral { Value = "x" }
-                        }
-                    },
-                    new FunctionExpression
-                    {
-                        FunctionName = "eq",
-                        FunctionParameters = new List<Expression>
-                        {
-                            new ParameterExpression { ParameterName = "b" },
-                            new StringLiteral { Value = "y" }
-                        }
-                    }
-                }
-            }
-        );
+            "and",
+            [
+                new FunctionExpression("eq", [
+                        new ParameterExpression("a"),
+                        new StringLiteral { Value = "x" }
+                    ]
+                ),
+                new FunctionExpression("eq",
+                    [
+                        new ParameterExpression("b"),
+                        new StringLiteral { Value = "y" }
+                    ]
+                )
+            ]);
 
         _parameters["a"] = "x";
         _parameters["b"] = "wrong";
@@ -274,32 +205,17 @@ public class ConditionalStepEvaluatorTest
     {
         // Condition: or(eq(parameters.a, 'x'), eq(parameters.b, 'y'))
         var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "or",
-                FunctionParameters = new List<Expression>
-                {
-                    new FunctionExpression
-                    {
-                        FunctionName = "eq",
-                        FunctionParameters = new List<Expression>
-                        {
-                            new ParameterExpression { ParameterName = "a" },
-                            new StringLiteral { Value = "x" }
-                        }
-                    },
-                    new FunctionExpression
-                    {
-                        FunctionName = "eq",
-                        FunctionParameters = new List<Expression>
-                        {
-                            new ParameterExpression { ParameterName = "b" },
-                            new StringLiteral { Value = "y" }
-                        }
-                    }
-                }
-            }
-        );
+            "or", [
+                new FunctionExpression("eq", [
+                    new ParameterExpression("a"),
+                    new StringLiteral { Value = "x" }
+                ]),
+                new FunctionExpression("eq", [
+                        new ParameterExpression("b"),
+                        new StringLiteral { Value = "y" }
+                    ]
+                )
+            ]);
 
         _parameters["a"] = "x";
         _parameters["b"] = "wrong";
@@ -311,33 +227,19 @@ public class ConditionalStepEvaluatorTest
     public void EvaluateCondition_WithOrFunction_ReturnsTrueWhenSecondTrue()
     {
         // Condition: or(eq(parameters.a, 'x'), eq(parameters.b, 'y'))
-        var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "or",
-                FunctionParameters = new List<Expression>
-                {
-                    new FunctionExpression
-                    {
-                        FunctionName = "eq",
-                        FunctionParameters = new List<Expression>
-                        {
-                            new ParameterExpression { ParameterName = "a" },
-                            new StringLiteral { Value = "x" }
-                        }
-                    },
-                    new FunctionExpression
-                    {
-                        FunctionName = "eq",
-                        FunctionParameters = new List<Expression>
-                        {
-                            new ParameterExpression { ParameterName = "b" },
-                            new StringLiteral { Value = "y" }
-                        }
-                    }
-                }
-            }
-        );
+        var condition = CreateCondition("or", [
+            new FunctionExpression("eq", [
+                    new ParameterExpression("a"),
+                    new StringLiteral { Value = "x" }
+                ]
+            ),
+            new FunctionExpression("eq",
+                [
+                    new ParameterExpression("b"),
+                    new StringLiteral { Value = "y" }
+                ]
+            )
+        ]);
 
         _parameters["a"] = "wrong";
         _parameters["b"] = "y";
@@ -349,33 +251,18 @@ public class ConditionalStepEvaluatorTest
     public void EvaluateCondition_WithOrFunction_ReturnsFalseWhenBothFalse()
     {
         // Condition: or(eq(parameters.a, 'x'), eq(parameters.b, 'y'))
-        var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "or",
-                FunctionParameters = new List<Expression>
-                {
-                    new FunctionExpression
-                    {
-                        FunctionName = "eq",
-                        FunctionParameters = new List<Expression>
-                        {
-                            new ParameterExpression { ParameterName = "a" },
-                            new StringLiteral { Value = "x" }
-                        }
-                    },
-                    new FunctionExpression
-                    {
-                        FunctionName = "eq",
-                        FunctionParameters = new List<Expression>
-                        {
-                            new ParameterExpression { ParameterName = "b" },
-                            new StringLiteral { Value = "y" }
-                        }
-                    }
-                }
-            }
-        );
+        var condition = CreateCondition("or", [
+            new FunctionExpression("eq", [
+                    new ParameterExpression("a"),
+                    new StringLiteral { Value = "x" }
+                ]
+            ),
+            new FunctionExpression("eq", [
+                    new ParameterExpression("b"),
+                    new StringLiteral { Value = "y" }
+                ]
+            )
+        ]);
 
         _parameters["a"] = "wrong1";
         _parameters["b"] = "wrong2";
@@ -391,24 +278,13 @@ public class ConditionalStepEvaluatorTest
     public void EvaluateCondition_WithNotFunction_InvertsTrue()
     {
         // Condition: not(eq(parameters.option, 'one'))
-        var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "not",
-                FunctionParameters = new List<Expression>
-                {
-                    new FunctionExpression
-                    {
-                        FunctionName = "eq",
-                        FunctionParameters = new List<Expression>
-                        {
-                            new ParameterExpression { ParameterName = "option" },
-                            new StringLiteral { Value = "one" }
-                        }
-                    }
-                }
-            }
-        );
+        var condition = CreateCondition("not", [
+            new FunctionExpression("eq", [
+                    new ParameterExpression("option"),
+                    new StringLiteral { Value = "one" }
+                ]
+            )
+        ]);
 
         _parameters["option"] = "one";
 
@@ -419,24 +295,12 @@ public class ConditionalStepEvaluatorTest
     public void EvaluateCondition_WithNotFunction_InvertsFalse()
     {
         // Condition: not(eq(parameters.option, 'one'))
-        var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "not",
-                FunctionParameters = new List<Expression>
-                {
-                    new FunctionExpression
-                    {
-                        FunctionName = "eq",
-                        FunctionParameters = new List<Expression>
-                        {
-                            new ParameterExpression { ParameterName = "option" },
-                            new StringLiteral { Value = "one" }
-                        }
-                    }
-                }
-            }
-        );
+        var condition = CreateCondition("not", [
+            new FunctionExpression("eq", [
+                new ParameterExpression("option"),
+                new StringLiteral { Value = "one" }
+            ])
+        ]);
 
         _parameters["option"] = "two";
 
@@ -451,17 +315,10 @@ public class ConditionalStepEvaluatorTest
     public void EvaluateCondition_WithContainsFunction_ReturnsTrueWhenFound()
     {
         // Condition: contains(parameters.tags, 'production')
-        var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "contains",
-                FunctionParameters = new List<Expression>
-                {
-                    new ParameterExpression { ParameterName = "tags" },
-                    new StringLiteral { Value = "production" }
-                }
-            }
-        );
+        var condition = CreateCondition("contains", [
+            new ParameterExpression("tags"),
+            new StringLiteral { Value = "production" }
+        ]);
 
         _parameters["tags"] = "staging,production,test";
 
@@ -472,17 +329,10 @@ public class ConditionalStepEvaluatorTest
     public void EvaluateCondition_WithContainsFunction_ReturnsFalseWhenNotFound()
     {
         // Condition: contains(parameters.tags, 'production')
-        var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "contains",
-                FunctionParameters = new List<Expression>
-                {
-                    new ParameterExpression { ParameterName = "tags" },
-                    new StringLiteral { Value = "production" }
-                }
-            }
-        );
+        var condition = CreateCondition("contains", [
+            new ParameterExpression("tags"),
+            new StringLiteral { Value = "production" }
+        ]);
 
         _parameters["tags"] = "staging,test";
 
@@ -498,16 +348,11 @@ public class ConditionalStepEvaluatorTest
     {
         // Condition: startswith(parameters.branch, 'refs/heads/')
         var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "startswith",
-                FunctionParameters = new List<Expression>
-                {
-                    new ParameterExpression { ParameterName = "branch" },
-                    new StringLiteral { Value = "refs/heads/" }
-                }
-            }
-        );
+            "startswith",
+            [
+                new ParameterExpression("branch"),
+                new StringLiteral { Value = "refs/heads/" }
+            ]);
 
         _parameters["branch"] = "refs/heads/main";
 
@@ -519,16 +364,10 @@ public class ConditionalStepEvaluatorTest
     {
         // Condition: startswith(parameters.branch, 'refs/heads/')
         var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "startswith",
-                FunctionParameters = new List<Expression>
-                {
-                    new ParameterExpression { ParameterName = "branch" },
-                    new StringLiteral { Value = "refs/heads/" }
-                }
-            }
-        );
+            "startswith", [
+                new ParameterExpression("branch"),
+                new StringLiteral { Value = "refs/heads/" }
+            ]);
 
         _parameters["branch"] = "refs/tags/v1.0";
 
@@ -544,16 +383,10 @@ public class ConditionalStepEvaluatorTest
     {
         // Condition: endswith(parameters.artifact, '.zip')
         var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "endswith",
-                FunctionParameters = new List<Expression>
-                {
-                    new ParameterExpression { ParameterName = "artifact" },
-                    new StringLiteral { Value = ".zip" }
-                }
-            }
-        );
+            "endswith", [
+                new ParameterExpression("artifact"),
+                new StringLiteral { Value = ".zip" }
+            ]);
 
         _parameters["artifact"] = "build-1.0.0.zip";
 
@@ -564,17 +397,10 @@ public class ConditionalStepEvaluatorTest
     public void EvaluateCondition_WithEndsWithFunction_ReturnsFalseWhenNotMatches()
     {
         // Condition: endswith(parameters.artifact, '.zip')
-        var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "endswith",
-                FunctionParameters = new List<Expression>
-                {
-                    new ParameterExpression { ParameterName = "artifact" },
-                    new StringLiteral { Value = ".zip" }
-                }
-            }
-        );
+        var condition = CreateCondition("endswith", [
+            new ParameterExpression("artifact"),
+            new StringLiteral { Value = ".zip" }
+        ]);
 
         _parameters["artifact"] = "build-1.0.0.tar.gz";
 
@@ -589,17 +415,10 @@ public class ConditionalStepEvaluatorTest
     public void EvaluateCondition_WithLtFunction_ReturnsTrueWhenLess()
     {
         // Condition: lt(parameters.version, '2.0')
-        var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "lt",
-                FunctionParameters = new List<Expression>
-                {
-                    new ParameterExpression { ParameterName = "version" },
-                    new StringLiteral { Value = "2.0" }
-                }
-            }
-        );
+        var condition = CreateCondition("lt", [
+            new ParameterExpression("version"),
+            new StringLiteral { Value = "2.0" }
+        ]);
 
         _parameters["version"] = "1.5";
 
@@ -610,17 +429,10 @@ public class ConditionalStepEvaluatorTest
     public void EvaluateCondition_WithLeFunction_ReturnsTrueWhenLessOrEqual()
     {
         // Condition: le(parameters.version, '2.0')
-        var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "le",
-                FunctionParameters = new List<Expression>
-                {
-                    new ParameterExpression { ParameterName = "version" },
-                    new StringLiteral { Value = "2.0" }
-                }
-            }
-        );
+        var condition = CreateCondition("le", [
+            new ParameterExpression("version"),
+            new StringLiteral { Value = "2.0" }
+        ]);
 
         _parameters["version"] = "2.0";
 
@@ -631,17 +443,10 @@ public class ConditionalStepEvaluatorTest
     public void EvaluateCondition_WithGtFunction_ReturnsTrueWhenGreater()
     {
         // Condition: gt(parameters.version, '1.0')
-        var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "gt",
-                FunctionParameters = new List<Expression>
-                {
-                    new ParameterExpression { ParameterName = "version" },
-                    new StringLiteral { Value = "1.0" }
-                }
-            }
-        );
+        var condition = CreateCondition("gt", [
+            new ParameterExpression("version"),
+            new StringLiteral { Value = "1.0" }
+        ]);
 
         _parameters["version"] = "2.5";
 
@@ -652,17 +457,11 @@ public class ConditionalStepEvaluatorTest
     public void EvaluateCondition_WithGeFunction_ReturnsTrueWhenGreaterOrEqual()
     {
         // Condition: ge(parameters.version, '1.0')
-        var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "ge",
-                FunctionParameters = new List<Expression>
-                {
-                    new ParameterExpression { ParameterName = "version" },
-                    new StringLiteral { Value = "1.0" }
-                }
-            }
-        );
+        var condition = CreateCondition("ge",
+        [
+            new ParameterExpression("version"),
+            new StringLiteral { Value = "1.0" }
+        ]);
 
         _parameters["version"] = "1.0";
 
@@ -677,17 +476,10 @@ public class ConditionalStepEvaluatorTest
     public void EvaluateCondition_WithVariableExpression_ResolvesVariable()
     {
         // Condition: eq(variables.environment, 'production')
-        var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "eq",
-                FunctionParameters = new List<Expression>
-                {
-                    new VariableExpression { Name = "environment" },
-                    new StringLiteral { Value = "production" }
-                }
-            }
-        );
+        var condition = CreateCondition("eq", [
+            new VariableExpression("environment"),
+            new StringLiteral { Value = "production" }
+        ]);
 
         _variables["environment"] = "production";
 
@@ -702,48 +494,27 @@ public class ConditionalStepEvaluatorTest
     public void EvaluateCondition_WithNestedAndOr_EvaluatesCorrectly()
     {
         // Condition: and(eq(parameters.a, 'x'), or(eq(parameters.b, 'y'), eq(parameters.c, 'z')))
-        var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "and",
-                FunctionParameters = new List<Expression>
-                {
-                    new FunctionExpression
-                    {
-                        FunctionName = "eq",
-                        FunctionParameters = new List<Expression>
-                        {
-                            new ParameterExpression { ParameterName = "a" },
-                            new StringLiteral { Value = "x" }
-                        }
-                    },
-                    new FunctionExpression
-                    {
-                        FunctionName = "or",
-                        FunctionParameters = new List<Expression>
-                        {
-                            new FunctionExpression
-                            {
-                                FunctionName = "eq",
-                                FunctionParameters = new List<Expression>
-                                {
-                                    new ParameterExpression { ParameterName = "b" },
-                                    new StringLiteral { Value = "y" }
-                                }
-                            },
-                            new FunctionExpression
-                            {
-                                FunctionName = "eq",
-                                FunctionParameters = new List<Expression>
-                                {
-                                    new ParameterExpression { ParameterName = "c" },
-                                    new StringLiteral { Value = "z" }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        var condition = CreateCondition("and",
+            [
+                new FunctionExpression("eq", [
+                    new ParameterExpression("a"),
+                    new StringLiteral { Value = "x" }
+                ]),
+                new FunctionExpression("or", [
+                    new FunctionExpression("eq", [
+
+                            new ParameterExpression("b"),
+                            new StringLiteral { Value = "y" }
+                        ]
+                    ),
+                    new FunctionExpression("eq",
+                        [
+                            new ParameterExpression("c"),
+                            new StringLiteral { Value = "z" }
+                        ]
+                    )
+                ])
+            ]
         );
 
         _parameters["a"] = "x";
@@ -759,41 +530,26 @@ public class ConditionalStepEvaluatorTest
     {
         // Condition: and(eq(parameters.a, 'x'), eq(parameters.b, 'y'), eq(parameters.c, 'z'))
         var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "and",
-                FunctionParameters = new List<Expression>
-                {
-                    new FunctionExpression
-                    {
-                        FunctionName = "eq",
-                        FunctionParameters = new List<Expression>
-                        {
-                            new ParameterExpression { ParameterName = "a" },
-                            new StringLiteral { Value = "x" }
-                        }
-                    },
-                    new FunctionExpression
-                    {
-                        FunctionName = "eq",
-                        FunctionParameters = new List<Expression>
-                        {
-                            new ParameterExpression { ParameterName = "b" },
-                            new StringLiteral { Value = "y" }
-                        }
-                    },
-                    new FunctionExpression
-                    {
-                        FunctionName = "eq",
-                        FunctionParameters = new List<Expression>
-                        {
-                            new ParameterExpression { ParameterName = "c" },
-                            new StringLiteral { Value = "z" }
-                        }
-                    }
-                }
-            }
-        );
+            "and",
+            [
+                new FunctionExpression("eq", [
+                        new ParameterExpression("a"),
+                        new StringLiteral { Value = "x" }
+                    ]
+                ),
+                new FunctionExpression("eq",
+                    [
+                        new ParameterExpression("b"),
+                        new StringLiteral { Value = "y" }
+                    ]
+                ),
+                new FunctionExpression("eq",
+                    [
+                        new ParameterExpression("c"),
+                        new StringLiteral { Value = "z" }
+                    ]
+                )
+            ]);
 
         _parameters["a"] = "x";
         _parameters["b"] = "y";
@@ -809,13 +565,7 @@ public class ConditionalStepEvaluatorTest
     [Test]
     public void EvaluateCondition_WithUnknownFunction_ThrowsInvalidOperationException()
     {
-        var condition = CreateCondition(
-            new FunctionExpression
-            {
-                FunctionName = "unknownFunc",
-                FunctionParameters = []
-            }
-        );
+        var condition = CreateCondition("unknownFunc", []);
 
         Assert.That(
             () => ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables),
@@ -826,16 +576,11 @@ public class ConditionalStepEvaluatorTest
     [Test]
     public void EvaluateCondition_WithWrongParameterCount_ThrowsInvalidOperationException()
     {
-        var condition = CreateCondition(
-            new FunctionExpression
+        var condition = CreateCondition("eq",
+            new List<Expression>
             {
-                FunctionName = "eq",
-                FunctionParameters = new List<Expression>
-                {
-                    new StringLiteral { Value = "only-one-param" }
-                }
-            }
-        );
+                new StringLiteral { Value = "only-one-param" }
+            });
 
         Assert.That(
             () => ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables),
@@ -846,17 +591,12 @@ public class ConditionalStepEvaluatorTest
     [Test]
     public void EvaluateCondition_WithMissingParameter_ThrowsKeyNotFoundException()
     {
-        var condition = CreateCondition(
-            new FunctionExpression
+        var condition = CreateCondition("eq",
+            new List<Expression>
             {
-                FunctionName = "eq",
-                FunctionParameters = new List<Expression>
-                {
-                    new ParameterExpression { ParameterName = "nonexistent" },
-                    new StringLiteral { Value = "value" }
-                }
-            }
-        );
+                new ParameterExpression("nonexistent"),
+                new StringLiteral { Value = "value" }
+            });
 
         Assert.That(
             () => ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables),
@@ -867,17 +607,12 @@ public class ConditionalStepEvaluatorTest
     [Test]
     public void EvaluateCondition_WithInvalidNumberForNumericComparison_ThrowsInvalidOperationException()
     {
-        var condition = CreateCondition(
-            new FunctionExpression
+        var condition = CreateCondition("lt",
+            new List<Expression>
             {
-                FunctionName = "lt",
-                FunctionParameters = new List<Expression>
-                {
-                    new ParameterExpression { ParameterName = "version" },
-                    new StringLiteral { Value = "2.0" }
-                }
-            }
-        );
+                new ParameterExpression("version"),
+                new StringLiteral { Value = "2.0" }
+            });
 
         _parameters["version"] = "not-a-number";
 
@@ -911,14 +646,13 @@ public class ConditionalStepEvaluatorTest
 
     #region Helper Methods
 
-    private static TemplateExpression CreateCondition(FunctionExpression funcExpr)
+    private static TemplateExpression CreateCondition(string name, IList<Expression> parameters)
     {
         return new TemplateExpression
         {
-            Children = new List<Expression> { funcExpr }
+            Children = new List<Expression> { new FunctionExpression(name, parameters) }
         };
     }
 
     #endregion
 }
-

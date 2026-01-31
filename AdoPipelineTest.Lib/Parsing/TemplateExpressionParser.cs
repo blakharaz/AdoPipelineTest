@@ -37,13 +37,13 @@ internal class TemplateExpressionParser
         if (identifier == "parameters" && Match('.'))
         {
             var name = ParseIdentifier();
-            return new ParameterExpression { ParameterName = name };
+            return new ParameterExpression(name);
         }
 
         if (identifier == "variables" && Match('.'))
         {
             var name = ParseIdentifier();
-            return new VariableExpression { Name = name };
+            return new VariableExpression(name);
         }
 
         if (Match('('))
@@ -71,11 +71,7 @@ internal class TemplateExpressionParser
                 }
             }
 
-            return new FunctionExpression
-            {
-                FunctionName = identifier,
-                FunctionParameters = parameters
-            };
+            return new FunctionExpression(identifier, parameters);
         }
 
         return new StringLiteral { Value = identifier };
