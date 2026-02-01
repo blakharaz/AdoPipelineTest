@@ -90,6 +90,7 @@ Please see [CONTRIBUTING.md](CONTRIBUTING.md) for:
 
 - **.NET 10.0** / **C# 14**
 - **YamlDotNet 16.x** - YAML parsing
+- **Sprache 2.3.1** - Expression parsing
 - **NUnit 4.x** - Testing framework
 
 ## License
@@ -101,5 +102,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Azure DevOps Pipelines Documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/)
 - [NUnit Documentation](https://docs.nunit.org/)
 - [YamlDotNet Documentation](https://github.com/aaubry/YamlDotNet)
-
+- [Sprache Documentation](https://github.com/sprache/Sprache)
 

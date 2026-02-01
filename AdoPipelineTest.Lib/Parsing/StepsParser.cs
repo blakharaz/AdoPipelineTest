@@ -254,7 +254,7 @@ internal static class StepsParser
         return new TaskStepElement
         {
             DisplayName = displayName,
-            Enabled = enabled?.Value is null ? null : ExpressionParser.ParseStringExpression(enabled.Value),
+            Enabled = enabled?.Value is null ? null : ExpressionParser.ParseBoolExpression(enabled.Value),
             ContinueOnError = continueOnError, 
             TaskName = taskNode.Value ?? throw new InvalidPipelineException("task node must have value"),
             Inputs = inputsDict
