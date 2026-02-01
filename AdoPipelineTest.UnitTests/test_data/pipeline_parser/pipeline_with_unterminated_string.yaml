@@ -7,7 +7,7 @@ parameters:
   
 steps:
   - task: DotNetCoreCLI@2
-    enabled: $${{ eq(parameters.enableTests, "true) }}
+    enabled: ${{ eq(parameters.enableTests, "true) }}
     inputs:
       command: 'test'
       projects: '**/*Tests.csproj'

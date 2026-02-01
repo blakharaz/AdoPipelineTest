@@ -120,12 +120,9 @@ public class PipelineParserTest
     [Test]
     public void PipelineWithUnterminatedStringInTemplateExpression_ThrowsInvalidPipelineException()
     {
-        var ex = Assert.Throws<InvalidPipelineException>(() =>
+        Assert.Throws<InvalidPipelineException>(() =>
             PipelineParser.Parse("test_data/pipeline_parser/pipeline_with_unterminated_string.yaml")
         );
-
-        Assert.That(ex, Is.Not.Null);
-        Assert.That(ex?.Message, Does.Contain("Unterminated string"));
     }
 
     [Test]

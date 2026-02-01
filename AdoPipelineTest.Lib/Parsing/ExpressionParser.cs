@@ -1,5 +1,8 @@
 using System.Text.RegularExpressions;
+using AdoPipelineTest.Model;
 using AdoPipelineTest.Parsing.Ast;
+using AdoPipelineTest.Parsing.Expressions;
+using Sprache;
 
 namespace AdoPipelineTest.Parsing;
 
@@ -15,6 +18,18 @@ internal static partial class ExpressionParser
         }
 
         return result;
+    }
+
+    internal static Expression ParseBoolExpression(string expression)
+    {
+        try
+        {
+            return BoolExpressionGrammar.ParseExpression(expression);
+        }
+        catch (ParseException e)
+        {
+            throw new InvalidPipelineException(e.Message, e);
+        }
     }
 
     private static List<Expression> ParseAsExpressions(string expression)
@@ -42,10 +57,17 @@ internal static partial class ExpressionParser
             for (int i = 0; i < matches.Count; ++i)
             {
                 var match = matches[i];
-                
-                var templateExpression = new TemplateExpressionParser(match.Groups[1].Value).ParseExpression();
 
-                expressionList.Add(new TemplateExpression { Children = [templateExpression]});
+                try
+                {
+                    var templateExpression = StringExpressionGrammar.ParseExpression(match.Groups[1].Value);
+
+                    expressionList.Add(new TemplateExpression { Children = [templateExpression] });
+                }
+                catch (ParseException e)
+                {
+                    throw new InvalidPipelineException(e.Message, e);
+                }
 
                 if (i < matches.Count - 1)
                 {

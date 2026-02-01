@@ -51,20 +51,14 @@ public class ExpressionParserTest
     [Test]
     public void ParseStringExpression_WithCompileTimeFunction_ReturnsTemplateExpression()
     {
-        var result = ExpressionParser.ParseStringExpression("${{ eq(parameters.Bar, \"foobar\") }}");
+        var result = ExpressionParser.ParseBoolExpression("${{ eq(parameters.Bar, \"foobar\") }}");
 
         using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.Children, Has.Count.EqualTo(1));
-
-            Assert.That(result.Children[0], Is.InstanceOf<TemplateExpression>());
-
-            var firstChild = result.Children[0] as TemplateExpression; 
-            Assert.That(firstChild?.Children, Has.Count.EqualTo(1));
             
-            Assert.That(firstChild?.Children[0], Is.InstanceOf<FunctionExpression>());
-            var functionExpr = firstChild?.Children[0] as FunctionExpression;
+            Assert.That(result, Is.InstanceOf<FunctionExpression>());
+            var functionExpr = result as FunctionExpression;
             Assert.That(functionExpr?.FunctionName, Is.EqualTo("eq"));
             Assert.That(functionExpr?.FunctionParameters, Has.Count.EqualTo(2));
             Assert.That(functionExpr?.FunctionParameters[0], Is.InstanceOf<ParameterExpression>());
@@ -75,7 +69,7 @@ public class ExpressionParserTest
     [Test]
     public void ParseStringExpression_WithMultipleExpressions_ReturnsAllChildrenInOrder()
     {
-        var result = ExpressionParser.ParseStringExpression("A ${{parameters.Foo}} B ${{ eq(parameters.Bar, \"foobar\") }} C ");
+        var result = ExpressionParser.ParseStringExpression("A ${{parameters.Foo}} B ${{ coalesce(parameters.Bar, \"foobar\") }} C ");
 
         using (Assert.EnterMultipleScope())
         {
@@ -159,6 +153,6 @@ public class ExpressionParserTest
             () => ExpressionParser.ParseStringExpression("${{ \"unterminated }}")
         );
 
-        Assert.That(ex?.Message, Does.Contain("Unterminated string"));
+        Assert.That(ex?.Message, Does.Contain("Unexpected end of input reached; expected \""));
     }
 }
