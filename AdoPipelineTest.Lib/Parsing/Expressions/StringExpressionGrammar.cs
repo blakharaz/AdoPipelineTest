@@ -19,36 +19,32 @@ public static class StringExpressionGrammar
         select new TemplateExpression { Children = e.ToList() };
     
     // N-ary args helper (0+ args)
-    private static Parser<IEnumerable<Expression>> NaryArgs =>
-        ExprRef.DelimitedBy(Parse.Char(',').Token());
+    private static Parser<IEnumerable<Expression>> NaryArgs(int minArgs, int maxArgs) =>
+        ExprRef.DelimitedBy(Parse.Char(',').Token())
+            .Where(a => minArgs <= a.Count())
+            .Where(a => a.Count() <= maxArgs);
 
     // Arity-specific function parsers
-    private static Parser<Expression> UnaryFunction(string name) =>
-        from n in Parse.String(name).Token()
+    private static Parser<FunctionExpression> UnaryFunction(string name) =>
+        from n in Parse.IgnoreCase(name).Token()
         from l in Parse.Char('(').Token()
         from arg in ExprRef.Once()
         from r in Parse.Char(')').Token()
         select new FunctionExpression(n, arg.ToList());
 
-    private static Parser<Expression> BinaryFunction(string name) =>
-        from n in Parse.String(name).Token()
+    private static Parser<FunctionExpression> BinaryFunction(string name) =>
+        from n in Parse.IgnoreCase(name).Token()
         from l in Parse.Char('(').Token()
-        from args in NaryArgs
+        from args in NaryArgs(2, 2)
         from r in Parse.Char(')').Token()
         select new FunctionExpression(n, args.ToList());
 
-    private static Parser<Expression> NaryFunction(string name, int minArgs, int? maxArgs = null) =>
-        from n in Parse.String(name).Token()
+    private static Parser<FunctionExpression> NaryFunction(string name, int minArgs, int? maxArgs = null) =>
+        from n in Parse.IgnoreCase(name).Token()
         from l in Parse.Char('(').Token()
-        from args in NaryArgs
+        from args in NaryArgs(minArgs, maxArgs.GetValueOrDefault(int.MaxValue))
         from r in Parse.Char(')').Token()
         select new FunctionExpression(n, args.ToList());
-
-    private static Parser<Expression> ZeroArgFunction(string name) =>
-        from n in Parse.String(name).Token()
-        from l in Parse.Char('(').Token()
-        from r in Parse.Char(')').Token()
-        select new FunctionExpression(n, Array.Empty<Expression>());
 
     // ADO boolean functions by arity group
     private static Parser<Expression> BinaryFunctions =>
