@@ -6,13 +6,9 @@ namespace AdoPipelineTest.Parsing.Expressions;
 internal static class CommonGrammar
 {
     internal static Parser<string> Identifier =>
-        Parse.Letter.Or(Parse.Char('_'))
-            .Once()
-            .Then(c => Parse.LetterOrDigit.Or(Parse.Chars("._")).Many()
-                .Select(chars => new string(c.Concat(chars).ToArray())))
-            .Token();
+        Parse.Identifier(Parse.Letter.Or(Parse.Char('_')), Parse.LetterOrDigit.Or(Parse.Chars("._"))).Text();
     
-    internal static Parser<Expression> IdentExpr => Identifier.Select(Expression (n) => new Identifier(n));
+    internal static Parser<Expression> IdentExpr => Identifier.Select(n => new Identifier(n));
     
     internal static Parser<Expression> BoolLiteralParser =>
         Parse.IgnoreCase("true").Token().Select(Expression (_) => new BoolLiteral{Value = true})

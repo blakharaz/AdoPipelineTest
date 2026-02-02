@@ -15,31 +15,32 @@ public static class BoolExpressionGrammar
 
     // N-ary args helper (0+ args)
     private static Parser<IEnumerable<Expression>> NaryArgs(int minArgs, int maxArgs) =>
-        ExprRef.DelimitedBy(Parse.Char(',').Optional().Token())
+        ExprRef.DelimitedBy(Parse.Char(',').Token())
             .Where(a => minArgs <= a.Count())
             .Where(a => a.Count() <= maxArgs);
 
     // Arity-specific function parsers
     private static Parser<FunctionExpression> UnaryFunction(string name) =>
-        from n in Parse.String(name).Token()
+        from n in Parse.IgnoreCase(name).Token()
         from l in Parse.Char('(').Token()
         from arg in ExprRef.Once()
         from r in Parse.Char(')').Token()
         select new FunctionExpression(n, arg.ToList());
 
-    internal static Parser<FunctionExpression> BinaryFunction(string name) =>
-        from n in Parse.String(name).Token()
+    private static Parser<FunctionExpression> BinaryFunction(string name) =>
+        from n in Parse.IgnoreCase(name).Token()
         from l in Parse.Char('(').Token()
         from args in NaryArgs(2, 2)
         from r in Parse.Char(')').Token()
         select new FunctionExpression(n, args.ToList());
 
-    private static Parser<FunctionExpression> NaryFunction(string name, int minArgs) =>
-        from n in Parse.String(name).Token()
+    private static Parser<FunctionExpression> NaryFunction(string name, int minArgs, int? maxArgs = null) =>
+        from n in Parse.IgnoreCase(name).Token()
         from l in Parse.Char('(').Token()
-        from args in NaryArgs(minArgs, int.MaxValue)
+        from args in NaryArgs(minArgs, maxArgs.GetValueOrDefault(int.MaxValue))
         from r in Parse.Char(')').Token()
         select new FunctionExpression(n, args.ToList());
+
 
     private static Parser<FunctionExpression> NullaryFunction(string name) =>
         from n in Parse.String(name).Token()
