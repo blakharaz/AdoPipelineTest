@@ -31,7 +31,12 @@ jobs:
       - name: Pack
         run: |
           dotnet pack --configuration Release -o ./artifacts
+        
+      - name: Configure GitHub Packages NuGet source
+        run: |
+          dotnet nuget add source --username blakharaz --password ${{ secrets.NUGET_PAT }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/blakharaz/index.json"
+
 
       - name: Publish to NuGet
         run: |
-          dotnet nuget push ./artifacts/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_PAT }} --skip-duplicate
+          dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_PAT }} --source "github"
