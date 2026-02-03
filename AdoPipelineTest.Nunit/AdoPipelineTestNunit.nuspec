@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>AdoPipelineTest.Nunit</id>
+    <version>1.0.0</version>
+    <title>Azure DevOps Pipeline Test Library Nunit Integration</title>
+    <authors>Blakharaz</authors>
+    <owners>Blakharaz</owners>
+    <description>Nunit Integration for Azure DevOps Pipeline Testing Library</description>
+  </metadata>
+</package>

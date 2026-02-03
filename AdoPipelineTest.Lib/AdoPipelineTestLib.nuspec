@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>AdoPipelineTest</id>
+    <version>1.0.0</version>
+    <title>Azure DevOps Pipeline Test Library</title>
+    <authors>Blakharaz</authors>
+    <owners>Blakharaz</owners>
+    <description>Library for Azure DevOps Pipeline Testing</description>
+  </metadata>
+</package>
