@@ -39,4 +39,4 @@ jobs:
 
       - name: Publish to NuGet
         run: |
-          dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_PAT }} --source "github"
+          dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_PAT }} --source "github" --skip-duplicate
