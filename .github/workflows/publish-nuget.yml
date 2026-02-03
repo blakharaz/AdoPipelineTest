@@ -26,7 +26,7 @@ jobs:
      
       - name: Run tests
         run: |
-          dotnet test --configuration Release --no-build --verbose
+          dotnet test --configuration Release --no-build
 
       - name: Pack
         run: |
