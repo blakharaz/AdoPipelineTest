@@ -1,0 +1,6 @@
+steps:
+  - script: echo 'No resources defined'
+
+resources:
+  partial-resource:
+    type: generic

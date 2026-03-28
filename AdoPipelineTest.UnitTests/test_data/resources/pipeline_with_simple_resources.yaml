@@ -1,0 +1,10 @@
+steps:
+  - script: echo 'Testing resources'
+
+resources:
+  docker-registry:
+    type: docker-registry
+    source: https://index.docker.io/v1/
+  nuget-feed:
+    type: nuget-feed
+    source: https://api.nuget.org/v3/index.json

@@ -1,0 +1,10 @@
+trigger:
+  - main
+  - develop
+  - release/*
+
+resources:
+  docker-registry:
+    type: docker-registry
+    source: https://index.docker.io/v1/
+    version: v2

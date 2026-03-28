@@ -13,4 +13,6 @@ internal class PipelineSyntaxTree
     public IList<PipelineStageElement> Stages { get; init; } = [];
 
     public IList<PipelineParameterElement> Parameters { get; init; } = [];
+
+    public IList<PipelineResourceElement> Resources { get; init; } = [];
 }
