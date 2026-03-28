@@ -23,16 +23,47 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+    - name: Install SonarScanner for .NET
+      run: |
+        dotnet tool install --global dotnet-coverage
+        dotnet tool install --global dotnet-sonarscanner
+    - name: SonarScanner Begin
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY }}
+        SONAR_HOST_URL: ${{ vars.SONAR_URL }}
+        SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION }}
+      run: |
+        args=()
+        args+=("/k:${{ env.SONAR_PROJECT_KEY }}")
+        if [ -n "${{ env.SONAR_HOST_URL }}" ]; then
+          args+=("/d:sonar.host.url=${{ env.SONAR_HOST_URL }}")
+        fi
+        if [ -n "${{ env.SONAR_ORGANIZATION }}" ]; then
+          args+=("/o:${{ env.SONAR_ORGANIZATION }}")
+        fi
+        args+=("/d:sonar.token=${{ env.SONAR_TOKEN }}")
+        args+=("/d:sonar.cs.vscoveragexml.reportsPaths=./TestResults/merged.vscoverage.xml")
+        dotnet sonarscanner begin "${args[@]}"
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
     - name: Test
-      run: dotnet test AdoPipelineTest.UnitTests --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage --logger "trx;LogFileName=test-results.trx"
+      run: dotnet test AdoPipelineTest.UnitTests --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults
+    - name: Merge coverage files
+      run: |
+        dotnet-coverage merge "TestResults/**/coverage.cobertura.xml" --output ./TestResults/merged.coverage.xml --output-format xml
+        dotnet-coverage merge "TestResults/**/coverage.cobertura.xml" --output ./TestResults/merged.cobertura.xml --output-format cobertura --verbosity detailed
+    - name: SonarScanner End
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: |
+        dotnet sonarscanner end /d:sonar.token="${{ env.SONAR_TOKEN }}"
     - name: Code Coverage Report
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
-        filename: coverage/**/coverage.cobertura.xml
+        filename: TestResults/merged.cobertura.xml
         badge: true
         fail_below_min: true
         format: markdown
