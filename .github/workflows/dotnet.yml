@@ -35,23 +35,20 @@ jobs:
         SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION }}
       run: |
         args=()
-        args+=("/k:${{ env.SONAR_PROJECT_KEY }}")
         if [ -n "${{ env.SONAR_HOST_URL }}" ]; then
           args+=("/d:sonar.host.url=${{ env.SONAR_HOST_URL }}")
         fi
         if [ -n "${{ env.SONAR_ORGANIZATION }}" ]; then
           args+=("/o:${{ env.SONAR_ORGANIZATION }}")
         fi
-        args+=("/d:sonar.token=${{ env.SONAR_TOKEN }}")
-        args+=("/d:sonar.projectBaseDir=$GITHUB_WORKSPACE")
-        args+=("/d:sonar.cs.vscoveragexml.reportsPaths=TestResults/merged.vscoverage.xml")
-        dotnet sonarscanner begin "${args[@]}"
+
+        dotnet sonarscanner begin /d:sonar.token="${{ env.SONAR_TOKEN }}" /k:"${{ env.SONAR_PROJECT_KEY }}" ${args[@]} /d:sonar.cs.vscoveragexml.reportsPaths="TestResults/merged.vscoverage.xml" /d:sonar.projectBaseDir="$GITHUB_WORKSPACE" /d:sonar.exclusions="**/obj/**,**/bin/**,**/TestResults/**,.github/**,**/*.md" /d:sonar.coverage.exclusions="**/*.Tests/**,**/*.Samples/**"
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore -c Release
     - name: Test
-      run: dotnet test AdoPipelineTest.sln -c Release --filter "FullyQualifiedName~.UnitTests." --settings coverlet.runsettings --logger "console;verbosity=minimal" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Threshold=0
+      run: dotnet test AdoPipelineTest.sln --no-build -c Release --filter "FullyQualifiedName~.UnitTests." --settings coverlet.runsettings --logger "console;verbosity=minimal" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Threshold=0
     - name: Merge coverage files
       run: |
         mkdir -p $GITHUB_WORKSPACE/TestResults
