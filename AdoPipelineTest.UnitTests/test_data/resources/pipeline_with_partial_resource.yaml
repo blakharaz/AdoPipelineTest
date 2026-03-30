@@ -1,3 +1,6 @@
+steps:
+  - script: echo 'Testing partial resource'
+
 resources:
   partial-resource:
     type: generic

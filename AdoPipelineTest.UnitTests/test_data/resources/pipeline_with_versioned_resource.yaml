@@ -1,10 +1,12 @@
-trigger:
-  - main
-  - develop
-  - release/*
+steps:
+  - script: echo 'Testing versioned resource'
 
 resources:
   docker-registry:
     type: docker-registry
     source: https://index.docker.io/v1/
     version: v2
+    trigger:
+      - main
+      - develop
+      - release/*

@@ -1,5 +1,6 @@
 using AdoPipelineTest.Parsing.Ast;
 using YamlDotNet.RepresentationModel;
+using System.Collections.Generic;
 
 namespace AdoPipelineTest.Parsing;
 
@@ -14,18 +15,93 @@ internal static class ResourcesParser
             return resources;
         }
 
-        foreach (var kvp in ((YamlMappingNode)resourcesNode).Children)
+        // Handle the resources mapping - it can contain both flat resources and grouped resources
+        if (resourcesNode is not YamlMappingNode resourcesMapping)
         {
-            var name = GetScalarValue(kvp.Key as YamlScalarNode);
-            if (string.IsNullOrEmpty(name))
+            return resources;
+        }
+
+        foreach (var kvp in resourcesMapping.Children)
+        {
+            // Skip if key is not a scalar (e.g., null or complex key)
+            if (kvp.Key is not YamlScalarNode keyNode || string.IsNullOrEmpty(keyNode.Value))
             {
                 continue;
             }
-            
-            resources.Add(ParseSingleResource(name, kvp.Value as YamlMappingNode));
+
+            string groupName = keyNode.Value;
+            YamlNode valueNode = kvp.Value;
+
+            // Check if this is a grouped resource (sequence of resources under a group like repositories, pipelines, etc.)
+            if (valueNode is YamlSequenceNode resourceSequence)
+            {
+                // Process each item in the sequence as a resource
+                foreach (var itemNode in resourceSequence.Children)
+                {
+                    if (itemNode is YamlMappingNode resourceMapping)
+                    {
+                        // Extract the resource name from the mapping (commonly under "repository" or "pipeline" key)
+                        string resourceName = ExtractResourceNameFromMapping(resourceMapping, groupName);
+                        if (!string.IsNullOrEmpty(resourceName))
+                        {
+                            resources.Add(ParseSingleResource(resourceName, resourceMapping));
+                        }
+                    }
+                }
+            }
+            // Check if this is a flat resource (direct mapping under resources)
+            else if (valueNode is YamlMappingNode resourceMapping)
+            {
+                // The key itself is the resource name
+                resources.Add(ParseSingleResource(groupName, resourceMapping));
+            }
         }
 
         return resources;
+    }
+
+    private static string ExtractResourceNameFromMapping(YamlMappingNode resourceMapping, string groupName)
+    {
+        // For grouped resources, the name is often in a field like "repository", "pipeline", "container", etc.
+        // Default to using the group name if we can't find a specific name field
+        string? name = null;
+
+        // Try common name fields based on resource type
+        if (resourceMapping.Children.TryGetValue(new YamlScalarNode("repository"), out var repoNode) &&
+            repoNode is YamlScalarNode repoScalar)
+        {
+            name = repoScalar.Value;
+        }
+        else if (resourceMapping.Children.TryGetValue(new YamlScalarNode("pipeline"), out var pipeNode) &&
+                 pipeNode is YamlScalarNode pipeScalar)
+        {
+            name = pipeScalar.Value;
+        }
+        else if (resourceMapping.Children.TryGetValue(new YamlScalarNode("container"), out var contNode) &&
+                 contNode is YamlScalarNode contScalar)
+        {
+            name = contScalar.Value;
+        }
+        else if (resourceMapping.Children.TryGetValue(new YamlScalarNode("package"), out var pkgNode) &&
+                 pkgNode is YamlScalarNode pkgScalar)
+        {
+            name = pkgScalar.Value;
+        }
+        else if (resourceMapping.Children.TryGetValue(new YamlScalarNode("name"), out var nameNode) &&
+                 nameNode is YamlScalarNode nameScalar)
+        {
+            name = nameScalar.Value;
+        }
+
+        // Fallback: if we still don't have a name, use a combination of group and index or just the group
+        if (string.IsNullOrEmpty(name))
+        {
+            // In real ADO pipelines, you might have multiple items in a group without explicit names
+            // For simplicity, we'll use the group name, though this could cause collisions
+            name = groupName;
+        }
+
+        return name;
     }
 
     private static PipelineResourceElement ParseSingleResource(
@@ -35,7 +111,7 @@ internal static class ResourcesParser
         var element = new PipelineResourceElement
         {
             Name = name,
-            Type = GetScalarValue(resourceNode, "type"),
+            Type = GetScalarValue(resourceNode, "type") ?? "unknown",
             Source = GetScalarValue(resourceNode, "source"),
             Version = GetScalarValue(resourceNode, "version"),
             Trigger = ParseTriggerList(resourceNode),
@@ -87,30 +163,63 @@ internal static class ResourcesParser
         var endpoints = new List<PipelineResourceEndpoint>();
         foreach (var endpointNode in endpointsSeq.Children.OfType<YamlMappingNode>())
         {
-            var name = GetScalarValue(endpointNode, "name");
-            var value = GetScalarValue(endpointNode, "value");
+            // Safely extract name and value
+            string? name = null;
+            string? value = null;
             var auth = new Dictionary<string, object?>();
+
+            if (endpointNode.Children.TryGetValue(new YamlScalarNode("name"), out var nameNode) &&
+                nameNode is YamlScalarNode nameScalar)
+            {
+                name = nameScalar.Value;
+            }
+
+            if (endpointNode.Children.TryGetValue(new YamlScalarNode("value"), out var valueNode) &&
+                valueNode is YamlScalarNode valueScalar)
+            {
+                value = valueScalar.Value;
+            }
 
             // Parse any additional properties as auth
             foreach (var kvp in endpointNode.Children)
             {
-                var key = kvp.Key as YamlScalarNode;
-                if (key != null && (key.Value == "name" || key.Value == "value"))
+                // Skip if key is not a scalar
+                if (kvp.Key is not YamlScalarNode keyNode || string.IsNullOrEmpty(keyNode.Value))
                 {
-                    continue; // Skip name and value as they're handled separately
+                    continue;
                 }
 
-                auth[key.Value] = ExtractValue(kvp.Value);
+                string keyValue = keyNode.Value;
+                
+                // Skip name and value as they're handled separately
+                if (keyValue == "name" || keyValue == "value")
+                {
+                    continue;
+                }
+
+                // Only add to auth if we have extra properties
+                if (auth.Count == 0 && !(keyValue == "name" || keyValue == "value"))
+                {
+                    // We'll only create the auth dict if we actually have auth data
+                }
+
+                // Extract the value
+                object? authValue = ExtractValue(kvp.Value);
+                auth[keyValue] = authValue;
             }
 
-            var endpoint = new PipelineResourceEndpoint
+            // Only create endpoint if we have at least a name or value
+            if (!string.IsNullOrEmpty(name) || !string.IsNullOrEmpty(value))
             {
-                Name = name,
-                Value = value,
-                Auth = auth
-            };
+                var endpoint = new PipelineResourceEndpoint
+                {
+                    Name = name ?? string.Empty,
+                    Value = value,
+                    Auth = auth.Count > 0 ? auth : null
+                };
 
-            endpoints.Add(endpoint);
+                endpoints.Add(endpoint);
+            }
         }
 
         return endpoints.Count > 0 ? endpoints : null;

@@ -8,3 +8,6 @@ resources:
     endpoints:
       - name: auth
         value: basic-auth-token
+
+steps:
+  - script: echo 'Testing endpoints'
