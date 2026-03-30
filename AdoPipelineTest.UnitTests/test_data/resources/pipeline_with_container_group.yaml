@@ -1,0 +1,8 @@
+resources:
+  containers:
+    - container: myContainer
+      image: myregistry.azurecr.io/myimage:latest
+      endpoint: my-docker-registry
+
+steps:
+  - script: echo hello

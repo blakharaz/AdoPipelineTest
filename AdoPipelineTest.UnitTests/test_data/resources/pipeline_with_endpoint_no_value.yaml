@@ -1,0 +1,10 @@
+resources:
+  docker-registry:
+    type: docker-registry
+    endpoints:
+      - name: docker-auth
+        username: dockeruser
+        password: dockerpassword
+
+steps:
+  - script: docker pull

@@ -1,0 +1,10 @@
+resources:
+  docker-registry:
+    type: docker-registry
+    trigger:
+      - main
+      -
+      - develop
+
+steps:
+  - script: echo test
