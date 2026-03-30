@@ -8,7 +8,7 @@
           <Exclude>[*.Tests]*,[*.AppHost]*</Exclude>
           <ExcludeByAttribute>Obsolete,CompilerGenerated,GeneratedCode,ExcludeFromCodeCoverage</ExcludeByAttribute>
           <ExcludeByFile>**/Migrations/*.cs,**/Program.cs</ExcludeByFile>
-          <UseSourceLink>true</UseSourceLink>
+          <UseSourceLink>false</UseSourceLink>
           <DeterministicReport>true</DeterministicReport>
           <IncludeTestAssembly>false</IncludeTestAssembly>
           <SkipAutoProps>true</SkipAutoProps>
