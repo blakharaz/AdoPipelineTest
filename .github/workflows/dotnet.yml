@@ -43,18 +43,26 @@ jobs:
           args+=("/o:${{ env.SONAR_ORGANIZATION }}")
         fi
         args+=("/d:sonar.token=${{ env.SONAR_TOKEN }}")
-        args+=("/d:sonar.cs.vscoveragexml.reportsPaths=./TestResults/merged.vscoverage.xml")
+        args+=("/d:sonar.projectBaseDir=$GITHUB_WORKSPACE")
+        args+=("/d:sonar.cs.vscoveragexml.reportsPaths=TestResults/merged.vscoverage.xml")
         dotnet sonarscanner begin "${args[@]}"
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore -c Release
     - name: Test
-      run: dotnet test AdoPipelineTest.UnitTests --no-build --verbosity normal --results-directory ./TestResults --settings coverlet.runsettings /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
+      run: dotnet test AdoPipelineTest.sln -c Release --filter "FullyQualifiedName~.UnitTests." --settings coverlet.runsettings --logger "console;verbosity=minimal" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Threshold=0
     - name: Merge coverage files
       run: |
-        dotnet-coverage merge "TestResults/**/coverage.cobertura.xml" --output ./TestResults/merged.vscoverage.xml --output-format xml
-        dotnet-coverage merge "TestResults/**/coverage.cobertura.xml" --output ./TestResults/merged.cobertura.xml --output-format cobertura --verbosity detailed
+        mkdir -p $GITHUB_WORKSPACE/TestResults
+        dotnet-coverage merge "**/coverage.cobertura.xml" --output $GITHUB_WORKSPACE/TestResults/merged.vscoverage.xml --output-format xml
+        dotnet-coverage merge "**/coverage.cobertura.xml" --output $GITHUB_WORKSPACE/TestResults/merged.cobertura.xml --output-format cobertura --verbosity detailed
+    - name: Upload coverage
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-unit
+        path: TestResults/merged.*.xml
+        retention-days: 1
     - name: SonarScanner End
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -78,7 +86,7 @@ jobs:
         name: coverage-report
         path: code-coverage-results.md
     - name: Run sample tests
-      run: dotnet test AdoPipelineTest.Samples --no-build --verbosity normal
+      run: dotnet test AdoPipelineTest.Samples -c Release --no-build --verbosity normal
 
   comment-pr:
     if: github.event_name == 'pull_request'
