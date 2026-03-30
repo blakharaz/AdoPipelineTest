@@ -50,10 +50,10 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Test
-      run: dotnet test AdoPipelineTest.UnitTests --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults
+      run: dotnet test AdoPipelineTest.UnitTests --no-build --verbosity normal --results-directory ./TestResults --settings coverlet.runsettings /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
     - name: Merge coverage files
       run: |
-        dotnet-coverage merge "TestResults/**/coverage.cobertura.xml" --output ./TestResults/merged.coverage.xml --output-format xml
+        dotnet-coverage merge "TestResults/**/coverage.cobertura.xml" --output ./TestResults/merged.vscoverage.xml --output-format xml
         dotnet-coverage merge "TestResults/**/coverage.cobertura.xml" --output ./TestResults/merged.cobertura.xml --output-format cobertura --verbosity detailed
     - name: SonarScanner End
       env:
