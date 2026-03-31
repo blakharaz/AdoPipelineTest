@@ -1,0 +1,13 @@
+trigger:
+  - main
+
+resources:
+  docker-registry:
+    type: docker-registry
+    source: https://index.docker.io/v1/
+    endpoints:
+      - name: auth
+        value: basic-auth-token
+
+steps:
+  - script: echo 'Testing endpoints'

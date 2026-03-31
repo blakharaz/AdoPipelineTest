@@ -1,0 +1,15 @@
+trigger:
+  - main
+
+resources:
+  repositories:
+    - repository: myGitRepo
+      type: git
+      connection: my-connection
+      ref: refs/heads/main
+    - repository: anotherRepo
+      type: git
+      connection: another-connection
+
+steps:
+  - script: echo hello

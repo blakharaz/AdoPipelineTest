@@ -1,0 +1,9 @@
+resources:
+  packages:
+    - package: myPackage
+      type: npm
+      connection: my-npm-connection
+      version: 1.0.0
+
+steps:
+  - script: npm install

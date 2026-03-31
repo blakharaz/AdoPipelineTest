@@ -10,7 +10,7 @@
       <PackageReference Include="NUnit" Version="4.4.0" />
     </ItemGroup>
 
-    <ItemGroup>
+    <ItemGroup> 
       <ProjectReference Include="..\AdoPipelineTest.Lib\AdoPipelineTest.Lib.csproj" />
     </ItemGroup>
 

@@ -1,0 +1,12 @@
+resources:
+  pipelines:
+    - pipeline: myPipeline
+      source: BuildPipeline
+      project: MyProject
+      trigger:
+        - main
+    - pipeline: releasePipeline
+      source: ReleasePipeline
+
+steps:
+  - template: template.yml

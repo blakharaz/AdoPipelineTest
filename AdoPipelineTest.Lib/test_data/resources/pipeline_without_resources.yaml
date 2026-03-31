@@ -1,0 +1,2 @@
+steps:
+  - script: echo 'No resources defined'

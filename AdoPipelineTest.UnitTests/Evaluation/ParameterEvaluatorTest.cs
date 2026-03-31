@@ -121,8 +121,11 @@ public class ParameterEvaluatorTest
 
         // Assert
         var timeout = result.First(p => p.Name == "timeoutMinutes");
-        Assert.That(timeout.Value, Is.EqualTo(30));
-        Assert.That(timeout.DefaultValue, Is.EqualTo(30));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(timeout.Value, Is.EqualTo(30));
+            Assert.That(timeout.DefaultValue, Is.EqualTo(30));
+        }
     }
 
     [Test]

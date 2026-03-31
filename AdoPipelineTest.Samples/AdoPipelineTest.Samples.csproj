@@ -68,6 +68,9 @@
       <None Update="Nunit\TemplateExpressions\ifelse_conditional_step_insertion.yml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+      <None Update="sample_pipeline_with_resources.yaml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

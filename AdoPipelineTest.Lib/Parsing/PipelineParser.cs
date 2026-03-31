@@ -26,6 +26,7 @@ internal class PipelineParser
         var agentPool = PoolParser.ParseAgentPool(rootNode);
         var parameters = ParametersParser.ParseParameters(rootNode);
         var variables = VariablesParser.ParseVariables(rootNode);
+        var resources = ResourcesParser.ParseResources(rootNode);
         var stages = ParseStages(rootNode, yamlPath);
 
         return new PipelineSyntaxTree
@@ -34,6 +35,7 @@ internal class PipelineParser
             AgentPool = agentPool,
             Parameters = parameters,
             Variables = variables,
+            Resources = resources,
             Stages = stages
         };
     }

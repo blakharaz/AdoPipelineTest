@@ -4,3 +4,6 @@ obj/
 riderModule.iml
 /_ReSharper.Caches/
 AdoPipelineTest.sln.DotSettings.user
+*/TestResults
+coverage-report
+coverage-report-unit

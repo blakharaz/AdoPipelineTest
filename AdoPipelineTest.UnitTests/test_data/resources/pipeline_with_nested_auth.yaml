@@ -1,0 +1,15 @@
+resources:
+  docker-registry:
+    type: docker-registry
+    endpoints:
+      - name: auth
+        value: basic-auth
+        config:
+          username: user1
+          password: pass1
+          extras:
+            - opt1
+            - opt2
+
+steps:
+  - script: echo test

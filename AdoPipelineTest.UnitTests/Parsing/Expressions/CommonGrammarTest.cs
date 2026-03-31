@@ -12,9 +12,11 @@ public class CommonGrammarTest
     {
         var resultTrue = CommonGrammar.Literal.Parse("true");
         var resultFalse = CommonGrammar.Literal.Parse("false");
-        
-        Assert.That(resultTrue, Is.InstanceOf<BoolLiteral>());
-        Assert.That(resultFalse, Is.InstanceOf<BoolLiteral>());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(resultTrue, Is.InstanceOf<BoolLiteral>());
+            Assert.That(resultFalse, Is.InstanceOf<BoolLiteral>());
+        }
     }
 
     [Test]
@@ -23,8 +25,11 @@ public class CommonGrammarTest
         var result = CommonGrammar.Literal.Parse("'Hello'");
         var result2 = CommonGrammar.Literal.Parse("'true'");
 
-        Assert.That(result, Is.InstanceOf<StringLiteral>());
-        Assert.That(result2, Is.InstanceOf<StringLiteral>());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result, Is.InstanceOf<StringLiteral>());
+            Assert.That(result2, Is.InstanceOf<StringLiteral>());
+        }
     }
     
     [Test]
@@ -33,7 +38,10 @@ public class CommonGrammarTest
         var result = CommonGrammar.Literal.Parse("\"Hello\"");
         var result2 = CommonGrammar.Literal.Parse("\"false\"");
 
-        Assert.That(result, Is.InstanceOf<StringLiteral>());
-        Assert.That(result2, Is.InstanceOf<StringLiteral>());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result, Is.InstanceOf<StringLiteral>());
+            Assert.That(result2, Is.InstanceOf<StringLiteral>());
+        }
     }
 }

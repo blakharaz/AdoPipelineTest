@@ -57,8 +57,11 @@ public class VariablesParserTest
         Assert.That(buildConfigVar!.DefaultValue, Is.TypeOf<Dictionary<string, object?>>());
         var buildConfigDict = (Dictionary<string, object?>)buildConfigVar!.DefaultValue!;
         Assert.That(buildConfigDict, Has.Count.EqualTo(2));
-        Assert.That(buildConfigDict["debug"], Is.EqualTo("true"));
-        Assert.That(buildConfigDict["release"], Is.EqualTo("false"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(buildConfigDict["debug"], Is.EqualTo("true"));
+            Assert.That(buildConfigDict["release"], Is.EqualTo("false"));
+        }
 
         // Verify sequence default
         var frameworksVar = pipeline.Variables.FirstOrDefault(v => v.Name == "frameworks");
@@ -66,7 +69,10 @@ public class VariablesParserTest
         Assert.That(frameworksVar!.DefaultValue, Is.TypeOf<List<object?>>());
         var frameworksList = (List<object?>)frameworksVar!.DefaultValue!;
         Assert.That(frameworksList, Has.Count.EqualTo(2));
-        Assert.That(frameworksList[0], Is.EqualTo("net6.0"));
-        Assert.That(frameworksList[1], Is.EqualTo("net8.0"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(frameworksList[0], Is.EqualTo("net6.0"));
+            Assert.That(frameworksList[1], Is.EqualTo("net8.0"));
+        }
     }
 }

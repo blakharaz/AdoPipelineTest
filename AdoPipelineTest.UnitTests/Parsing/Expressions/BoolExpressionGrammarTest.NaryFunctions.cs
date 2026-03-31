@@ -13,8 +13,11 @@ public partial class BoolExpressionGrammarTest
         var result = BoolExpressionGrammar.NaryFunctions.Parse("and(true, false, true)");
         var result2 = BoolExpressionGrammar.Functions.Parse("and(true, false, true)");
 
-        Assert.That(result, Is.InstanceOf<FunctionExpression>());
-        Assert.That(result2, Is.InstanceOf<FunctionExpression>());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result, Is.InstanceOf<FunctionExpression>());
+            Assert.That(result2, Is.InstanceOf<FunctionExpression>());
+        }
     }
 
     [Test]
@@ -23,8 +26,11 @@ public partial class BoolExpressionGrammarTest
         var result = BoolExpressionGrammar.NaryFunctions.Parse("and(eq(true, false), false)");
         var result2 = BoolExpressionGrammar.Functions.Parse("and(eq(true, false), false)");
 
-        Assert.That(result, Is.InstanceOf<FunctionExpression>());
-        Assert.That(result2, Is.InstanceOf<FunctionExpression>());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result, Is.InstanceOf<FunctionExpression>());
+            Assert.That(result2, Is.InstanceOf<FunctionExpression>());
+        }
     }
 
     [Test]
@@ -33,8 +39,11 @@ public partial class BoolExpressionGrammarTest
         var result = BoolExpressionGrammar.NaryFunctions.Parse("and(succeeded(), not(eq(stage, 'Prod')))");
         var result2 = BoolExpressionGrammar.Functions.Parse("and(succeeded(), not(eq(stage, 'Prod')))");
 
-        Assert.That(result, Is.InstanceOf<FunctionExpression>());
-        Assert.That(result2, Is.InstanceOf<FunctionExpression>());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result, Is.InstanceOf<FunctionExpression>());
+            Assert.That(result2, Is.InstanceOf<FunctionExpression>());
+        }
     }
 
     [Test]
@@ -45,10 +54,13 @@ public partial class BoolExpressionGrammarTest
         var result3 = BoolExpressionGrammar.Functions.Parse("and(false, parameters.Foo)");
         var result4 = BoolExpressionGrammar.Functions.Parse("and(parameters.Foo, false)");
 
-        Assert.That(result, Is.InstanceOf<FunctionExpression>());
-        Assert.That(result2, Is.InstanceOf<FunctionExpression>());
-        Assert.That(result3, Is.InstanceOf<FunctionExpression>());
-        Assert.That(result4, Is.InstanceOf<FunctionExpression>());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result, Is.InstanceOf<FunctionExpression>());
+            Assert.That(result2, Is.InstanceOf<FunctionExpression>());
+            Assert.That(result3, Is.InstanceOf<FunctionExpression>());
+            Assert.That(result4, Is.InstanceOf<FunctionExpression>());
+        }
     }
     
     [Test]
@@ -59,10 +71,13 @@ public partial class BoolExpressionGrammarTest
         var result3 = BoolExpressionGrammar.Functions.Parse("and(false, variables.Bar)");
         var result4 = BoolExpressionGrammar.Functions.Parse("and(variables.Bar, false)");
 
-        Assert.That(result, Is.InstanceOf<FunctionExpression>());
-        Assert.That(result2, Is.InstanceOf<FunctionExpression>());
-        Assert.That(result3, Is.InstanceOf<FunctionExpression>());
-        Assert.That(result4, Is.InstanceOf<FunctionExpression>());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result, Is.InstanceOf<FunctionExpression>());
+            Assert.That(result2, Is.InstanceOf<FunctionExpression>());
+            Assert.That(result3, Is.InstanceOf<FunctionExpression>());
+            Assert.That(result4, Is.InstanceOf<FunctionExpression>());
+        }
     }
     
     [Test]
@@ -73,9 +88,12 @@ public partial class BoolExpressionGrammarTest
         var result3 = BoolExpressionGrammar.NaryFunctions.Parse("succeeded()");
         var result4 = BoolExpressionGrammar.Functions.Parse("succeeded()");
 
-        Assert.That(result, Is.InstanceOf<FunctionExpression>());
-        Assert.That(result2, Is.InstanceOf<FunctionExpression>());
-        Assert.That(result3, Is.InstanceOf<FunctionExpression>());
-        Assert.That(result4, Is.InstanceOf<FunctionExpression>());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result, Is.InstanceOf<FunctionExpression>());
+            Assert.That(result2, Is.InstanceOf<FunctionExpression>());
+            Assert.That(result3, Is.InstanceOf<FunctionExpression>());
+            Assert.That(result4, Is.InstanceOf<FunctionExpression>());
+        }
     }
 }

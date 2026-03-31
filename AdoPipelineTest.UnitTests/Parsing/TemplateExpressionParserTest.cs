@@ -33,9 +33,11 @@ public class TemplateExpressionParserTest
         var parser = new TemplateExpressionParser("\"hello\"");
         
         var result = parser.ParseExpression();
-        
-        Assert.That(result, Is.InstanceOf<StringLiteral>());
-        Assert.That(((StringLiteral)result).Value, Is.EqualTo("hello"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result, Is.InstanceOf<StringLiteral>());
+            Assert.That(((StringLiteral)result).Value, Is.EqualTo("hello"));
+        }
     }
 
     [Test]
@@ -44,9 +46,11 @@ public class TemplateExpressionParserTest
         var parser = new TemplateExpressionParser("\"hello\\\"world\"");
         
         var result = parser.ParseExpression();
-        
-        Assert.That(result, Is.InstanceOf<StringLiteral>());
-        Assert.That(((StringLiteral)result).Value, Is.EqualTo("hello\"world"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result, Is.InstanceOf<StringLiteral>());
+            Assert.That(((StringLiteral)result).Value, Is.EqualTo("hello\"world"));
+        }
     }
 
     [Test]
@@ -55,9 +59,11 @@ public class TemplateExpressionParserTest
         var parser = new TemplateExpressionParser("parameters.foo");
         
         var result = parser.ParseExpression();
-        
-        Assert.That(result, Is.InstanceOf<ParameterExpression>());
-        Assert.That(((ParameterExpression)result).ParameterName, Is.EqualTo("foo"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result, Is.InstanceOf<ParameterExpression>());
+            Assert.That(((ParameterExpression)result).ParameterName, Is.EqualTo("foo"));
+        }
     }
 
     [Test]
@@ -66,9 +72,11 @@ public class TemplateExpressionParserTest
         var parser = new TemplateExpressionParser("variables.bar");
         
         var result = parser.ParseExpression();
-        
-        Assert.That(result, Is.InstanceOf<VariableExpression>());
-        Assert.That(((VariableExpression)result).Name, Is.EqualTo("bar"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result, Is.InstanceOf<VariableExpression>());
+            Assert.That(((VariableExpression)result).Name, Is.EqualTo("bar"));
+        }
     }
 
     [Test]
@@ -80,8 +88,11 @@ public class TemplateExpressionParserTest
         
         Assert.That(result, Is.InstanceOf<FunctionExpression>());
         var funcExpr = (FunctionExpression)result;
-        Assert.That(funcExpr.FunctionName, Is.EqualTo("upper"));
-        Assert.That(funcExpr.FunctionParameters, Has.Count.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(funcExpr.FunctionName, Is.EqualTo("upper"));
+            Assert.That(funcExpr.FunctionParameters, Has.Count.EqualTo(1));
+        }
         Assert.That(funcExpr.FunctionParameters[0], Is.InstanceOf<StringLiteral>());
     }
 
@@ -91,9 +102,11 @@ public class TemplateExpressionParserTest
         var parser = new TemplateExpressionParser("\"\"");
         
         var result = parser.ParseExpression();
-        
-        Assert.That(result, Is.InstanceOf<StringLiteral>());
-        Assert.That(((StringLiteral)result).Value, Is.EqualTo(""));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result, Is.InstanceOf<StringLiteral>());
+            Assert.That(((StringLiteral)result).Value, Is.EqualTo(""));
+        }
     }
 }
 
