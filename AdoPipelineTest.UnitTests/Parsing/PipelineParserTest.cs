@@ -16,15 +16,21 @@ public class PipelineParserTest
 
         // Verify triggers
         Assert.That(pipeline.Triggers, Is.Not.Null);
-        Assert.That(pipeline.Triggers.IncludedBranches, Has.Count.EqualTo(1));
-        Assert.That(pipeline.Triggers.IncludedBranches, Does.Contain("main"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(pipeline.Triggers.IncludedBranches, Has.Count.EqualTo(1));
+            Assert.That(pipeline.Triggers.IncludedBranches, Does.Contain("main"));
+        }
 
         // Verify pool
         Assert.That(pipeline.AgentPool, Is.Not.Null);
-        Assert.That(pipeline.AgentPool.VmImage, Is.EqualTo("ubuntu-latest"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(pipeline.AgentPool.VmImage, Is.EqualTo("ubuntu-latest"));
 
-        // Verify stages and jobs
-        Assert.That(pipeline.Stages, Has.Count.EqualTo(1));
+            // Verify stages and jobs
+            Assert.That(pipeline.Stages, Has.Count.EqualTo(1));
+        }
         Assert.That(pipeline.Stages[0].Jobs, Has.Count.EqualTo(1));
 
         // Verify steps
@@ -88,19 +94,32 @@ public class PipelineParserTest
         // Verify dotnetVersion variable
         var dotnetVersionVar = pipeline.Variables.FirstOrDefault(v => v.Name == "dotnetVersion");
         Assert.That(dotnetVersionVar, Is.Not.Null);
-        Assert.That(dotnetVersionVar!.DefaultValue, Is.EqualTo("8.0.x"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(dotnetVersionVar.DefaultValue, Is.EqualTo("8.0.x"));
 
-        // Verify triggers
-        Assert.That(pipeline.Triggers, Is.Not.Null);
-        Assert.That(pipeline.Triggers.IncludedBranches, Has.Count.EqualTo(1));
-        Assert.That(pipeline.Triggers.IncludedBranches, Does.Contain("main"));
+            // Verify triggers
+            Assert.That(pipeline.Triggers, Is.Not.Null);
+        }
 
-        // Verify pool
-        Assert.That(pipeline.AgentPool, Is.Not.Null);
-        Assert.That(pipeline.AgentPool.VmImage, Is.EqualTo("ubuntu-latest"));
+        Assert.That(pipeline.Triggers!.IncludedBranches, Has.Count.EqualTo(1));
 
-        // Verify steps
-        Assert.That(pipeline.Stages, Has.Count.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(pipeline.Triggers.IncludedBranches, Does.Contain("main"));
+
+            // Verify pool
+            Assert.That(pipeline.AgentPool, Is.Not.Null);
+        }
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(pipeline.AgentPool!.VmImage, Is.EqualTo("ubuntu-latest"));
+
+            // Verify steps
+            Assert.That(pipeline.Stages, Has.Count.EqualTo(1));
+        }
+
         Assert.That(pipeline.Stages[0].Jobs, Has.Count.EqualTo(1));
         var steps = pipeline.Stages[0].Jobs[0].Steps;
         Assert.That(steps, Has.Count.EqualTo(2));
@@ -137,9 +156,11 @@ public class PipelineParserTest
         
         var steps = pipeline.Stages[0].Jobs[0].Steps;
         Assert.That(steps, Has.Count.EqualTo(2));
-        
-        Assert.That(steps[0], Is.InstanceOf<ConditionalStepExpression>());
-        Assert.That(steps[1], Is.InstanceOf<ConditionalStepExpression>());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(steps[0], Is.InstanceOf<ConditionalStepExpression>());
+            Assert.That(steps[1], Is.InstanceOf<ConditionalStepExpression>());
+        }
     }
 
     [Test]
@@ -160,20 +181,29 @@ public class PipelineParserTest
         
         var ifStatement = steps[0] as ConditionalStepExpression;
         Assert.That(ifStatement, Is.Not.Null);
-        
-        // Verify the "if" branch
-        Assert.That(ifStatement!.ThenSteps, Has.Count.EqualTo(1));
-        Assert.That(ifStatement.ThenSteps[0], Is.InstanceOf<TaskStepElement>());
-        
-        // Verify the "else if" branch (nested in ElseBranch)
-        Assert.That(ifStatement.ElseBranch, Is.InstanceOf<ConditionalStepExpression>());
+        using (Assert.EnterMultipleScope())
+        {
+
+            // Verify the "if" branch
+            Assert.That(ifStatement!.ThenSteps, Has.Count.EqualTo(1));
+            Assert.That(ifStatement.ThenSteps[0], Is.InstanceOf<TaskStepElement>());
+
+            // Verify the "else if" branch (nested in ElseBranch)
+            Assert.That(ifStatement.ElseBranch, Is.InstanceOf<ConditionalStepExpression>());
+        }
         var elseIfStatement = ifStatement.ElseBranch as ConditionalStepExpression;
-        Assert.That(elseIfStatement!.ThenSteps, Has.Count.EqualTo(3));
-        
-        // Verify the "else" branch (nested in the else-if's ElseBranch)
-        Assert.That(elseIfStatement.ElseBranch, Is.InstanceOf<ConditionalStepExpression>());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(elseIfStatement!.ThenSteps, Has.Count.EqualTo(3));
+
+            // Verify the "else" branch (nested in the else-if's ElseBranch)
+            Assert.That(elseIfStatement.ElseBranch, Is.InstanceOf<ConditionalStepExpression>());
+        }
         var elseStatement = elseIfStatement.ElseBranch as ConditionalStepExpression;
-        Assert.That(elseStatement!.ThenSteps, Has.Count.EqualTo(1));
-        Assert.That(elseStatement.ThenSteps[0], Is.InstanceOf<ScriptStepElement>());
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(elseStatement!.ThenSteps, Has.Count.EqualTo(1));
+            Assert.That(elseStatement.ThenSteps[0], Is.InstanceOf<ScriptStepElement>());
+        }
     }
 }

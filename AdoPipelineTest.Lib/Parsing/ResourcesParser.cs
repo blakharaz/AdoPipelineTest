@@ -1,12 +1,11 @@
 using AdoPipelineTest.Parsing.Ast;
 using YamlDotNet.RepresentationModel;
-using System.Collections.Generic;
 
 namespace AdoPipelineTest.Parsing;
 
 internal static class ResourcesParser
 {
-    internal static IList<PipelineResourceElement> ParseResources(YamlMappingNode rootNode)
+    internal static List<PipelineResourceElement> ParseResources(YamlMappingNode rootNode)
     {
         var resources = new List<PipelineResourceElement>();
 
@@ -21,43 +20,54 @@ internal static class ResourcesParser
             return resources;
         }
 
-        foreach (var kvp in resourcesMapping.Children)
+        foreach (var (key, valueNode) in resourcesMapping.Children)
         {
             // Skip if key is not a scalar (e.g., null or complex key)
-            if (kvp.Key is not YamlScalarNode keyNode || string.IsNullOrEmpty(keyNode.Value))
+            if (key is not YamlScalarNode keyNode || string.IsNullOrEmpty(keyNode.Value))
             {
                 continue;
             }
 
-            string groupName = keyNode.Value;
-            YamlNode valueNode = kvp.Value;
+            var groupName = keyNode.Value;
 
-            // Check if this is a grouped resource (sequence of resources under a group like repositories, pipelines, etc.)
-            if (valueNode is YamlSequenceNode resourceSequence)
+            switch (valueNode)
             {
-                // Process each item in the sequence as a resource
-                foreach (var itemNode in resourceSequence.Children)
+                // Check if this is a grouped resource (sequence of resources under a group like repositories, pipelines, etc.)
+                case YamlSequenceNode resourceSequence:
                 {
-                    if (itemNode is YamlMappingNode resourceMapping)
-                    {
-                        // Extract the resource name from the mapping (commonly under "repository" or "pipeline" key)
-                        string resourceName = ExtractResourceNameFromMapping(resourceMapping, groupName);
-                        if (!string.IsNullOrEmpty(resourceName))
-                        {
-                            resources.Add(ParseSingleResource(resourceName, resourceMapping));
-                        }
-                    }
+                    ProcessResourceSequence(resourceSequence, groupName, resources);
+                    break;
                 }
-            }
-            // Check if this is a flat resource (direct mapping under resources)
-            else if (valueNode is YamlMappingNode resourceMapping)
-            {
-                // The key itself is the resource name
-                resources.Add(ParseSingleResource(groupName, resourceMapping));
+                // Check if this is a flat resource (direct mapping under resources)
+                case YamlMappingNode resourceMapping:
+                {
+                    // The key itself is the resource name
+                    resources.Add(ParseSingleResource(groupName, resourceMapping));
+                    break;
+                }
             }
         }
 
         return resources;
+    }
+
+    private static void ProcessResourceSequence(YamlSequenceNode resourceSequence, string groupName, List<PipelineResourceElement> resources)
+    {
+        // Process each item in the sequence as a resource
+        foreach (var itemNode in resourceSequence.Children)
+        {
+            if (itemNode is not YamlMappingNode resourceMapping)
+            {
+                continue;
+            }
+            
+            // Extract the resource name from the mapping (commonly under "repository" or "pipeline" keys
+            var resourceName = ExtractResourceNameFromMapping(resourceMapping, groupName);
+            if (!string.IsNullOrEmpty(resourceName))
+            {
+                resources.Add(ParseSingleResource(resourceName, resourceMapping));
+            }
+        }
     }
 
     private static string ExtractResourceNameFromMapping(YamlMappingNode resourceMapping, string groupName)
@@ -111,9 +121,9 @@ internal static class ResourcesParser
         var element = new PipelineResourceElement
         {
             Name = name,
-            Type = GetScalarValue(resourceNode, "type") ?? "unknown",
-            Source = GetScalarValue(resourceNode, "source"),
-            Version = GetScalarValue(resourceNode, "version"),
+            Type = ExtractScalarValue(resourceNode, "type") ?? "unknown",
+            Source = ExtractScalarValue(resourceNode, "source"),
+            Version = ExtractScalarValue(resourceNode, "version"),
             Trigger = ParseTriggerList(resourceNode),
             Endpoints = ParseEndpoints(resourceNode)
         };
@@ -121,7 +131,7 @@ internal static class ResourcesParser
         return element;
     }
 
-    private static IList<string>? ParseTriggerList(YamlMappingNode? resourceNode)
+    private static List<string>? ParseTriggerList(YamlMappingNode? resourceNode)
     {
         if (resourceNode == null)
         {
@@ -147,104 +157,77 @@ internal static class ResourcesParser
         return triggers.Count > 0 ? triggers : null;
     }
 
-    private static IList<PipelineResourceEndpoint>? ParseEndpoints(YamlMappingNode? resourceNode)
+    private static List<PipelineResourceEndpoint>? ParseEndpoints(YamlMappingNode? resourceNode)
     {
         if (resourceNode == null)
         {
             return null;
         }
 
-        if (!resourceNode.Children.TryGetValue("endpoints", out var endpointsNode) ||
-            endpointsNode is not YamlSequenceNode endpointsSeq)
-        {
-            return null;
-        }
+        var endpointsSeq = GetEndpointsSequence(resourceNode);  
 
-        var endpoints = new List<PipelineResourceEndpoint>();
-        foreach (var endpointNode in endpointsSeq.Children.OfType<YamlMappingNode>())
-        {
-            // Safely extract name and value
-            string? name = null;
-            string? value = null;
-            var auth = new Dictionary<string, object?>();
+        var endpoints = endpointsSeq?.Children.OfType<YamlMappingNode>()
+            .Select(CreateEndpointFromNode)
+            .Where(IsValidEndpoint)
+            .ToList();
 
-            if (endpointNode.Children.TryGetValue(new YamlScalarNode("name"), out var nameNode) &&
-                nameNode is YamlScalarNode nameScalar)
-            {
-                name = nameScalar.Value;
-            }
-
-            if (endpointNode.Children.TryGetValue(new YamlScalarNode("value"), out var valueNode) &&
-                valueNode is YamlScalarNode valueScalar)
-            {
-                value = valueScalar.Value;
-            }
-
-            // Parse any additional properties as auth
-            foreach (var kvp in endpointNode.Children)
-            {
-                // Skip if key is not a scalar
-                if (kvp.Key is not YamlScalarNode keyNode || string.IsNullOrEmpty(keyNode.Value))
-                {
-                    continue;
-                }
-
-                string keyValue = keyNode.Value;
-                
-                // Skip name and value as they're handled separately
-                if (keyValue == "name" || keyValue == "value")
-                {
-                    continue;
-                }
-
-                // Only add to auth if we have extra properties
-                if (auth.Count == 0 && !(keyValue == "name" || keyValue == "value"))
-                {
-                    // We'll only create the auth dict if we actually have auth data
-                }
-
-                // Extract the value
-                object? authValue = ExtractValue(kvp.Value);
-                auth[keyValue] = authValue;
-            }
-
-            // Only create endpoint if we have at least a name or value
-            if (!string.IsNullOrEmpty(name) || !string.IsNullOrEmpty(value))
-            {
-                var endpoint = new PipelineResourceEndpoint
-                {
-                    Name = name ?? string.Empty,
-                    Value = value,
-                    Auth = auth.Count > 0 ? auth : null
-                };
-
-                endpoints.Add(endpoint);
-            }
-        }
-
-        return endpoints.Count > 0 ? endpoints : null;
+        return endpoints?.Count > 0 ? endpoints : null;
     }
 
-    private static string? GetScalarValue(YamlScalarNode? scalarNode)
+    private static YamlSequenceNode? GetEndpointsSequence(YamlMappingNode resourceNode)
     {
-        return scalarNode?.Value;
+        return resourceNode.Children.TryGetValue("endpoints", out var endpointsNode) &&
+               endpointsNode is YamlSequenceNode endpointsSeq
+            ? endpointsSeq
+            : null;
     }
 
-    private static string? GetScalarValue(YamlMappingNode? node, string key)
+    private static bool IsValidEndpoint(PipelineResourceEndpoint endpoint)
+    {
+        return !string.IsNullOrEmpty(endpoint.Name) || !string.IsNullOrEmpty(endpoint.Value);
+    }
+
+    private static PipelineResourceEndpoint CreateEndpointFromNode(YamlMappingNode endpointNode)
+    {
+        var name = ExtractScalarValue(endpointNode, "name");
+        var value = ExtractScalarValue(endpointNode, "value");
+        var auth = BuildAuthDictionary(endpointNode);
+
+        return new PipelineResourceEndpoint
+        {
+            Name = name ?? string.Empty,
+            Value = value,
+            Auth = auth.Count > 0 ? auth : null
+        };
+    }
+
+    private static Dictionary<string, object?> BuildAuthDictionary(YamlMappingNode endpointNode)
+    {
+        return endpointNode.Children
+            .Where(IsRelevantAuthProperty)
+            .Select(kvp => new { Key = ((YamlScalarNode)kvp.Key).Value!, Value = ExtractValue(kvp.Value) })
+            .ToDictionary(item => item.Key, item => item.Value);
+    }
+
+    private static bool IsRelevantAuthProperty(KeyValuePair<YamlNode, YamlNode> kvp)
+    {
+        if (kvp.Key is not YamlScalarNode keyNode || string.IsNullOrEmpty(keyNode.Value))
+        {
+            return false;
+        }
+
+        var keyValue = keyNode.Value;
+        return keyValue != "name" && keyValue != "value";
+    }
+
+    private static string? ExtractScalarValue(YamlMappingNode? node, string key)
     {
         if (node == null || !node.Children.TryGetValue(key, out var valueNode))
         {
             return null;
         }
 
-        var scalar = valueNode as YamlScalarNode;
-        
-        if (scalar == null)
-        {
-            return null;
-        }
-        
-        return scalar.Value;
+        return (valueNode as YamlScalarNode)?.Value;
     }
 
     private static object? ExtractValue(YamlNode valueNode)

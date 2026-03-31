@@ -14,20 +14,26 @@ public class PipelineTesterVariablesTest
 
         // Verify variables are captured in result
         Assert.That(result.Variables, Has.Count.EqualTo(3));
-        Assert.That(result.Variables.Select(v => v.Name), Does.Contain("buildConfiguration"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result.Variables.Select(v => v.Name), Does.Contain("buildConfiguration"));
 
-        // Verify stages are evaluated
-        Assert.That(result.Stages, Has.Count.EqualTo(1));
+            // Verify stages are evaluated
+            Assert.That(result.Stages, Has.Count.EqualTo(1));
+        }
         var steps = result.Stages[0].Jobs[0].Steps;
         Assert.That(steps, Has.Count.EqualTo(2));
 
         // Verify the second step (DotNetCoreCLI) has the variable replaced in inputs
         var buildTask = steps[1] as TaskStep;
         Assert.That(buildTask, Is.Not.Null);
-        Assert.That(buildTask!.Inputs, Does.ContainKey("arguments"));
-        
-        // The variable $(buildConfiguration) should be replaced with 'Release'
-        Assert.That(buildTask.Inputs["arguments"], Does.Contain("Release"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(buildTask!.Inputs, Does.ContainKey("arguments"));
+
+            // The variable $(buildConfiguration) should be replaced with 'Release'
+            Assert.That(buildTask.Inputs["arguments"], Does.Contain("Release"));
+        }
     }
 
     [Test]
@@ -50,10 +56,13 @@ public class PipelineTesterVariablesTest
         // Verify the second step has the overridden variable value
         var buildTask = steps[1] as TaskStep;
         Assert.That(buildTask, Is.Not.Null);
-        Assert.That(buildTask!.Inputs, Does.ContainKey("arguments"));
-        
-        // The variable should be replaced with 'Debug' (user-provided), not 'Release' (default)
-        Assert.That(buildTask.Inputs["arguments"], Does.Contain("Debug"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(buildTask!.Inputs, Does.ContainKey("arguments"));
+
+            // The variable should be replaced with 'Debug' (user-provided), not 'Release' (default)
+            Assert.That(buildTask.Inputs["arguments"], Does.Contain("Debug"));
+        }
         Assert.That(buildTask.Inputs["arguments"], Does.Not.Contain("Release"));
     }
 

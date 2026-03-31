@@ -15,16 +15,22 @@ public class ResourcesParserTest
         // Verify first resource - docker registry
         var dockerRegistry = pipeline.Resources.FirstOrDefault(r => r.Name == "docker-registry");
         Assert.That(dockerRegistry, Is.Not.Null);
-        Assert.That(dockerRegistry!.Name, Is.EqualTo("docker-registry"));
-        Assert.That(dockerRegistry!.Type, Is.EqualTo("docker-registry"));
-        Assert.That(dockerRegistry!.Source, Is.EqualTo("https://index.docker.io/v1/"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(dockerRegistry.Name, Is.EqualTo("docker-registry"));
+            Assert.That(dockerRegistry.Type, Is.EqualTo("docker-registry"));
+            Assert.That(dockerRegistry.Source, Is.EqualTo("https://index.docker.io/v1/"));
+        }
 
         // Verify second resource - nuget feed
         var nugetFeed = pipeline.Resources.FirstOrDefault(r => r.Name == "nuget-feed");
         Assert.That(nugetFeed, Is.Not.Null);
-        Assert.That(nugetFeed!.Name, Is.EqualTo("nuget-feed"));
-        Assert.That(nugetFeed!.Type, Is.EqualTo("nuget-feed"));
-        Assert.That(nugetFeed!.Source, Is.EqualTo("https://api.nuget.org/v3/index.json"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(nugetFeed.Name, Is.EqualTo("nuget-feed"));
+            Assert.That(nugetFeed.Type, Is.EqualTo("nuget-feed"));
+            Assert.That(nugetFeed.Source, Is.EqualTo("https://api.nuget.org/v3/index.json"));
+        }
     }
 
     [Test]
@@ -43,13 +49,23 @@ public class ResourcesParserTest
         Assert.That(pipeline.Resources, Has.Count.EqualTo(1));
 
         var resource = pipeline.Resources[0];
-        Assert.That(resource.Name, Is.EqualTo("docker-registry"));
-        Assert.That(resource.Version, Is.EqualTo("v2"));
+        Assert.That(resource, Is.Not.Null);
+        
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(resource.Name, Is.EqualTo("docker-registry"));
+            Assert.That(resource.Version, Is.EqualTo("v2"));
+        }
+
         Assert.That(resource.Trigger, Is.Not.Null);
-        Assert.That(resource.Trigger!.Count, Is.EqualTo(3));
-        Assert.That(resource.Trigger!.Contains("main"), Is.True);
-        Assert.That(resource.Trigger!.Contains("develop"), Is.True);
-        Assert.That(resource.Trigger!.Contains("release/*"), Is.True);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(resource.Trigger, Has.Count.EqualTo(3));
+            Assert.That(resource.Trigger.Contains("main"), Is.True);
+            Assert.That(resource.Trigger.Contains("develop"), Is.True);
+            Assert.That(resource.Trigger.Contains("release/*"), Is.True);
+        }
     }
 
     [Test]
@@ -60,11 +76,13 @@ public class ResourcesParserTest
         Assert.That(pipeline.Resources, Has.Count.EqualTo(1));
 
         var resource = pipeline.Resources[0];
-        Assert.That(resource.Name, Is.EqualTo("docker-registry"));
-        
-        // Verify endpoints exist
-        Assert.That(resource.Endpoints, Is.Not.Null);
-        Assert.That(resource.Endpoints!.Count, Is.GreaterThan(0));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(resource.Name, Is.EqualTo("docker-registry"));
+
+            // Verify endpoints exist
+            Assert.That(resource.Endpoints, Is.Not.Null.And.Not.Empty);
+        }
     }
 
     [Test]
@@ -104,8 +122,12 @@ public class ResourcesParserTest
 
         var buildPipeline = pipeline.Resources.FirstOrDefault(r => r.Name == "myPipeline");
         Assert.That(buildPipeline, Is.Not.Null);
-        Assert.That(buildPipeline!.Trigger, Is.Not.Null);
-        Assert.That(buildPipeline!.Trigger, Contains.Item("main"));
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(buildPipeline.Trigger, Is.Not.Null);
+            Assert.That(buildPipeline.Trigger, Contains.Item("main"));
+        }
 
         var releasePipeline = pipeline.Resources.FirstOrDefault(r => r.Name == "releasePipeline");
         Assert.That(releasePipeline, Is.Not.Null);
@@ -119,8 +141,11 @@ public class ResourcesParserTest
         Assert.That(pipeline.Resources, Has.Count.EqualTo(1));
 
         var container = pipeline.Resources[0];
-        Assert.That(container.Name, Is.EqualTo("myContainer"));
-        Assert.That(container.Source, Is.Null);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(container.Name, Is.EqualTo("myContainer"));
+            Assert.That(container.Source, Is.Null);
+        }
     }
 
     [Test]
@@ -131,8 +156,11 @@ public class ResourcesParserTest
         Assert.That(pipeline.Resources, Has.Count.EqualTo(1));
 
         var package = pipeline.Resources[0];
-        Assert.That(package.Name, Is.EqualTo("myPackage"));
-        Assert.That(package.Source, Is.Null);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(package.Name, Is.EqualTo("myPackage"));
+            Assert.That(package.Source, Is.Null);
+        }
     }
 
     [Test]
@@ -144,15 +172,21 @@ public class ResourcesParserTest
 
         var resource = pipeline.Resources[0];
         Assert.That(resource.Endpoints, Is.Not.Null);
-        Assert.That(resource.Endpoints!.Count, Is.EqualTo(1));
+        Assert.That(resource.Endpoints, Has.Count.EqualTo(1));
 
         var endpoint = resource.Endpoints[0];
-        Assert.That(endpoint.Name, Is.EqualTo("docker-auth"));
-        Assert.That(endpoint.Value, Is.EqualTo("secret-token"));
-        Assert.That(endpoint.Auth, Is.Not.Null);
-        Assert.That(endpoint.Auth!.ContainsKey("username"), Is.True);
-        Assert.That(endpoint.Auth["username"], Is.EqualTo("dockeruser"));
-        Assert.That(endpoint.Auth["password"], Is.EqualTo("dockerpassword"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(endpoint.Name, Is.EqualTo("docker-auth"));
+            Assert.That(endpoint.Value, Is.EqualTo("secret-token"));
+            Assert.That(endpoint.Auth, Is.Not.Null);
+        }
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(endpoint.Auth!.ContainsKey("username"), Is.True);
+            Assert.That(endpoint.Auth["username"], Is.EqualTo("dockeruser"));
+            Assert.That(endpoint.Auth["password"], Is.EqualTo("dockerpassword"));
+        }
     }
 
     [Test]
@@ -164,12 +198,15 @@ public class ResourcesParserTest
 
         var resource = pipeline.Resources[0];
         Assert.That(resource.Endpoints, Is.Not.Null);
-        Assert.That(resource.Endpoints!.Count, Is.EqualTo(1));
+        Assert.That(resource.Endpoints!, Has.Count.EqualTo(1));
 
         var endpoint = resource.Endpoints[0];
-        Assert.That(endpoint.Name, Is.EqualTo("docker-auth"));
-        Assert.That(endpoint.Value, Is.Null);
-        Assert.That(endpoint.Auth, Is.Not.Null);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(endpoint.Name, Is.EqualTo("docker-auth"));
+            Assert.That(endpoint.Value, Is.Null);
+            Assert.That(endpoint.Auth, Is.Not.Null);
+        }
     }
 
     [Test]
@@ -186,12 +223,15 @@ public class ResourcesParserTest
 
         var config = endpoint.Auth["config"] as Dictionary<string, object?>;
         Assert.That(config, Is.Not.Null);
-        Assert.That(config!.ContainsKey("username"), Is.True);
-        Assert.That(config["username"], Is.EqualTo("user1"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(config!.ContainsKey("username"), Is.True);
+            Assert.That(config["username"], Is.EqualTo("user1"));
+        }
 
         var extras = config["extras"] as List<object?>;
         Assert.That(extras, Is.Not.Null);
-        Assert.That(extras!.Count, Is.EqualTo(2));
+        Assert.That(extras!, Has.Count.EqualTo(2));
     }
 
     [Test]
@@ -203,8 +243,11 @@ public class ResourcesParserTest
 
         var resource = pipeline.Resources[0];
         Assert.That(resource.Trigger, Is.Not.Null);
-        Assert.That(resource.Trigger!.Count, Is.EqualTo(2));
-        Assert.That(resource.Trigger, Contains.Item("main"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(resource.Trigger!, Has.Count.EqualTo(2));
+            Assert.That(resource.Trigger, Contains.Item("main"));
+        }
         Assert.That(resource.Trigger, Contains.Item("develop"));
     }
 

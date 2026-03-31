@@ -1,4 +1,3 @@
-
 using AdoPipelineTest.Evaluation;
 
 namespace AdoPipelineTest.UnitTests.Evaluation;

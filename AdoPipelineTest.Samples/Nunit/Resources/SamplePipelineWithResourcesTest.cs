@@ -4,7 +4,8 @@ using Is = AdoPipelineTest.Nunit.Is;
 
 namespace AdoPipelineTest.Samples.Nunit.Resources;
 
-public class SamplePipelineWithResourcesTest
+public class 
+    SamplePipelineWithResourcesTest
 {
     [Test]
     public void ParseSamplePipelineWithResources()
@@ -27,10 +28,13 @@ public class SamplePipelineWithResourcesTest
         
         // Verify second job (Deploy)
         var deployJob = result.Stages[1].Jobs[0];
-        Assert.That(deployJob, Is.Not.Null);
-        
-        // Verify steps exist
-        Assert.That(buildJob.Steps, Has.Count.EqualTo(2));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(deployJob, Is.Not.Null);
+
+            // Verify steps exist
+            Assert.That(buildJob.Steps, Has.Count.EqualTo(2));
+        }
         Assert.That(deployJob.Steps, Has.Count.EqualTo(1));
     }
 }
