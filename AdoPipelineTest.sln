@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdoPipelineTest.Nunit", "Ad
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdoPipelineTest.UnitTests", "AdoPipelineTest.UnitTests\AdoPipelineTest.UnitTests.csproj", "{47655A1F-3117-42F8-A46C-A9048D2E92DE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdoPipelineTest.Mstest", "AdoPipelineTest.Mstest\AdoPipelineTest.Mstest.csproj", "{8D9497A7-991D-4773-B9CD-D93B90C4CAC5}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AI Instructions", "AI Instructions", "{D4A5E4F1-8F5C-4B5F-9A8F-3E5C8F5C4B5F}"
 	ProjectSection(SolutionItems) = preProject
 		.ai\context.md = .ai\context.md
@@ -47,5 +49,9 @@ Global
 		{47655A1F-3117-42F8-A46C-A9048D2E92DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47655A1F-3117-42F8-A46C-A9048D2E92DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47655A1F-3117-42F8-A46C-A9048D2E92DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D9497A7-991D-4773-B9CD-D93B90C4CAC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D9497A7-991D-4773-B9CD-D93B90C4CAC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D9497A7-991D-4773-B9CD-D93B90C4CAC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D9497A7-991D-4773-B9CD-D93B90C4CAC5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
