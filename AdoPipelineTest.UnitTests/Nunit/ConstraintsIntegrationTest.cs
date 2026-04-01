@@ -1,6 +1,4 @@
-using AdoPipelineTest.Nunit;
-using NUnit.Framework.Constraints;
-using AIs = AdoPipelineTest.Nunit.Is;
+using PipelineIs = AdoPipelineTest.Nunit.Is;
 
 namespace AdoPipelineTest.UnitTests.Nunit;
 
@@ -14,20 +12,26 @@ public class ConstraintsIntegrationTest
             .WithPipeline("test_data/pipeline_parser/pipeline_with_stage_and_job_names.yaml")
             .Run();
 
-        Assert.That(result, AIs.HasStage("Build"));
-        Assert.That(result, AIs.HasStage("Deploy"));
-        Assert.That(result, AIs.HasStage("Build Stage"));
+        Assert.That(result, PipelineIs.HasStage("Build"));
+        Assert.That(result, PipelineIs.HasStage("Deploy"));
+        Assert.That(result, PipelineIs.HasStage("Build Stage"));
         
-        Assert.That(result.Stages[0], AIs.HasJob("Compile"));
-        Assert.That(result.Stages[0], AIs.HasJob("Compile Job"));
+        Assert.That(result.Stages[0], PipelineIs.HasJob("Compile"));
+        Assert.That(result.Stages[0], PipelineIs.HasJob("Compile Job"));
         
-        Assert.That(result.Stages[0].Jobs[0], AIs.HasStep("Build Task"));
-        Assert.That(result.Stages[0].Jobs[0], AIs.HasTask("DotNetCoreCLI@2"));
-        
-        Assert.That(result.Stages[0], AIs.DependsOn("Prep"));
-        Assert.That(result.Stages[0].Jobs[0], AIs.DependsOn("Setup"));
-        Assert.That(result.Stages[1], AIs.DependsOn("Build"));
-        Assert.That(result.Stages[1], AIs.DependsOn("Test"));
+        Assert.That(result.Stages[0].Jobs[0], PipelineIs.HasStep("Build Task"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result.Stages[0].Jobs[0], PipelineIs.HasTask("DotNetCoreCLI@2"));
+
+            Assert.That(result.Stages[0], PipelineIs.DependsOn("Prep"));
+        }
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result.Stages[0].Jobs[0], PipelineIs.DependsOn("Setup"));
+            Assert.That(result.Stages[1], PipelineIs.DependsOn("Build"));
+        }
+        Assert.That(result.Stages[1], PipelineIs.DependsOn("Test"));
     }
 
     [Test]
@@ -37,7 +41,6 @@ public class ConstraintsIntegrationTest
             .WithPipeline("test_data/pipeline_parser/pipeline_with_stage_and_job_names.yaml")
             .Run();
 
-        Assert.That(result, NUnit.Framework.Is.Not.EqualTo(null));
-        Assert.That(result, NUnit.Framework.Is.Not.Null);
+        Assert.That(result, Is.Not.Null);
     }
 }

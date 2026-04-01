@@ -72,7 +72,7 @@ internal static class StepsParser
         }
 
         var name = jobMappingNode.GetChildIfExists<YamlScalarNode>("job")?.Value;
-        var displayName = jobMappingNode.GetChildIfExists<YamlScalarNode>("displayName")?.Value;;
+        var displayName = jobMappingNode.GetChildIfExists<YamlScalarNode>("displayName")?.Value;
         var dependsOn = ParseDependsOn(jobMappingNode);
 
         return new PipelineJobElement
@@ -84,7 +84,7 @@ internal static class StepsParser
         };
     }
 
-    private static IList<string> ParseDependsOn(YamlMappingNode mappingNode)
+    private static List<string> ParseDependsOn(YamlMappingNode mappingNode)
     {
         var dependsOn = new List<string>();
 
@@ -125,7 +125,7 @@ internal static class StepsParser
             var stepNode = stepsNode.ElementAt(i);
             
             // Check if this is a conditional step
-            if (IsConditionalStep(stepNode, out var conditionalType))
+            if (IsConditionalStep(stepNode, out _))
             {
                 var conditionalStep = ParseConditionalStep(stepsNode, ref i, pipelinePath);
                 steps.Add(conditionalStep);
@@ -189,7 +189,7 @@ internal static class StepsParser
         var keyValue = TrimTrailingColon(key!.Value!);
         
         // Parse the condition
-        TemplateExpression? condition = null;
+        TemplateExpression? condition;
         if (keyValue.StartsWith("${{ if ") || keyValue.StartsWith("${{ else if "))
         {
             var conditionText = keyValue
@@ -242,7 +242,7 @@ internal static class StepsParser
             throw new FormatException("Step node is not a mapping node");
         }
 
-        var displayName = stepMappingNode.GetChildIfExists<YamlScalarNode>("displayName")?.Value;;
+        var displayName = stepMappingNode.GetChildIfExists<YamlScalarNode>("displayName")?.Value;
         var continueOnError = stepMappingNode.GetChildIfExists<YamlScalarNode>("continueOnError")?.Value;
 
         if (stepMappingNode.TryGetChild<YamlScalarNode>("task", out var taskNode))
@@ -252,18 +252,18 @@ internal static class StepsParser
 
         if (stepMappingNode.TryGetChild<YamlScalarNode>("script", out var scriptNode))
         {
-            return ParseScriptStep(displayName, continueOnError, scriptNode, stepMappingNode);
+            return ParseScriptStep(displayName, continueOnError, scriptNode);
         }
 
         if (stepMappingNode.TryGetChild<YamlScalarNode>("template", out var templateNode))
         {
-            return ParseTemplateStep(templateNode, stepMappingNode, pipelinePath);
+            return ParseTemplateStep(templateNode, pipelinePath);
         }
         
         throw new InvalidDataException("unknown step type"); 
     }
 
-    private static PipelineStepElement ParseTemplateStep(YamlScalarNode templateNode, YamlMappingNode stepMappingNode, string pipelinePath)
+    private static TemplateStepElement ParseTemplateStep(YamlScalarNode templateNode, string pipelinePath)
     {
         return new TemplateStepElement
         {
@@ -273,16 +273,13 @@ internal static class StepsParser
     }
 
     private static ScriptStepElement ParseScriptStep(string? displayName, string? continueOnError,
-        YamlScalarNode scriptNode, YamlMappingNode stepNode)
+        YamlScalarNode scriptNode)
     {
         var script = scriptNode.Value;
 
-        if (string.IsNullOrEmpty(script))
-        {
-            throw new InvalidPipelineException("script node has no content", "", scriptNode);
-        }
-        
-        return new ScriptStepElement { DisplayName = displayName, ContinueOnError = continueOnError, Script = script};
+        return string.IsNullOrEmpty(script) 
+            ? throw new InvalidPipelineException("script node has no content", "", scriptNode) 
+            : new ScriptStepElement { DisplayName = displayName, ContinueOnError = continueOnError, Script = script};
     }
 
     private static TaskStepElement ParseTaskStep(string? displayName, string? continueOnError, YamlScalarNode taskNode,
