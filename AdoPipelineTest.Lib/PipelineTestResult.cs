@@ -14,4 +14,6 @@ public class PipelineTestResult
 
     public IDictionary<string, PipelineParameter> Parameters { get; init; } =
         new Dictionary<string, PipelineParameter>();
+
+    public IList<PipelineResource> Resources { get; init; } = [];
 }
