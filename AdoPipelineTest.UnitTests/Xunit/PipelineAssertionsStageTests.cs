@@ -1,10 +1,9 @@
-using NUnit.Framework;
 using AdoPipelineTest.Model;
-using AdoPipelineTest.Xunit;
+using NUnit.Framework;
 using NUnitAssert = NUnit.Framework.Assert;
-using PipelineAssert = AdoPipelineTest.Xunit.Assert;
+using Assert = AdoPipelineTest.Xunit.Assert;
 
-namespace AdoPipelineTest.UnitTests.XunitHelpers;
+namespace AdoPipelineTest.UnitTests.Xunit;
 
 public class PipelineAssertionsStageTests
 {
@@ -16,7 +15,7 @@ public class PipelineAssertionsStageTests
             Stages = new List<PipelineStage> { new() { DisplayName = "Build" } }
         };
 
-        NUnitAssert.DoesNotThrow(() => PipelineAssert.HasStage(result, "Build"));
+        NUnitAssert.DoesNotThrow(() => Assert.HasStage(result, "Build"));
     }
 
     [Test]
@@ -27,7 +26,7 @@ public class PipelineAssertionsStageTests
             Stages = new List<PipelineStage> { new() { DisplayName = "Build" } }
         };
 
-        NUnitAssert.That(() => PipelineAssert.HasStage(result, "Deploy"), Throws.Exception);
+        NUnitAssert.That(() => Assert.HasStage(result, "Deploy"), Throws.Exception);
     }
 
     [Test]
@@ -38,7 +37,7 @@ public class PipelineAssertionsStageTests
             Stages = new List<PipelineStage> { new(), new() }
         };
 
-        NUnitAssert.DoesNotThrow(() => PipelineAssert.StageCount(result, 2));
+        NUnitAssert.DoesNotThrow(() => Assert.StageCount(result, 2));
     }
 
     [Test]
@@ -49,6 +48,6 @@ public class PipelineAssertionsStageTests
             Stages = new List<PipelineStage> { new() }
         };
 
-        NUnitAssert.That(() => PipelineAssert.StageCount(result, 2), Throws.Exception);
+        NUnitAssert.That(() => Assert.StageCount(result, 2), Throws.Exception);
     }
 }

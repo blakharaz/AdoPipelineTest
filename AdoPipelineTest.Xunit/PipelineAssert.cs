@@ -1,38 +1,53 @@
+using AdoPipelineTest;
 using AdoPipelineTest.Model;
 using AdoPipelineTest.Model.Steps;
-using XunitAssert = Xunit.Assert;
+using Xunit.Sdk;
 
 namespace AdoPipelineTest.Xunit;
 
-public static class Assert
+/// <summary>
+/// Extended assertions for Azure DevOps YAML pipeline testing.
+/// Inherit from Xunit.Assert to provide custom assertions alongside built-in ones.
+/// Usage: using Assert = AdoPipelineTest.Xunit.Assert;
+/// </summary>
+public class Assert : global::Xunit.Assert
 {
     public static void HasStage(PipelineTestResult result, string stageDisplayName, string? because = null)
     {
         var stage = result.Stages.FirstOrDefault(s => s.DisplayName == stageDisplayName);
-        var message = because ?? $"Stage '{stageDisplayName}' not found. Available stages: {string.Join(", ", result.Stages.Select(s => s.DisplayName ?? "(unnamed)"))}";
-        XunitAssert.True(stage != null, message);
+        var message = because ??
+                      $"Stage '{stageDisplayName}' not found. Available stages: {string.Join(", ", result.Stages.Select(s => s.DisplayName ?? "(unnamed)"))}";
+        if (stage == null)
+            throw new XunitException(message);
     }
 
     public static void StageCount(PipelineTestResult result, int count, string? because = null)
     {
-        XunitAssert.Equal(count, result.Stages.Count);
+        if (result.Stages.Count != count)
+            throw new XunitException(because ?? $"Expected {count} stages, but found {result.Stages.Count}");
     }
 
-    public static void HasJob(PipelineTestResult result, string stageDisplayName, string jobDisplayName, string? because = null)
+    public static void HasJob(PipelineTestResult result, string stageDisplayName, string jobDisplayName,
+        string? because = null)
     {
         var stage = result.Stages.FirstOrDefault(s => s.DisplayName == stageDisplayName);
-        XunitAssert.True(stage != null, $"Stage '{stageDisplayName}' not found");
+        if (stage == null)
+            throw new XunitException($"Stage '{stageDisplayName}' not found");
 
         var job = stage!.Jobs.FirstOrDefault(j => j.DisplayName == jobDisplayName);
-        var message = because ?? $"Job '{jobDisplayName}' not found in stage '{stageDisplayName}'. Available jobs: {string.Join(", ", stage.Jobs.Select(j => j.DisplayName ?? "(unnamed)"))}";
-        XunitAssert.True(job != null, message);
+        var message = because ??
+                      $"Job '{jobDisplayName}' not found in stage '{stageDisplayName}'. Available jobs: {string.Join(", ", stage.Jobs.Select(j => j.DisplayName ?? "(unnamed)"))}";
+        if (job == null)
+            throw new XunitException(message);
     }
 
     public static void HasJob(PipelineStage stage, string jobDisplayName, string? because = null)
     {
         var job = stage.Jobs.FirstOrDefault(j => j.DisplayName == jobDisplayName);
-        var message = because ?? $"Job '{jobDisplayName}' not found. Available jobs: {string.Join(", ", stage.Jobs.Select(j => j.DisplayName ?? "(unnamed)"))}";
-        XunitAssert.True(job != null, message);
+        var message = because ??
+                      $"Job '{jobDisplayName}' not found. Available jobs: {string.Join(", ", stage.Jobs.Select(j => j.DisplayName ?? "(unnamed)"))}";
+        if (job == null)
+            throw new XunitException(message);
     }
 
     public static void HasStep(PipelineTestResult result, string stepDisplayName, string? because = null)
@@ -41,21 +56,25 @@ public static class Assert
             .SelectMany(s => s.Jobs)
             .SelectMany(j => j.Steps)
             .ToList();
-        
+
         var step = allSteps.FirstOrDefault(s => s.DisplayName == stepDisplayName);
-        var message = because ?? $"Step '{stepDisplayName}' not found. Available steps: {string.Join(", ", allSteps.Select(s => s.DisplayName ?? "(unnamed)"))}";
-        XunitAssert.True(step != null, message);
+        var message = because ??
+                      $"Step '{stepDisplayName}' not found. Available steps: {string.Join(", ", allSteps.Select(s => s.DisplayName ?? "(unnamed)"))}";
+        if (step == null)
+            throw new XunitException(message);
     }
 
-    public static void HasStep(PipelineTestResult result, Func<PipelineStep, bool> predicate, string? because = null)
+    public static void HasStep(PipelineTestResult result, Func<PipelineStep, bool> predicate,
+        string? because = null)
     {
         var allSteps = result.Stages
             .SelectMany(s => s.Jobs)
             .SelectMany(j => j.Steps)
             .ToList();
-        
+
         var step = allSteps.FirstOrDefault(predicate);
-        XunitAssert.True(step != null, because ?? "No step matched the predicate");
+        if (step == null)
+            throw new XunitException(because ?? "No step matched the predicate");
     }
 
     public static void HasTask(PipelineTestResult result, string taskName, string? because = null)
@@ -65,53 +84,69 @@ public static class Assert
             .SelectMany(j => j.Steps)
             .OfType<TaskStep>()
             .ToList();
-        
+
         var task = allTasks.FirstOrDefault(t => t.TaskName == taskName);
-        var message = because ?? $"Task '{taskName}' not found. Available tasks: {string.Join(", ", allTasks.Select(t => t.TaskName))}";
-        XunitAssert.True(task != null, message);
+        var message = because ??
+                      $"Task '{taskName}' not found. Available tasks: {string.Join(", ", allTasks.Select(t => t.TaskName))}";
+        if (task == null)
+            throw new XunitException(message);
     }
 
     public static void HasVariable(PipelineTestResult result, string variableName, string? because = null)
     {
         var variable = result.Variables.FirstOrDefault(v => v.Name == variableName);
-        var message = because ?? $"Variable '{variableName}' not found. Available variables: {string.Join(", ", result.Variables.Select(v => v.Name))}";
-        XunitAssert.True(variable != null, message);
+        var message = because ??
+                      $"Variable '{variableName}' not found. Available variables: {string.Join(", ", result.Variables.Select(v => v.Name))}";
+        if (variable == null)
+            throw new XunitException(message);
     }
 
-    public static void HasVariable(PipelineTestResult result, string variableName, string expectedValue, string? because = null)
+    public static void HasVariable(PipelineTestResult result, string variableName, string expectedValue,
+        string? because = null)
     {
         var variable = result.Variables.FirstOrDefault(v => v.Name == variableName);
-        XunitAssert.True(variable != null, because ?? $"Variable '{variableName}' not found");
-        XunitAssert.Equal(expectedValue, variable!.DefaultValue?.ToString());
+        if (variable == null)
+            throw new XunitException(because ?? $"Variable '{variableName}' not found");
+        if (expectedValue != variable!.DefaultValue?.ToString())
+            throw new XunitException(because ?? $"Variable '{variableName}' has value '{variable.DefaultValue}', expected '{expectedValue}'");
     }
 
     public static void HasParameter(PipelineTestResult result, string parameterName, string? because = null)
     {
-        XunitAssert.True(result.Parameters.ContainsKey(parameterName), because ?? $"Parameter '{parameterName}' not found");
+        if (!result.Parameters.ContainsKey(parameterName))
+            throw new XunitException(because ?? $"Parameter '{parameterName}' not found");
     }
 
-    public static void ParameterHasValue(PipelineTestResult result, string parameterName, object expectedValue, string? because = null)
+    public static void ParameterHasValue(PipelineTestResult result, string parameterName, object expectedValue,
+        string? because = null)
     {
-        XunitAssert.True(result.Parameters.ContainsKey(parameterName), because ?? $"Parameter '{parameterName}' not found");
+        if (!result.Parameters.ContainsKey(parameterName))
+            throw new XunitException(because ?? $"Parameter '{parameterName}' not found");
         var parameter = result.Parameters[parameterName];
-        XunitAssert.Equal(expectedValue, parameter.Value);
+        if (!object.Equals(expectedValue, parameter.Value))
+            throw new XunitException(because ?? $"Parameter '{parameterName}' has value '{parameter.Value}', expected '{expectedValue}'");
     }
 
     public static void HasTrigger(PipelineTestResult result, string? because = null)
     {
-        XunitAssert.True(result.Triggers != null, because ?? "Triggers not defined");
+        if (result.Triggers == null)
+            throw new XunitException(because ?? "Triggers not defined");
     }
 
     public static void TriggersIncludeBranch(PipelineTestResult result, string branchName, string? because = null)
     {
-        XunitAssert.True(result.Triggers != null, because ?? "Triggers not defined");
-        XunitAssert.Contains(branchName, result.Triggers!.IncludedBranches);
+        if (result.Triggers == null)
+            throw new XunitException(because ?? "Triggers not defined");
+        if (!result.Triggers!.IncludedBranches.Contains(branchName))
+            throw new XunitException(because ?? $"Branch '{branchName}' not found in included branches");
     }
 
     public static void HasVmImage(PipelineTestResult result, string vmImage, string? because = null)
     {
-        XunitAssert.True(result.AgentPool != null, because ?? "Agent pool not defined");
-        XunitAssert.Equal(vmImage, result.AgentPool!.VmImage);
+        if (result.AgentPool == null)
+            throw new XunitException(because ?? "Agent pool not defined");
+        if (vmImage != result.AgentPool!.VmImage)
+            throw new XunitException(because ?? $"VmImage is '{result.AgentPool.VmImage}', expected '{vmImage}'");
     }
 
     public static void HasScriptStep(PipelineTestResult result, string scriptContent, string? because = null)
@@ -121,35 +156,39 @@ public static class Assert
             .SelectMany(j => j.Steps)
             .OfType<ScriptStep>()
             .ToList();
-        
+
         var matchingStep = scriptSteps.FirstOrDefault(s => s.Script.Contains(scriptContent));
-        XunitAssert.True(matchingStep != null, because ?? $"No script step containing '{scriptContent}' found");
+        if (matchingStep == null)
+            throw new XunitException(because ?? $"No script step containing '{scriptContent}' found");
     }
 
     public static void JobCount(PipelineStage stage, int expectedCount, string? because = null)
     {
-        XunitAssert.Equal(expectedCount, stage.Jobs.Count);
+        if (stage.Jobs.Count != expectedCount)
+            throw new XunitException(because ?? $"Expected {expectedCount} jobs, but found {stage.Jobs.Count}");
     }
 
     public static void StepCount(PipelineJob job, int expectedCount, string? because = null)
     {
-        XunitAssert.Equal(expectedCount, job.Steps.Count);
+        if (job.Steps.Count != expectedCount)
+            throw new XunitException(because ?? $"Expected {expectedCount} steps, but found {job.Steps.Count}");
     }
 
-    public static void TaskHasInput(PipelineTestResult result, string taskName, string inputKey, string? expectedValue = null, string? because = null)
+    public static void TaskHasInput(PipelineTestResult result, string taskName, string inputKey,
+        string? expectedValue = null, string? because = null)
     {
         var taskSteps = result.Stages
             .SelectMany(s => s.Jobs)
             .SelectMany(j => j.Steps)
             .OfType<TaskStep>()
             .ToList();
-        
+
         var task = taskSteps.FirstOrDefault(t => t.TaskName == taskName);
-        XunitAssert.True(task != null, because ?? $"Task '{taskName}' not found");
-        XunitAssert.True(task!.Inputs.ContainsKey(inputKey), because ?? $"Task '{taskName}' does not have input '{inputKey}'");
-        if (expectedValue != null)
-        {
-            XunitAssert.Equal(expectedValue, task.Inputs[inputKey]);
-        }
+        if (task == null)
+            throw new XunitException(because ?? $"Task '{taskName}' not found");
+        if (!task!.Inputs.ContainsKey(inputKey))
+            throw new XunitException(because ?? $"Task '{taskName}' does not have input '{inputKey}'");
+        if (expectedValue != null && expectedValue != task.Inputs[inputKey])
+            throw new XunitException(because ?? $"Task '{taskName}' input '{inputKey}' has value '{task.Inputs[inputKey]}', expected '{expectedValue}'");
     }
 }

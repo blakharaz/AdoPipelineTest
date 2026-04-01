@@ -1,20 +1,37 @@
 # xUnit Helpers
 
-This document describes the xUnit assertion helpers provided by `AdoPipelineTest.Xunit` for testing Azure DevOps YAML pipelines.
+This document describes the xUnit assertion helpers provided by `AdoPipelineTest.Xunit` for testing Azure DevOps YAML pipelines. Two distribution formats are available.
 
-## Getting Started
+## Installation
+
+### Option A: Compiled Package (Recommended)
+
+```bash
+dotnet add package AdoPipelineTest.Xunit
+```
+
+Add the alias to your test files:
 
 ```csharp
-using AdoPipelineTest;
-using AdoPipelineTest.Xunit;
-
-var result = new PipelineTester()
-    .WithPipeline("azure-pipelines.yaml")
-    .Run();
-
-Assert.HasStage(result, "Build");
-Assert.StageCount(result, 1);
+using Assert = AdoPipelineTest.Xunit.Assert;
 ```
+
+This gives you access to both built-in xUnit assertions (`Assert.Equal`, `Assert.NotNull`) and the pipeline assertions (`Assert.HasStage`, `Assert.HasTask`) through a single `Assert` class.
+
+### Option B: Source-Only Package
+
+```bash
+dotnet add package AdoPipelineTest.Xunit.Source
+```
+
+This package adds a `partial class Assert` directly into the `Xunit` namespace via source files. No alias is needed:
+
+```csharp
+using Xunit;
+// Assert now includes pipeline assertions natively
+```
+
+Note: Requires `xunit.v3.assert.source` to be referenced in your project so that `Xunit.Assert` is compiled as a partial class.
 
 ## Available Assertions
 
@@ -56,9 +73,7 @@ Assert.StageCount(result, 1);
 ### Testing Stage Structure
 
 ```csharp
-using Xunit;
-using AdoPipelineTest;
-using AdoPipelineTest.Xunit;
+using Assert = AdoPipelineTest.Xunit.Assert;
 
 public class PipelineTests
 {
