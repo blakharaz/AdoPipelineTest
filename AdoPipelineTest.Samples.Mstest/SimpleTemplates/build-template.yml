@@ -1,0 +1,15 @@
+steps:
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'build'
+      projects: '**/*.csproj'
+      arguments: '--configuration Debug'
+    displayName: 'Build .NET Project'
+
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'publish'
+      projects: '**/*.csproj'
+      arguments: '--configuration Debug --output $(Build.ArtifactStagingDirectory)'
+      publishWebProjects: false
+    displayName: 'Publish Build Output'

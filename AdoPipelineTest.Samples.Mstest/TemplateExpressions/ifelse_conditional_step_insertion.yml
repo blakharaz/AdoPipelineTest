@@ -1,0 +1,26 @@
+parameters:
+  - name: 'option'
+    type: string
+    values:
+      - one
+      - two
+      - three
+
+steps:
+  - ${{ if eq(parameters.option, 'one') }}:
+      - task: VSBuild@1
+  
+  - ${{ else if eq(parameters.option, 'two') }}:
+      - task: UseDotNet@2
+        inputs:
+          command: build
+      - task: UseDotNet@2
+        inputs:
+          command: test
+      - task: UseDotNet@2
+        inputs:
+          command: pack
+          
+  - ${{ else }}:
+      - script: | 
+          echo "No steps to run" 
