@@ -1,4 +1,6 @@
-using PipelineIs = AdoPipelineTest.Nunit.Is;
+using Does = AdoPipelineTest.Nunit.Does;
+using Has = AdoPipelineTest.Nunit.Has;
+using Is = AdoPipelineTest.Nunit.Is;
 
 namespace AdoPipelineTest.UnitTests.Nunit;
 
@@ -12,26 +14,26 @@ public class ConstraintsIntegrationTest
             .WithPipeline("test_data/pipeline_parser/pipeline_with_stage_and_job_names.yaml")
             .Run();
 
-        Assert.That(result, PipelineIs.HasStage("Build"));
-        Assert.That(result, PipelineIs.HasStage("Deploy"));
-        Assert.That(result, PipelineIs.HasStage("Build Stage"));
+        Assert.That(result, Has.Stage("Build"));
+        Assert.That(result, Has.Stage("Deploy"));
+        Assert.That(result, Has.Stage("Build Stage"));
         
-        Assert.That(result.Stages[0], PipelineIs.HasJob("Compile"));
-        Assert.That(result.Stages[0], PipelineIs.HasJob("Compile Job"));
+        Assert.That(result.Stages[0], Has.Job("Compile"));
+        Assert.That(result.Stages[0], Has.Job("Compile Job"));
         
-        Assert.That(result.Stages[0].Jobs[0], PipelineIs.HasStep("Build Task"));
+        Assert.That(result.Stages[0].Jobs[0], Has.Step("Build Task"));
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(result.Stages[0].Jobs[0], PipelineIs.HasTask("DotNetCoreCLI@2"));
+            Assert.That(result.Stages[0].Jobs[0], Has.Task("DotNetCoreCLI@2"));
 
-            Assert.That(result.Stages[0], PipelineIs.DependsOn("Prep"));
+            Assert.That(result.Stages[0], Does.DependOn("Prep"));
         }
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(result.Stages[0].Jobs[0], PipelineIs.DependsOn("Setup"));
-            Assert.That(result.Stages[1], PipelineIs.DependsOn("Build"));
+            Assert.That(result.Stages[0].Jobs[0], Does.DependOn("Setup"));
+            Assert.That(result.Stages[1], Does.DependOn("Build"));
         }
-        Assert.That(result.Stages[1], PipelineIs.DependsOn("Test"));
+        Assert.That(result.Stages[1], Does.DependOn("Test"));
     }
 
     [Test]
