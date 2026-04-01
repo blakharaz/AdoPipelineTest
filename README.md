@@ -37,6 +37,63 @@ public void MyPipeline_HasCorrectStructure()
     Assert.That(result.Stages[0].Name, Is.EqualTo("Deploy"));
 }
 ```
+### NUnit Constraints
+
+The `AdoPipelineTest.Nunit` package provides custom NUnit constraints for fluent pipeline assertions:
+
+```csharp
+using AdoPipelineTest.Nunit;
+
+[Test]
+public void Pipeline_HasCorrectStructure()
+{
+    var result = new PipelineTester()
+        .WithPipeline("azure-pipelines.yaml")
+        .Run();
+
+    // Stage assertions (match by Name or DisplayName)
+    Assert.That(result, Is.HasStage("Build"));
+    Assert.That(result, Is.HasStage("Build Stage"));
+    
+    // Job assertions (match by Name or DisplayName)
+    Assert.That(result.Stages[0], Is.HasJob("Compile"));
+    
+    // Step assertions (match by DisplayName)
+    Assert.That(result.Stages[0].Jobs[0], Is.HasStep("Build Task"));
+    
+    // Task assertions (match by TaskName)
+    Assert.That(result.Stages[0].Jobs[0], Is.HasTask("DotNetCoreCLI@2"));
+    
+    // Dependency assertions
+    Assert.That(result.Stages[0], Is.DependsOn("Prep"));
+    Assert.That(result.Stages[0].Jobs[0], Is.DependsOn("Setup"));
+    
+    // Variable assertions
+    Assert.That(result, Is.HasVariable("buildConfiguration"));
+    
+    // Parameter assertions
+    Assert.That(result, Is.HasParameter("environment"));
+    
+    // Trigger assertions
+    Assert.That(result.Triggers, Is.HasTrigger());
+    
+    // Resource assertions
+    Assert.That(result, Is.HasResource("repositories"));
+}
+```
+
+| Constraint | Target Type | Description |
+|------------|-------------|-------------|
+| `HasStage(name)` | `PipelineTestResult` | Asserts pipeline has a stage with given name or display name |
+| `HasJob(name)` | `PipelineStage` | Asserts stage has a job with given name or display name |
+| `HasStep(displayName)` | `PipelineJob` | Asserts job has a step with given display name |
+| `HasTask(taskName)` | `PipelineJob` | Asserts job has a task with given task name |
+| `HasVariable(name)` | `PipelineTestResult` | Asserts pipeline has a variable with given name |
+| `HasParameter(name)` | `PipelineTestResult` | Asserts pipeline has a parameter with given name |
+| `HasTrigger()` | `PipelineTriggers` | Asserts pipeline has triggers configured |
+| `DependsOn(name)` | `PipelineStage`, `PipelineJob` | Asserts stage/job depends on another |
+| `HasResource(type)` | `PipelineTestResult` | Asserts pipeline has a resource of given type |
+
 ## How It Works
 
 AdoPipelineTest uses a **two-phase approach**:

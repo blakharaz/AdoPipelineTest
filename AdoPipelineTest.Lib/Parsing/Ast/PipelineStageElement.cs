@@ -8,8 +8,12 @@ internal class PipelineStageElement : PipelineElement
     {
         Jobs = other.Jobs;
         DisplayName = other.DisplayName;
+        Name = other.Name;
+        DependsOn = other.DependsOn;
     }
 
-    internal IList<PipelineJobElement> Jobs { get; init; } = [];
+    internal string? Name { get; init; }
     internal string? DisplayName { get; init; }
+    internal IList<string> DependsOn { get; init; } = [];
+    internal IList<PipelineJobElement> Jobs { get; init; } = [];
 }

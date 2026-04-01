@@ -11,6 +11,7 @@ Comprehensive examples for common testing scenarios.
 - [Testing Multi-Stage Pipelines](#testing-multi-stage-pipelines)
 - [Testing Step Types](#testing-step-types)
 - [Testing Triggers](#testing-triggers)
+- [Testing NUnit Constraints](#testing-nunit-constraints)
 - [Testing Templates](#testing-templates)
 - [Advanced Scenarios](#advanced-scenarios)
 
@@ -413,6 +414,138 @@ public void Pipeline_TriggersOnlyForPathChanges()
     var triggers = result.Triggers;
     Assert.That(triggers.Paths, Is.Not.Empty);
     Assert.That(triggers.Paths, Has.Some.EqualTo("src/**"));
+}
+```
+
+## Testing NUnit Constraints
+
+The `AdoPipelineTest.Nunit` package provides fluent assertions for pipeline testing.
+
+### Basic Constraint Usage
+
+```csharp
+using AdoPipelineTest.Nunit;
+
+[TestFixture]
+public class PipelineConstraintsTest
+{
+    private PipelineTestResult _result;
+
+    [SetUp]
+    public void Setup()
+    {
+        _result = new PipelineTester()
+            .WithPipeline("azure-pipelines.yaml")
+            .Run();
+    }
+
+    [Test]
+    public void Pipeline_HasExpectedStages()
+    {
+        Assert.That(_result, Is.HasStage("Build"));
+        Assert.That(_result, Is.HasStage("Test"));
+        Assert.That(_result, Is.HasStage("Deploy"));
+    }
+
+    [Test]
+    public void Pipeline_StagesHaveCorrectJobs()
+    {
+        Assert.That(_result.Stages[0], Is.HasJob("Compile"));
+        Assert.That(_result.Stages[0], Is.HasJob("Package"));
+    }
+
+    [Test]
+    public void Pipeline_JobsHaveCorrectTasks()
+    {
+        var buildJob = _result.Stages[0].Jobs[0];
+        
+        Assert.That(buildJob, Is.HasTask("DotNetCoreCLI@2"));
+        Assert.That(buildJob, Is.HasStep("Restore packages"));
+    }
+}
+```
+
+### Testing Dependencies
+
+```csharp
+[Test]
+public void Pipeline_StagesHaveCorrectDependencies()
+{
+    var result = new PipelineTester()
+        .WithPipeline("dependent-stages.yaml")
+        .Run();
+
+    var buildStage = result.Stages.First(s => s.Name == "Build");
+    var deployStage = result.Stages.First(s => s.Name == "Deploy");
+
+    Assert.That(buildStage, Is.DependsOn("Prep"));
+    Assert.That(deployStage, Is.DependsOn("Build"));
+    Assert.That(deployStage, Is.DependsOn("Test"));
+}
+```
+
+### Testing Variables and Parameters
+
+```csharp
+[Test]
+public void Pipeline_HasExpectedVariablesAndParameters()
+{
+    var result = new PipelineTester()
+        .WithPipeline("configured-pipeline.yaml")
+        .WithParameter("environment", "production")
+        .Run();
+
+    Assert.That(result, Is.HasVariable("buildConfiguration"));
+    Assert.That(result, Is.HasParameter("environment"));
+}
+```
+
+### Testing Triggers and Resources
+
+```csharp
+[Test]
+public void Pipeline_HasTriggersAndResources()
+{
+    var result = new PipelineTester()
+        .WithPipeline("full-pipeline.yaml")
+        .Run();
+
+    Assert.That(result.Triggers, Is.HasTrigger());
+    Assert.That(result, Is.HasResource("repositories"));
+    Assert.That(result, Is.HasResource("pipelines"));
+}
+```
+
+### Combining Constraints
+
+```csharp
+[Test]
+public void Pipeline_FullStructureValidation()
+{
+    var result = new PipelineTester()
+        .WithPipeline("ci-pipeline.yaml")
+        .Run();
+
+    // Stages
+    Assert.That(result, Is.HasStage("Build"));
+    Assert.That(result, Is.HasStage("Deploy"));
+    
+    // Jobs within stages
+    Assert.That(result.Stages[0], Is.HasJob("Compile"));
+    Assert.That(result.Stages[0], Is.HasJob("Test"));
+    
+    // Steps within jobs
+    var buildJob = result.Stages[0].Jobs[0];
+    Assert.That(buildJob, Is.HasStep("Build solution"));
+    Assert.That(buildJob, Is.HasTask("DotNetCoreCLI@2"));
+    
+    // Dependencies
+    Assert.That(result.Stages[1], Is.DependsOn("Build"));
+    
+    // Configuration
+    Assert.That(result, Is.HasVariable("buildConfiguration"));
+    Assert.That(result, Is.HasParameter("environment"));
+    Assert.That(result.Triggers, Is.HasTrigger());
 }
 ```
 

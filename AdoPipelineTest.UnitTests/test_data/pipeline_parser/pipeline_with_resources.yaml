@@ -1,0 +1,10 @@
+resources:
+  repositories:
+    - repository: myRepo
+      type: git
+      name: MyProject/MyRepo
+  pipelines:
+    - pipeline: myPipeline
+      source: MyPipeline
+      trigger:
+        - main
