@@ -10,8 +10,12 @@ internal class PipelineJobElement : PipelineElement
     {
         Steps = jobWithTemplates.Steps;
         DisplayName = jobWithTemplates.DisplayName;
+        Name = jobWithTemplates.Name;
+        DependsOn = jobWithTemplates.DependsOn;
     }
 
-    internal IList<PipelineStepElement> Steps { get; init; } = [];
+    internal string? Name { get; init; }
     internal string? DisplayName { get; init; }
+    internal IList<string> DependsOn { get; init; } = [];
+    internal IList<PipelineStepElement> Steps { get; init; } = [];
 }

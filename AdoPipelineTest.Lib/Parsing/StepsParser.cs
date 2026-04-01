@@ -19,13 +19,17 @@ internal static class StepsParser
             throw new FormatException("Stage node is not a mapping node");
         }
 
+        var name = stageMappingNode.GetChildIfExists<YamlScalarNode>("stage")?.Value;
         var displayName = stageMappingNode.GetChildIfExists<YamlScalarNode>("displayName")?.Value;
+        var dependsOn = ParseDependsOn(stageMappingNode);
         
         if (stageMappingNode.TryGetChild<YamlSequenceNode>("steps", out var stepsNode))
         {
             return new PipelineStageElement
             {
+                Name = name,
                 DisplayName = displayName,
+                DependsOn = dependsOn,
                 Jobs =
                 [
                     new PipelineJobElement
@@ -40,7 +44,9 @@ internal static class StepsParser
         {
             return new PipelineStageElement
             {
+                Name = name,
                 DisplayName = displayName,
+                DependsOn = dependsOn,
                 Jobs = ParseJobs(jobsNode, pipelinePath)
             };
         }
@@ -65,13 +71,48 @@ internal static class StepsParser
             throw new FormatException("Steps node is not a sequence node");
         }
 
+        var name = jobMappingNode.GetChildIfExists<YamlScalarNode>("job")?.Value;
         var displayName = jobMappingNode.GetChildIfExists<YamlScalarNode>("displayName")?.Value;;
+        var dependsOn = ParseDependsOn(jobMappingNode);
 
         return new PipelineJobElement
         {
+            Name = name,
             DisplayName = displayName,
+            DependsOn = dependsOn,
             Steps = ParseSteps(stepsNode, pipelinePath)
         };
+    }
+
+    private static IList<string> ParseDependsOn(YamlMappingNode mappingNode)
+    {
+        var dependsOn = new List<string>();
+
+        if (!mappingNode.Children.TryGetValue("dependsOn", out var dependsOnNode))
+        {
+            return dependsOn;
+        }
+
+        switch (dependsOnNode)
+        {
+            case YamlScalarNode scalarNode:
+                if (!string.IsNullOrEmpty(scalarNode.Value))
+                {
+                    dependsOn.Add(scalarNode.Value);
+                }
+                break;
+            case YamlSequenceNode sequenceNode:
+                foreach (var item in sequenceNode.Children)
+                {
+                    if (item is YamlScalarNode scalar && !string.IsNullOrEmpty(scalar.Value))
+                    {
+                        dependsOn.Add(scalar.Value);
+                    }
+                }
+                break;
+        }
+
+        return dependsOn;
     }
 
     internal static IList<PipelineStepElement> ParseSteps(YamlSequenceNode stepsNode, string pipelinePath)

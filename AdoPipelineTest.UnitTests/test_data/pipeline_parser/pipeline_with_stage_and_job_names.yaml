@@ -1,0 +1,24 @@
+stages:
+  - stage: Build
+    displayName: Build Stage
+    dependsOn: Prep
+    jobs:
+      - job: Compile
+        displayName: Compile Job
+        dependsOn: Setup
+        steps:
+          - task: DotNetCoreCLI@2
+            displayName: Build Task
+
+  - stage: Deploy
+    displayName: Deploy Stage
+    dependsOn:
+      - Build
+      - Test
+    jobs:
+      - job: Release
+        displayName: Release Job
+        dependsOn: Package
+        steps:
+          - task: AzureCLI@2
+            displayName: Deploy Task

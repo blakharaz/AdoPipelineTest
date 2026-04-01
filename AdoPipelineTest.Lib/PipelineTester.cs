@@ -68,7 +68,8 @@ public class PipelineTester
             AgentPool = parseResult.AgentPool,
             Parameters = parameters.ToDictionary(item => item.Name),
             Variables = ConvertVariables(parseResult.Variables),
-            Stages = evaluatedStages
+            Stages = evaluatedStages,
+            Resources = ConvertResources(parseResult.Resources)
         };
     }
 
@@ -78,6 +79,15 @@ public class PipelineTester
         {
             Name = rawVar.Name,
             DefaultValue = rawVar.DefaultValue
+        }).ToList();
+    }
+
+    private static List<PipelineResource> ConvertResources(IList<PipelineResourceElement> rawResources)
+    {
+        return rawResources.Select(rawResource => new PipelineResource
+        {
+            Type = rawResource.Type,
+            Name = rawResource.Name
         }).ToList();
     }
 

@@ -10,6 +10,9 @@ internal static class PipelineEvaluator
     {
         return new PipelineStage
         {
+            Name = stage.Name,
+            DisplayName = stage.DisplayName,
+            DependsOn = stage.DependsOn.ToList(),
             Jobs = stage.Jobs.Select(job => EvaluateJob(job, parameters, variables)).ToList()
         };
     }
@@ -18,7 +21,9 @@ internal static class PipelineEvaluator
     {
         return new PipelineJob
         {
+            Name = job.Name,
             DisplayName = job.DisplayName,
+            DependsOn = job.DependsOn.ToList(),
             Steps = job.Steps.SelectMany(step => EvaluateSteps(step, parameters, variables)).ToList()
         };
     }
