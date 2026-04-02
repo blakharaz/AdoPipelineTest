@@ -1,2 +1,26 @@
+[github_app]
+pr_commands = [
+    "/agentic_describe",
+    "/agentic_review"
+]
+
 [pr_reviewer]
 require_security_review = false # path traversal and showing paths in errors is okay
+
+# Show multiple severity levels inline
+inline_comments_severity_threshold = 1
+
+# Show feedback both inline and in summary
+comments_location_policy = "both"
+
+# detection of unrelated changes
+check_pr_additional_content = true
+
+# Display more findings and expand contextual sections
+[review_agent_ux]
+finding_overflow_count = 5
+resolved_overflow_count = 5
+expand_description = true
+expand_code = true
+expand_evidence = true
+expand_prompt = true
