@@ -36,7 +36,7 @@ public class PipelineWithParametersTests
         var parameters = result.Parameters;
 
         Assert.AreEqual("MySampleProject", parameters["projectName"].Value);
-        Assert.AreEqual(true, parameters["enableTests"].Value);
+        Assert.IsTrue(parameters["enableTests"].Value as bool?);
         Assert.AreEqual(30, parameters["timeoutMinutes"].Value);
         Assert.AreEqual("Release", parameters["buildConfiguration"].Value);
         Assert.AreEqual("$(Build.ArtifactStagingDirectory)", parameters["outputDirectory"].Value);
@@ -61,7 +61,7 @@ public class PipelineWithParametersTests
         var parameters = result.Parameters;
 
         Assert.AreEqual("CustomProject", parameters["projectName"].Value);
-        Assert.AreEqual(false, parameters["enableTests"].Value);
+        Assert.IsFalse(parameters["enableTests"].Value as bool?);
         Assert.AreEqual("Debug", parameters["buildConfiguration"].Value);
     }
 
@@ -71,7 +71,7 @@ public class PipelineWithParametersTests
         var tester = new PipelineTester()
             .WithPipeline(YamlPath);
 
-        Assert.ThrowsException<InvalidOperationException>(() => tester.Run());
+        Assert.ThrowsExactly<InvalidOperationException>(() => tester.Run());
     }
 
     [TestMethod]

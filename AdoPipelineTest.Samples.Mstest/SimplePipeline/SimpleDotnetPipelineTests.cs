@@ -12,7 +12,8 @@ public class SimpleDotnetPipelineTests
         var result = new PipelineTester()
             .WithPipeline("SimplePipeline/simple_dotnet_pipeline.yaml")
             .Run();
-        
+
+        Assert.IsNotNull(result);
         result.HasTrigger();
         result.HasVmImage("ubuntu-latest");
         result.HasStageCount(1);
@@ -25,7 +26,8 @@ public class SimpleDotnetPipelineTests
         var result = new PipelineTester()
             .WithPipeline("SimplePipeline/simple_dotnet_pipeline.yaml")
             .Run();
-        
+
+        Assert.IsNotNull(result);
         var steps = result.Stages[0].Jobs[0].Steps;
         Assert.AreEqual(4, steps.Count);
     }
@@ -36,7 +38,8 @@ public class SimpleDotnetPipelineTests
         var result = new PipelineTester()
             .WithPipeline("SimplePipeline/simple_dotnet_pipeline.yaml")
             .Run();
-        
+
+        Assert.IsNotNull(result);
         result.HasTask("UseDotNet@2");
         result.HasTask("DotNetCoreCLI@2");
     }
@@ -47,7 +50,8 @@ public class SimpleDotnetPipelineTests
         var result = new PipelineTester()
             .WithPipeline("SimplePipeline/simple_dotnet_pipeline.yaml")
             .Run();
-        
+
+        Assert.IsNotNull(result);
         result.TriggersIncludeBranch("main");
     }
 }

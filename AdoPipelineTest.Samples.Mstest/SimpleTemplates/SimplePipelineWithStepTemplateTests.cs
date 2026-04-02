@@ -17,6 +17,7 @@ public class SimplePipelineWithStepTemplateTests
     public void Pipeline_Should_Have_One_Stage()
     {
         var result = CreateTester().Run();
+        Assert.IsNotNull(result);
         result.HasStageCount(1);
     }
 
@@ -119,6 +120,7 @@ public class SimplePipelineWithStepTemplateTests
     public void Pipeline_Should_Have_AgentPool_Configured()
     {
         var result = CreateTester().Run();
+        Assert.IsNotNull(result);
         result.HasVmImage("ubuntu-latest");
     }
 
@@ -126,6 +128,7 @@ public class SimplePipelineWithStepTemplateTests
     public void Pipeline_Should_Have_Triggers_Configured()
     {
         var result = CreateTester().Run();
+        Assert.IsNotNull(result);
         result.HasTrigger();
     }
 

@@ -99,7 +99,7 @@ public class StepVariablesTests
 
         var arguments = buildStep.Inputs["arguments"]?.ToString();
         StringAssert.Contains(arguments, "Debug");
-        StringAssert.DoesNotMatch(arguments, new System.Text.RegularExpressions.Regex("Release"));
+        Assert.IsFalse(arguments.Contains("Release"));
     }
 
     [TestMethod]
