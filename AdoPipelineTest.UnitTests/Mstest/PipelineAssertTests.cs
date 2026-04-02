@@ -79,10 +79,17 @@ public class PipelineAssertTests
     #region HasStage
 
     [TestMethod]
-    public void HasStage_ExistingStage_DoesNotThrow()
+    public void HasStage_ExistingStageByDisplayName_DoesNotThrow()
     {
         _result.HasStage("Build Stage");
         MsAssert.IsNotNull(_result.Stages.FirstOrDefault(s => s.DisplayName == "Build Stage"));
+    }
+
+    [TestMethod]
+    public void HasStage_ExistingStageByName_DoesNotThrow()
+    {
+        _result.HasStage("Build");
+        MsAssert.IsNotNull(_result.Stages.FirstOrDefault(s => s.Name == "Build"));
     }
 
     [TestMethod]
@@ -94,10 +101,19 @@ public class PipelineAssertTests
     [DataTestMethod]
     [DataRow("Build Stage")]
     [DataRow("Deploy Stage")]
-    public void HasStage_AllExistingStages_DoesNotThrow(string stageName)
+    public void HasStage_AllExistingStagesByDisplayName_DoesNotThrow(string stageName)
     {
         _result.HasStage(stageName);
         MsAssert.IsNotNull(_result.Stages.FirstOrDefault(s => s.DisplayName == stageName));
+    }
+
+    [DataTestMethod]
+    [DataRow("Build")]
+    [DataRow("Deploy")]
+    public void HasStage_AllExistingStagesByName_DoesNotThrow(string stageName)
+    {
+        _result.HasStage(stageName);
+        MsAssert.IsNotNull(_result.Stages.FirstOrDefault(s => s.Name == stageName));
     }
 
     #endregion
@@ -122,10 +138,17 @@ public class PipelineAssertTests
     #region HasJob (on PipelineTestResult)
 
     [TestMethod]
-    public void HasJob_ExistingJob_DoesNotThrow()
+    public void HasJob_ExistingJobByDisplayName_DoesNotThrow()
     {
         _result.HasJob("Build Stage", "Build Job");
         MsAssert.IsNotNull(_result.Stages.FirstOrDefault(s => s.DisplayName == "Build Stage")?.Jobs.FirstOrDefault(j => j.DisplayName == "Build Job"));
+    }
+
+    [TestMethod]
+    public void HasJob_ExistingJobByName_DoesNotThrow()
+    {
+        _result.HasJob("Build", "BuildJob");
+        MsAssert.IsNotNull(_result.Stages.FirstOrDefault(s => s.Name == "Build")?.Jobs.FirstOrDefault(j => j.Name == "BuildJob"));
     }
 
     [TestMethod]
@@ -145,11 +168,19 @@ public class PipelineAssertTests
     #region HasJob (on PipelineStage)
 
     [TestMethod]
-    public void HasJobOnStage_ExistingJob_DoesNotThrow()
+    public void HasJobOnStage_ExistingJobByDisplayName_DoesNotThrow()
     {
         var stage = _result.Stages[0];
         stage.HasJob("Build Job");
         MsAssert.IsNotNull(stage.Jobs.FirstOrDefault(j => j.DisplayName == "Build Job"));
+    }
+
+    [TestMethod]
+    public void HasJobOnStage_ExistingJobByName_DoesNotThrow()
+    {
+        var stage = _result.Stages[0];
+        stage.HasJob("BuildJob");
+        MsAssert.IsNotNull(stage.Jobs.FirstOrDefault(j => j.Name == "BuildJob"));
     }
 
     [TestMethod]

@@ -6,10 +6,10 @@ namespace AdoPipelineTest.Mstest;
 
 public static class PipelineAssert
 {
-    public static void HasStage(this PipelineTestResult result, string stageDisplayName, string? because = null)
+    public static void HasStage(this PipelineTestResult result, string stageName, string? because = null)
     {
-        var stage = result.Stages.FirstOrDefault(s => s.DisplayName == stageDisplayName);
-        Assert.IsNotNull(stage, because ?? $"Stage '{stageDisplayName}' not found. Available stages: {string.Join(", ", result.Stages.Select(s => s.DisplayName ?? "(unnamed)"))}");
+        var stage = result.Stages.FirstOrDefault(s => s.Name == stageName || s.DisplayName == stageName);
+        Assert.IsNotNull(stage, because ?? $"Stage '{stageName}' not found. Available stages: {string.Join(", ", result.Stages.Select(s => FormatStageLabel(s)))}");
     }
 
     public static void HasStageCount(this PipelineTestResult result, int count, string? because = null)
@@ -17,20 +17,30 @@ public static class PipelineAssert
         Assert.AreEqual(count, result.Stages.Count, because ?? $"Expected {count} stages, found {result.Stages.Count}");
     }
 
-    public static void HasJob(this PipelineTestResult result, string stageDisplayName, string jobDisplayName, string? because = null)
+    public static void HasJob(this PipelineTestResult result, string stageName, string jobName, string? because = null)
     {
-        var stage = result.Stages.FirstOrDefault(s => s.DisplayName == stageDisplayName);
-        Assert.IsNotNull(stage, $"Stage '{stageDisplayName}' not found");
+        var stage = result.Stages.FirstOrDefault(s => s.Name == stageName || s.DisplayName == stageName);
+        Assert.IsNotNull(stage, $"Stage '{stageName}' not found");
         
-        var job = stage.Jobs.FirstOrDefault(j => j.DisplayName == jobDisplayName);
-        Assert.IsNotNull(job, because ?? $"Job '{jobDisplayName}' not found in stage '{stageDisplayName}'. Available jobs: {string.Join(", ", stage.Jobs.Select(j => j.DisplayName ?? "(unnamed)"))}");
+        var job = stage.Jobs.FirstOrDefault(j => j.Name == jobName || j.DisplayName == jobName);
+        Assert.IsNotNull(job, because ?? $"Job '{jobName}' not found in stage '{stageName}'. Available jobs: {string.Join(", ", stage.Jobs.Select(j => FormatJobLabel(j)))}");
     }
 
-    public static void HasJob(this PipelineStage stage, string jobDisplayName, string? because = null)
+    public static void HasJob(this PipelineStage stage, string jobName, string? because = null)
     {
-        var job = stage.Jobs.FirstOrDefault(j => j.DisplayName == jobDisplayName);
-        Assert.IsNotNull(job, because ?? $"Job '{jobDisplayName}' not found. Available jobs: {string.Join(", ", stage.Jobs.Select(j => j.DisplayName ?? "(unnamed)"))}");
+        var job = stage.Jobs.FirstOrDefault(j => j.Name == jobName || j.DisplayName == jobName);
+        Assert.IsNotNull(job, because ?? $"Job '{jobName}' not found. Available jobs: {string.Join(", ", stage.Jobs.Select(j => FormatJobLabel(j)))}");
     }
+
+    private static string FormatStageLabel(PipelineStage s) =>
+        string.IsNullOrWhiteSpace(s.DisplayName)
+            ? (s.Name ?? "(unnamed)")
+            : $"{s.Name} ({s.DisplayName})";
+
+    private static string FormatJobLabel(PipelineJob j) =>
+        string.IsNullOrWhiteSpace(j.DisplayName)
+            ? (j.Name ?? "(unnamed)")
+            : $"{j.Name} ({j.DisplayName})";
 
     public static void HasStep(this PipelineTestResult result, string stepDisplayName, string? because = null)
     {

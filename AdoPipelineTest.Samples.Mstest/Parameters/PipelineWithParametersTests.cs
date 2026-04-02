@@ -36,7 +36,8 @@ public class PipelineWithParametersTests
         var parameters = result.Parameters;
 
         Assert.AreEqual("MySampleProject", parameters["projectName"].Value);
-        Assert.IsTrue(parameters["enableTests"].Value as bool?);
+        var enableTests = (bool?)parameters["enableTests"].Value;
+        Assert.IsTrue(enableTests);
         Assert.AreEqual(30, parameters["timeoutMinutes"].Value);
         Assert.AreEqual("Release", parameters["buildConfiguration"].Value);
         Assert.AreEqual("$(Build.ArtifactStagingDirectory)", parameters["outputDirectory"].Value);
@@ -61,7 +62,8 @@ public class PipelineWithParametersTests
         var parameters = result.Parameters;
 
         Assert.AreEqual("CustomProject", parameters["projectName"].Value);
-        Assert.IsFalse(parameters["enableTests"].Value as bool?);
+        var enableTests = (bool?)parameters["enableTests"].Value;
+        Assert.IsFalse(enableTests);
         Assert.AreEqual("Debug", parameters["buildConfiguration"].Value);
     }
 
