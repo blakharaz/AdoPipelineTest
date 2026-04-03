@@ -10,7 +10,7 @@ public class SimplePipelineWithStepTemplateTests
     private static PipelineTester CreateTester()
     {
         return new PipelineTester()
-            .WithPipeline("SimpleTemplates/simple_pipeline_with_step_template.yaml");
+            .WithPipeline("pipelines/SimpleTemplates/simple_pipeline_with_step_template.yaml");
     }
 
     [TestMethod]

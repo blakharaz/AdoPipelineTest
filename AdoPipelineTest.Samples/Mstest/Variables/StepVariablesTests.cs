@@ -7,11 +7,13 @@ namespace AdoPipelineTest.Samples.Mstest.Variables;
 [TestClass]
 public class StepVariablesTests
 {
+    private const string YamlPath = "pipelines/Variables/pipeline_with_variables.yaml";
+
     [TestMethod]
     public void PipelineLoadedWithVariables()
     {
         var result = new PipelineTester()
-            .WithPipeline("Variables/pipeline_with_variables.yaml")
+            .WithPipeline(YamlPath)
             .Run();
 
         Assert.IsNotNull(result);
@@ -26,7 +28,7 @@ public class StepVariablesTests
     public void VariableEvaluatedInBuildStep()
     {
         var result = new PipelineTester()
-            .WithPipeline("Variables/pipeline_with_variables.yaml")
+            .WithPipeline(YamlPath)
             .Run();
 
         var steps = result.Stages[0].Jobs[0].Steps;
@@ -43,7 +45,7 @@ public class StepVariablesTests
     public void VariableEvaluatedInTestStep()
     {
         var result = new PipelineTester()
-            .WithPipeline("Variables/pipeline_with_variables.yaml")
+            .WithPipeline(YamlPath)
             .Run();
 
         var steps = result.Stages[0].Jobs[0].Steps;
@@ -60,7 +62,7 @@ public class StepVariablesTests
     public void AllStepsPreserveTaskDetails()
     {
         var result = new PipelineTester()
-            .WithPipeline("Variables/pipeline_with_variables.yaml")
+            .WithPipeline(YamlPath)
             .Run();
 
         var steps = result.Stages[0].Jobs[0].Steps;
@@ -87,7 +89,7 @@ public class StepVariablesTests
     public void VariableOverriddenWithCustomValue()
     {
         var result = new PipelineTester()
-            .WithPipeline("Variables/pipeline_with_variables.yaml")
+            .WithPipeline(YamlPath)
             .WithVariables(new Dictionary<string, object> { ["buildConfiguration"] = "Debug" })
             .Run();
 
@@ -106,7 +108,7 @@ public class StepVariablesTests
     public void VariableOverriddenInMultipleSteps()
     {
         var result = new PipelineTester()
-            .WithPipeline("Variables/pipeline_with_variables.yaml")
+            .WithPipeline(YamlPath)
             .WithVariables(new Dictionary<string, object> { ["buildConfiguration"] = "Debug" })
             .Run();
 
@@ -128,7 +130,7 @@ public class StepVariablesTests
     public void DefaultVariableValueUsedWhenNotOverridden()
     {
         var result = new PipelineTester()
-            .WithPipeline("Variables/pipeline_with_variables.yaml")
+            .WithPipeline(YamlPath)
             .Run();
 
         var steps = result.Stages[0].Jobs[0].Steps;
@@ -142,7 +144,7 @@ public class StepVariablesTests
     public void MultipleVariablesCanBeSet()
     {
         var result = new PipelineTester()
-            .WithPipeline("Variables/pipeline_with_variables.yaml")
+            .WithPipeline(YamlPath)
             .WithVariables(new Dictionary<string, object> { ["buildConfiguration"] = "Release" })
             .Run();
 
@@ -157,7 +159,7 @@ public class StepVariablesTests
     public void VariableEvaluationPreservesStepTaskName()
     {
         var result = new PipelineTester()
-            .WithPipeline("Variables/pipeline_with_variables.yaml")
+            .WithPipeline(YamlPath)
             .WithVariables(new Dictionary<string, object> { ["buildConfiguration"] = "Debug" })
             .Run();
 

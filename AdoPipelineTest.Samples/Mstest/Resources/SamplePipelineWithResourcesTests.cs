@@ -6,11 +6,13 @@ namespace AdoPipelineTest.Samples.Mstest.Resources;
 [TestClass]
 public class SamplePipelineWithResourcesTests
 {
+    private const string YamlPath = "pipelines/Resources/sample_pipeline_with_resources.yaml";
+    
     [TestMethod]
     public void ParseSamplePipelineWithResources()
     {
         var result = new PipelineTester()
-            .WithPipeline("sample_pipeline_with_resources.yaml")
+            .WithPipeline(YamlPath)
             .Run();
 
         Assert.IsNotNull(result);

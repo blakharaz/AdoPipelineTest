@@ -7,7 +7,7 @@ namespace AdoPipelineTest.Samples.Mstest.TemplateExpressions;
 [TestClass]
 public class SimpleConditionalInsertionTests
 {
-    private const string YamlPath = "TemplateExpressions/simple_conditional_insertion.yml";
+    private const string YamlPath = "pipelines/TemplateExpressions/simple_conditional_insertion.yaml";
 
     [TestMethod]
     public void TestConditionalInsertionSteps_ConditionMsBuild()
