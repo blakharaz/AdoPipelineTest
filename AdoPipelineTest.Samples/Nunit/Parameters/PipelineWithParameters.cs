@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using AdoPipelineTest.Model.Steps;
 
 namespace AdoPipelineTest.Samples.Nunit.Parameters;
@@ -7,7 +8,7 @@ using Is = AdoPipelineTest.Nunit.Is;
 [TestFixture]
 public class PipelineWithParameters
 {
-    private const string YamlPath = "Nunit/Parameters/pipeline_with_parameters.yaml";
+    private const string YamlPath = "pipelines/Parameters/pipeline_with_parameters.yaml";
 
     [Test]
     public void VerifyPipelineStructure()

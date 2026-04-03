@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using AdoPipelineTest.Parsing.Ast;
 using AdoPipelineTest.Parsing.Expressions;
 using Sprache;

@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using AdoPipelineTest.Parsing;
 using AdoPipelineTest.UnitTests.Utils;
 using YamlDotNet.RepresentationModel;

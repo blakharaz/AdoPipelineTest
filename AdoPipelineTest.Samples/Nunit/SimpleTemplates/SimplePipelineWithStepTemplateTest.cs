@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using AdoPipelineTest.Model.Steps;
 
 namespace AdoPipelineTest.Samples.Nunit.SimpleTemplates;
@@ -8,7 +9,7 @@ public class SimplePipelineWithStepTemplateTest
     private static PipelineTester CreateTester()
     {
         return new PipelineTester()
-            .WithPipeline("Nunit/SimpleTemplates/simple_pipeline_with_step_template.yaml");
+            .WithPipeline("pipelines/SimpleTemplates/simple_pipeline_with_step_template.yaml");
     }
 
     [Test]

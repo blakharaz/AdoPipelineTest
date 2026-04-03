@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using AdoPipelineTest.Model.Steps;
 
 namespace AdoPipelineTest.Samples.Nunit.Variables;
@@ -7,11 +8,13 @@ using Is = AdoPipelineTest.Nunit.Is;
 [TestFixture]
 public class StepVariablesTest
 {
+    private const string YamlPath = "pipelines/Variables/pipeline_with_variables.yaml";
+
     [Test]
     public void PipelineLoadedWithVariables()
     {
         var result = new PipelineTester()
-            .WithPipeline("Nunit/Variables/pipeline_with_variables.yaml")
+            .WithPipeline(YamlPath)
             .Run();
 
         Assert.That(result, Is.Not.Null);
@@ -26,7 +29,7 @@ public class StepVariablesTest
     public void VariableEvaluatedInBuildStep()
     {
         var result = new PipelineTester()
-            .WithPipeline("Nunit/Variables/pipeline_with_variables.yaml")
+            .WithPipeline(YamlPath)
             .Run();
 
         var steps = result.Stages[0].Jobs[0].Steps;
@@ -44,7 +47,7 @@ public class StepVariablesTest
     public void VariableEvaluatedInTestStep()
     {
         var result = new PipelineTester()
-            .WithPipeline("Nunit/Variables/pipeline_with_variables.yaml")
+            .WithPipeline(YamlPath)
             .Run();
 
         var steps = result.Stages[0].Jobs[0].Steps;
@@ -62,7 +65,7 @@ public class StepVariablesTest
     public void AllStepsPreserveTaskDetails()
     {
         var result = new PipelineTester()
-            .WithPipeline("Nunit/Variables/pipeline_with_variables.yaml")
+            .WithPipeline(YamlPath)
             .Run();
 
         var steps = result.Stages[0].Jobs[0].Steps;
@@ -94,7 +97,7 @@ public class StepVariablesTest
     public void VariableOverriddenWithCustomValue()
     {
         var result = new PipelineTester()
-            .WithPipeline("Nunit/Variables/pipeline_with_variables.yaml")
+            .WithPipeline(YamlPath)
             .WithVariables(new Dictionary<string, object> { ["buildConfiguration"] = "Debug" })
             .Run();
 
@@ -114,7 +117,7 @@ public class StepVariablesTest
     public void VariableOverriddenInMultipleSteps()
     {
         var result = new PipelineTester()
-            .WithPipeline("Nunit/Variables/pipeline_with_variables.yaml")
+            .WithPipeline(YamlPath)
             .WithVariables(new Dictionary<string, object> { ["buildConfiguration"] = "Debug" })
             .Run();
 
@@ -140,7 +143,7 @@ public class StepVariablesTest
     public void DefaultVariableValueUsedWhenNotOverridden()
     {
         var result = new PipelineTester()
-            .WithPipeline("Nunit/Variables/pipeline_with_variables.yaml")
+            .WithPipeline(YamlPath)
             .Run();
 
         var steps = result.Stages[0].Jobs[0].Steps;
@@ -155,7 +158,7 @@ public class StepVariablesTest
     public void MultipleVariablesCanBeSet()
     {
         var result = new PipelineTester()
-            .WithPipeline("Nunit/Variables/pipeline_with_variables.yaml")
+            .WithPipeline(YamlPath)
             .WithVariables(new Dictionary<string, object> { ["buildConfiguration"] = "Release" })
             .Run();
 
@@ -171,7 +174,7 @@ public class StepVariablesTest
     public void VariableEvaluationPreservesStepTaskName()
     {
         var result = new PipelineTester()
-            .WithPipeline("Nunit/Variables/pipeline_with_variables.yaml")
+            .WithPipeline(YamlPath)
             .WithVariables(new Dictionary<string, object> { ["buildConfiguration"] = "Debug" })
             .Run();
 

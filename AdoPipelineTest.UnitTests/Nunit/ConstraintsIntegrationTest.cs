@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using Does = AdoPipelineTest.Nunit.Does;
 using Has = AdoPipelineTest.Nunit.Has;
 using Is = AdoPipelineTest.Nunit.Is;

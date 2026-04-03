@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using AdoPipelineTest.Model.Steps;
 
 namespace AdoPipelineTest.Samples.Nunit.TemplateExpressions;
@@ -5,7 +6,7 @@ namespace AdoPipelineTest.Samples.Nunit.TemplateExpressions;
 [TestFixture]
 public class SimpleConditionalInsertion
 {
-    private const string YamlPath = "Nunit/TemplateExpressions/simple_conditional_insertion.yml";
+    private const string YamlPath = "pipelines/TemplateExpressions/simple_conditional_insertion.yaml";
     
     [Test]
     public void TestConditionalInsertionSteps_ConditionMsBuild()

@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using AdoPipelineTest.Model.Steps;
 
 namespace AdoPipelineTest.Samples.Nunit.SimplePipeline;
@@ -6,10 +7,12 @@ using Is = AdoPipelineTest.Nunit.Is;
 
 public class SimpleNodeJsPipelineTest
 {
+    private const string YamlPath = "pipelines/SimplePipeline/simple_nodejs_pipeline.yaml";
+
     [Test]
     public void VerifyBasics()
     {
-        var result = new PipelineTester().WithPipeline("Nunit/SimplePipeline/simple_nodejs_pipeline.yaml").Run();
+        var result = new PipelineTester().WithPipeline(YamlPath).Run();
 
         Assert.That(result, Is.Not.Null);
         using (Assert.EnterMultipleScope())
@@ -27,7 +30,7 @@ public class SimpleNodeJsPipelineTest
     [Test]
     public void VerifyStep1()
     {
-        var result = new PipelineTester().WithPipeline("Nunit/SimplePipeline/simple_nodejs_pipeline.yaml").Run();
+        var result = new PipelineTester().WithPipeline(YamlPath).Run();
 
         Assert.That(result, Is.Not.Null);
         var steps = result.Stages[0].Jobs[0].Steps;
@@ -46,7 +49,7 @@ public class SimpleNodeJsPipelineTest
     [Test]
     public void VerifyStep2()
     {
-        var result = new PipelineTester().WithPipeline("Nunit/SimplePipeline/simple_nodejs_pipeline.yaml").Run();
+        var result = new PipelineTester().WithPipeline(YamlPath).Run();
 
         Assert.That(result, Is.Not.Null);
         var steps = result.Stages[0].Jobs[0].Steps;
@@ -64,7 +67,7 @@ public class SimpleNodeJsPipelineTest
     [Test]
     public void VerifyStep3()
     {
-        var result = new PipelineTester().WithPipeline("Nunit/SimplePipeline/simple_nodejs_pipeline.yaml").Run();
+        var result = new PipelineTester().WithPipeline(YamlPath).Run();
 
         Assert.That(result, Is.Not.Null);
         var steps = result.Stages[0].Jobs[0].Steps;

@@ -7,7 +7,7 @@ namespace AdoPipelineTest.Samples.Mstest.Parameters;
 [TestClass]
 public class PipelineWithSimpleExpressionsTests
 {
-    private const string YamlPath = "Parameters/pipeline_with_simple_expressions.yaml";
+    private const string YamlPath = "pipelines/Parameters/pipeline_with_simple_expressions.yaml";
 
     [TestMethod]
     public void VerifyPipelineStructure()
