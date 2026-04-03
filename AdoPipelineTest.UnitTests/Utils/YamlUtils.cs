@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using YamlDotNet.RepresentationModel;
 
 namespace AdoPipelineTest.UnitTests.Utils;

@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using AdoPipelineTest.Evaluation;
 using AdoPipelineTest.Parsing.Ast;
 
