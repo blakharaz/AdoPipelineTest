@@ -1,4 +1,5 @@
-﻿using AdoPipelineTest.Model.Steps;
+using NUnit.Framework;
+using AdoPipelineTest.Model.Steps;
 
 namespace AdoPipelineTest.Samples.Nunit.SimplePipeline;
 
