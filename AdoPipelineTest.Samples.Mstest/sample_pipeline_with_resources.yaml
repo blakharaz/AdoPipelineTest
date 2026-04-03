@@ -1,0 +1,92 @@
+# Sample Azure DevOps Pipeline with Resources
+trigger:
+  - main
+  - develop
+
+resources:
+  repositories:
+    - repository: self
+      type: git
+      name: MyProject/MyRepo
+    
+    - repository: ContosoRepo
+      type: git
+      name: Contoso/ContosoTools
+      ref: refs/tags/v2.0
+
+  pipelines:
+    - pipeline: CI
+      source: MyProject-CI
+      trigger:
+        branches:
+          include:
+            - main
+            - develop
+    
+    - pipeline: SecurityScan
+      source: Security-Team/Scanning-Pipeline
+      trigger:
+        branches:
+          include:
+            - main
+            - releases/*
+
+  containers:
+    - container: nginx
+      image: nginx:latest
+      endpoint: dockerHub
+      options: '--privileged'
+    
+    - container: mysql
+      image: mysql:8.0
+      env:
+        MYSQL_ROOT_PASSWORD: $(mysqlPassword)
+        MYSQL_DATABASE: $(mysqlDatabase)
+      ports:
+        - 3306:3306
+      options: >-
+        --health-cmd="mysqladmin ping"
+        --health-interval=10s
+        --health-timeout=5s
+        --health-retries=3
+
+  packages:
+    - package: MyNuGetFeed
+      type: nuget
+      feed: https://pkgs.dev.azure.com/MyOrg/_packaging/MyFeed/nuget/v3/index.json
+    
+    - package: MynpmFeed
+      type: npm
+      feed: https://pkgs.dev.azure.com/MyOrg/_packaging/MyNpmFeed/npm/registry/
+      version: 1.x
+
+stages:
+  - stage: Build
+    jobs:
+    - job: BuildApp
+      pool:
+        vmImage: 'ubuntu-latest'
+      container: nginx
+      steps:
+        - script: |
+            echo "Building application..."
+            dotnet build
+          displayName: 'Build Application'
+        
+        - script: |
+            echo "Running tests..."
+            dotnet test
+          displayName: 'Run Tests'
+
+  - stage: Deploy
+    dependsOn: Build
+    jobs:
+    - job: DeployApp
+      pool:
+        vmImage: 'ubuntu-latest'
+      container: mysql
+      steps:
+        - script: |
+            echo "Deploying to production..."
+            # Deployment commands here
+          displayName: 'Deploy Application'

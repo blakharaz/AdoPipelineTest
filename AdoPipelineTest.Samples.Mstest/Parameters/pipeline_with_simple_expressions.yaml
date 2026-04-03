@@ -1,0 +1,74 @@
+parameters:
+  - name: projectName
+    type: string
+    default: 'MySampleProject'
+    displayName: 'Project Name'
+
+  - name: targetFile
+    type: string
+  
+  - name: enableTests
+    type: boolean
+    default: true
+    displayName: 'Enable Unit Tests'
+  
+  - name: timeoutMinutes
+    type: number
+    default: 30
+    displayName: 'Timeout in Minutes'
+  
+  - name: buildConfiguration
+    type: string
+    default: 'Release'
+    values:
+      - 'Debug'
+      - 'Release'
+      - 'CI'
+    displayName: 'Build Configuration'
+  
+  - name: outputDirectory
+    type: string
+    default: '$(Build.ArtifactStagingDirectory)'
+    displayName: 'Output Directory'
+  
+  - name: buildSettings
+    type: object
+    default: {}
+    displayName: 'Build Settings'
+
+jobs:
+  - job: BuildAndTest
+    displayName: 'Build and Test Job'
+    steps:
+      - script: |
+          echo "Building project: ${{ parameters.projectName }}"
+          echo "Target file: ${{ parameters.targetFile }}"
+          echo "Configuration: ${{ parameters.buildConfiguration }}"
+          echo "Enable Tests: ${{ parameters.enableTests }}"
+          echo "Timeout: ${{ parameters.timeoutMinutes }} minutes"
+          echo "Output Directory: ${{ parameters.outputDirectory }}"
+          echo "Build Settings: ${{ parameters.buildSettings }}"
+        displayName: 'Display Parameter Values'
+      
+      - task: DotNetCoreCLI@2
+        inputs:
+          command: 'build'
+          projects: '**/*.csproj'
+          arguments: '--configuration ${{ parameters.buildConfiguration }}'
+        displayName: 'Build .NET Project'
+      
+      - task: DotNetCoreCLI@2
+        inputs:
+          command: 'test'
+          projects: '**/*Tests.csproj'
+          arguments: '--configuration ${{ parameters.buildConfiguration }}'
+        displayName: 'Run Unit Tests'
+      
+      - script: |
+          echo "Pipeline completed successfully" > ${{ parameters.outputDirectory }}/${{parameters.targetFile}}
+          echo "Project: ${{ parameters.projectName }}" > ${{ parameters.outputDirectory }}/${{parameters.targetFile}}
+          echo "Configuration: ${{ parameters.buildConfiguration }}" > ${{ parameters.outputDirectory }}/${{parameters.targetFile}}
+          echo "Tests Enabled: ${{ parameters.enableTests }}" > ${{ parameters.outputDirectory }}/${{parameters.targetFile}}
+          echo "Timeout: ${{ parameters.timeoutMinutes }} minutes" > ${{ parameters.outputDirectory }}/${{parameters.targetFile}}
+          cat ${{ parameters.outputDirectory }}/${{parameters.targetFile}}
+        displayName: 'Pipeline Summary'

@@ -9,6 +9,7 @@ A .NET testing library for Azure DevOps YAML pipelines. Unit test your ADO pipel
 - **Test Expressions** - Validate template expressions and conditional logic
 - **Template Support** - Automatically resolves referenced template files
 - **NUnit Integration** - Custom constraints for fluent assertions
+- **MSTest Integration** - Extension methods for fluent assertions
 
 ## Quick Start
 
@@ -93,6 +94,70 @@ public void Pipeline_HasCorrectStructure()
 | `HasTrigger()` | `PipelineTriggers` | Asserts pipeline has triggers configured |
 | `DependsOn(name)` | `PipelineStage`, `PipelineJob` | Asserts stage/job depends on another |
 | `HasResource(type)` | `PipelineTestResult` | Asserts pipeline has a resource of given type |
+
+### MSTest Extension Methods
+
+The `AdoPipelineTest.Mstest` package provides extension methods on `PipelineTestResult` and `PipelineStage` for fluent assertions:
+
+```csharp
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using AdoPipelineTest.Mstest;
+
+[TestClass]
+public class PipelineTests
+{
+    [TestMethod]
+    public void Pipeline_HasCorrectStructure()
+    {
+        var result = new PipelineTester()
+            .WithPipeline("azure-pipelines.yaml")
+            .Run();
+
+        result.HasTrigger();
+        result.HasVmImage("ubuntu-latest");
+        result.HasStageCount(1);
+        result.HasStage("Build");
+        result.HasJob("Build", "Compile");
+        result.HasTask("DotNetCoreCLI@2");
+        result.HasStep("Build Task");
+        result.HasVariable("buildConfiguration");
+        result.HasVariable("buildConfiguration", "Release");
+        result.HasParameter("environment");
+        result.HasScriptStep("dotnet build");
+        result.TriggersIncludeBranch("main");
+    }
+
+    [TestMethod]
+    public void Pipeline_JobAssertions()
+    {
+        var result = new PipelineTester()
+            .WithPipeline("azure-pipelines.yaml")
+            .Run();
+
+        var stage = result.Stages[0];
+        stage.HasJob("Compile");
+    }
+}
+```
+
+| Method | Target | Description |
+|--------|--------|-------------|
+| `HasStage(name)` | `PipelineTestResult` | Asserts pipeline has a stage with given display name |
+| `HasStageCount(count)` | `PipelineTestResult` | Asserts exact stage count |
+| `HasJob(stageName, jobName)` | `PipelineTestResult` | Asserts a job exists in a named stage |
+| `HasJob(jobName)` | `PipelineStage` | Asserts a job exists in a stage |
+| `HasStep(displayName)` | `PipelineTestResult` | Asserts a step with given display name exists |
+| `HasStep(predicate)` | `PipelineTestResult` | Asserts a step matching a predicate exists |
+| `HasTask(taskName)` | `PipelineTestResult` | Asserts a TaskStep with given task name exists |
+| `HasVariable(name)` | `PipelineTestResult` | Asserts a variable exists |
+| `HasVariable(name, value)` | `PipelineTestResult` | Asserts a variable exists with a specific value |
+| `HasParameter(name)` | `PipelineTestResult` | Asserts a parameter exists |
+| `HasTrigger()` | `PipelineTestResult` | Asserts triggers are configured |
+| `TriggersIncludeBranch(name)` | `PipelineTestResult` | Asserts a specific branch is in triggers |
+| `HasVmImage(image)` | `PipelineTestResult` | Asserts the VM image |
+| `HasScriptStep(pattern)` | `PipelineTestResult` | Asserts a ScriptStep containing a pattern exists |
+
+All methods accept an optional `because` parameter for custom failure messages.
 
 ## How It Works
 

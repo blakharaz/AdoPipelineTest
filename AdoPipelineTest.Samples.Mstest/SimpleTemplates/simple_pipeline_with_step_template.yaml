@@ -1,0 +1,41 @@
+trigger:
+  - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+  dotnetVersion: '8.0.x'
+
+stages:
+  - stage: Build
+    displayName: 'Build Stage'
+    jobs:
+      - job: BuildJob
+        displayName: 'Build .NET Project'
+        steps:
+          - task: UseDotNet@2
+            inputs:
+              version: $(dotnetVersion)
+            displayName: 'Install .NET SDK'
+
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: 'restore'
+              projects: '**/*.csproj'
+            displayName: 'Restore NuGet packages'
+
+          - template: build-template.yml
+
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: 'test'
+              projects: '**/*Tests.csproj'
+            displayName: 'Run Unit Tests'
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              pathToPublish: '$(Build.ArtifactStagingDirectory)'
+              artifactName: 'drop'
+            displayName: 'Publish Artifacts'

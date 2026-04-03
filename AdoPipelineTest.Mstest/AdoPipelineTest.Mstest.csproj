@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Description>MSTest assertions for AdoPipelineTest - Unit test Azure DevOps YAML pipelines</Description>
+        <PackageTags>azure-devops;yaml;pipelines;testing;mstest</PackageTags>
+        <Authors>$(Authors)</Authors>
+        <RepositoryUrl>$(RepositoryUrl)</RepositoryUrl>
+        <PackageProjectUrl>$(PackageProjectUrl)</PackageProjectUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Version>1.0.0</Version>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MSTest" Version="3.8.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\AdoPipelineTest.Lib\AdoPipelineTest.Lib.csproj" />
+    </ItemGroup>
+
+</Project>
