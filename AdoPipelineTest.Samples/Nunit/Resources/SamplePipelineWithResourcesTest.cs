@@ -4,15 +4,15 @@ using Is = AdoPipelineTest.Nunit.Is;
 
 namespace AdoPipelineTest.Samples.Nunit.Resources;
 
-public class 
-    SamplePipelineWithResourcesTest
+public class SamplePipelineWithResourcesTest
 {
+    private const string YamlPath = "pipelines/Resources/sample_pipeline_with_resources.yaml";
+    
     [Test]
     public void ParseSamplePipelineWithResources()
     {
-        // Parse the sample pipeline using PipelineTester like other samples
         var result = new PipelineTester()
-            .WithPipeline("sample_pipeline_with_resources.yaml")
+            .WithPipeline(YamlPath)
             .Run();
         
         // Verify basic structure

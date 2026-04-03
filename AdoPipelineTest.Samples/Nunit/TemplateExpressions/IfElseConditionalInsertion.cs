@@ -5,7 +5,7 @@ namespace AdoPipelineTest.Samples.Nunit.TemplateExpressions;
 [TestFixture]
 public class IfElseConditionalInsertion
 {
-    private const string YamlPath = "Nunit/TemplateExpressions/ifelse_conditional_step_insertion.yml";
+    private const string YamlPath = "pipelines/TemplateExpressions/ifelse_conditional_step_insertion.yaml";
     
     [Test]
     public void TestConditionalInsertionSteps_ConditionMsBuild()

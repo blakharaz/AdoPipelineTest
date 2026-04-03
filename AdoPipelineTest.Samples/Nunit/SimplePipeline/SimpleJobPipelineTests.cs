@@ -7,10 +7,12 @@ using Is = AdoPipelineTest.Nunit.Is;
 
 public class SimpleJobPipelineTests
 {
+    private const string YamlPath = "pipelines/SimplePipeline/simple_job_pipeline.yaml";
+
     [Test]
     public void VerifyBasics()
     {
-        var result = new PipelineTester().WithPipeline("Nunit/SimplePipeline/simple_job_pipeline.yaml").Run();
+        var result = new PipelineTester().WithPipeline(YamlPath).Run();
         
         Assert.That(result, Is.Not.Null);
         using (Assert.EnterMultipleScope())
@@ -28,7 +30,7 @@ public class SimpleJobPipelineTests
     [Test]
     public void VerifyStep1()
     {
-        var result = new PipelineTester().WithPipeline("Nunit/SimplePipeline/simple_job_pipeline.yaml").Run();
+        var result = new PipelineTester().WithPipeline(YamlPath).Run();
         
         Assert.That(result, Is.Not.Null);
 
@@ -48,7 +50,7 @@ public class SimpleJobPipelineTests
     [Test]
     public void VerifyStep2()
     {
-        var result = new PipelineTester().WithPipeline("Nunit/SimplePipeline/simple_job_pipeline.yaml").Run();
+        var result = new PipelineTester().WithPipeline(YamlPath).Run();
         
         Assert.That(result, Is.Not.Null);
         var steps = result.Stages[0].Jobs[0].Steps;
@@ -67,7 +69,7 @@ public class SimpleJobPipelineTests
     [Test]
     public void VerifyStep3()
     {
-        var result = new PipelineTester().WithPipeline("Nunit/SimplePipeline/simple_job_pipeline.yaml").Run();
+        var result = new PipelineTester().WithPipeline(YamlPath).Run();
         
         Assert.That(result, Is.Not.Null);
         var steps = result.Stages[0].Jobs[0].Steps;
@@ -86,7 +88,7 @@ public class SimpleJobPipelineTests
     [Test]
     public void VerifyStep4()
     {
-        var result = new PipelineTester().WithPipeline("Nunit/SimplePipeline/simple_job_pipeline.yaml").Run();
+        var result = new PipelineTester().WithPipeline(YamlPath).Run();
         
         Assert.That(result, Is.Not.Null);
         var steps = result.Stages[0].Jobs[0].Steps;

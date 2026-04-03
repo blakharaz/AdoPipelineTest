@@ -7,7 +7,7 @@ using Is = AdoPipelineTest.Nunit.Is;
 [TestFixture]
 public class PipelineWithSimpleExpressions
 {
-    private const string YamlPath = "Nunit/Parameters/pipeline_with_simple_expressions.yaml";
+    private const string YamlPath = "pipelines/Parameters/pipeline_with_simple_expressions.yaml";
 
     [Test]
     public void VerifyPipelineStructure()
