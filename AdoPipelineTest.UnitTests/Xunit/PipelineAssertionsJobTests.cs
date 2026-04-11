@@ -1,10 +1,9 @@
-using NUnit.Framework;
 using AdoPipelineTest.Model;
-using AdoPipelineTest.Xunit;
+using NUnit.Framework;
 using NUnitAssert = NUnit.Framework.Assert;
-using PipelineAssert = AdoPipelineTest.Xunit.Assert;
+using Assert = AdoPipelineTest.Xunit.Assert;
 
-namespace AdoPipelineTest.UnitTests.XunitHelpers;
+namespace AdoPipelineTest.UnitTests.Xunit;
 
 public class PipelineAssertionsJobTests
 {
@@ -23,7 +22,7 @@ public class PipelineAssertionsJobTests
             }
         };
 
-        NUnitAssert.DoesNotThrow(() => PipelineAssert.HasJob(result, "Build", "BuildJob"));
+        NUnitAssert.DoesNotThrow(() => Assert.HasJob(result, "Build", "BuildJob"));
     }
 
     [Test]
@@ -34,7 +33,7 @@ public class PipelineAssertionsJobTests
             Stages = new List<PipelineStage> { new() { DisplayName = "Build" } }
         };
 
-        NUnitAssert.That(() => PipelineAssert.HasJob(result, "Deploy", "Job"), Throws.Exception);
+        NUnitAssert.That(() => Assert.HasJob(result, "Deploy", "Job"), Throws.Exception);
     }
 
     [Test]
@@ -52,7 +51,7 @@ public class PipelineAssertionsJobTests
             }
         };
 
-        NUnitAssert.That(() => PipelineAssert.HasJob(result, "Build", "TestJob"), Throws.Exception);
+        NUnitAssert.That(() => Assert.HasJob(result, "Build", "TestJob"), Throws.Exception);
     }
 
     [Test]
@@ -64,7 +63,7 @@ public class PipelineAssertionsJobTests
             Jobs = new List<PipelineJob> { new() { DisplayName = "BuildJob" } }
         };
 
-        NUnitAssert.DoesNotThrow(() => PipelineAssert.HasJob(stage, "BuildJob"));
+        NUnitAssert.DoesNotThrow(() => Assert.HasJob(stage, "BuildJob"));
     }
 
     [Test]
@@ -76,7 +75,7 @@ public class PipelineAssertionsJobTests
             Jobs = new List<PipelineJob> { new() { DisplayName = "BuildJob" } }
         };
 
-        NUnitAssert.That(() => PipelineAssert.HasJob(stage, "TestJob"), Throws.Exception);
+        NUnitAssert.That(() => Assert.HasJob(stage, "TestJob"), Throws.Exception);
     }
 
     [Test]
@@ -87,7 +86,7 @@ public class PipelineAssertionsJobTests
             Jobs = new List<PipelineJob> { new(), new(), new() }
         };
 
-        NUnitAssert.DoesNotThrow(() => PipelineAssert.JobCount(stage, 3));
+        NUnitAssert.DoesNotThrow(() => Assert.JobCount(stage, 3));
     }
 
     [Test]
@@ -98,6 +97,6 @@ public class PipelineAssertionsJobTests
             Jobs = new List<PipelineJob> { new() }
         };
 
-        NUnitAssert.That(() => PipelineAssert.JobCount(stage, 2), Throws.Exception);
+        NUnitAssert.That(() => Assert.JobCount(stage, 2), Throws.Exception);
     }
 }

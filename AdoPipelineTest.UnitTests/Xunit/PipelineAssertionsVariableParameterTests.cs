@@ -1,10 +1,9 @@
-using NUnit.Framework;
 using AdoPipelineTest.Model;
-using AdoPipelineTest.Xunit;
+using NUnit.Framework;
 using NUnitAssert = NUnit.Framework.Assert;
-using PipelineAssert = AdoPipelineTest.Xunit.Assert;
+using Assert = AdoPipelineTest.Xunit.Assert;
 
-namespace AdoPipelineTest.UnitTests.XunitHelpers;
+namespace AdoPipelineTest.UnitTests.Xunit;
 
 public class PipelineAssertionsVariableParameterTests
 {
@@ -19,7 +18,7 @@ public class PipelineAssertionsVariableParameterTests
             }
         };
 
-        NUnitAssert.DoesNotThrow(() => PipelineAssert.HasParameter(result, "env"));
+        NUnitAssert.DoesNotThrow(() => Assert.HasParameter(result, "env"));
     }
 
     [Test]
@@ -30,7 +29,7 @@ public class PipelineAssertionsVariableParameterTests
             Parameters = new Dictionary<string, PipelineParameter>()
         };
 
-        NUnitAssert.That(() => PipelineAssert.HasParameter(result, "env"), Throws.Exception);
+        NUnitAssert.That(() => Assert.HasParameter(result, "env"), Throws.Exception);
     }
 
     [Test]
@@ -44,7 +43,7 @@ public class PipelineAssertionsVariableParameterTests
             }
         };
 
-        NUnitAssert.DoesNotThrow(() => PipelineAssert.ParameterHasValue(result, "env", "prod"));
+        NUnitAssert.DoesNotThrow(() => Assert.ParameterHasValue(result, "env", "prod"));
     }
 
     [Test]
@@ -58,7 +57,7 @@ public class PipelineAssertionsVariableParameterTests
             }
         };
 
-        NUnitAssert.That(() => PipelineAssert.ParameterHasValue(result, "env", "dev"), Throws.Exception);
+        NUnitAssert.That(() => Assert.ParameterHasValue(result, "env", "dev"), Throws.Exception);
     }
 
     [Test]
@@ -72,7 +71,7 @@ public class PipelineAssertionsVariableParameterTests
             }
         };
 
-        NUnitAssert.DoesNotThrow(() => PipelineAssert.HasVariable(result, "buildConfig"));
+        NUnitAssert.DoesNotThrow(() => Assert.HasVariable(result, "buildConfig"));
     }
 
     [Test]
@@ -83,7 +82,7 @@ public class PipelineAssertionsVariableParameterTests
             Variables = new List<PipelineVariable>()
         };
 
-        NUnitAssert.That(() => PipelineAssert.HasVariable(result, "buildConfig"), Throws.Exception);
+        NUnitAssert.That(() => Assert.HasVariable(result, "buildConfig"), Throws.Exception);
     }
 
     [Test]
@@ -97,6 +96,6 @@ public class PipelineAssertionsVariableParameterTests
             }
         };
 
-        NUnitAssert.DoesNotThrow(() => PipelineAssert.HasVariable(result, "buildConfig", "Release"));
+        NUnitAssert.DoesNotThrow(() => Assert.HasVariable(result, "buildConfig", "Release"));
     }
 }

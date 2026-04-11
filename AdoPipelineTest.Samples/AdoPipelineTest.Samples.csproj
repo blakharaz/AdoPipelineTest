@@ -6,6 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
+        <UseAppHost>true</UseAppHost>
     </PropertyGroup>
 
     <ItemGroup>
@@ -31,6 +32,7 @@
       <ProjectReference Include="..\AdoPipelineTest.Lib\AdoPipelineTest.Lib.csproj" />
       <ProjectReference Include="..\AdoPipelineTest.Nunit\AdoPipelineTest.Nunit.csproj" />
       <ProjectReference Include="..\AdoPipelineTest.Mstest\AdoPipelineTest.Mstest.csproj" />
+      <ProjectReference Include="..\AdoPipelineTest.Xunit\AdoPipelineTest.Xunit.csproj" />
     </ItemGroup>
 
     <ItemGroup>
