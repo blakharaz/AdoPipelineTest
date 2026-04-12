@@ -143,7 +143,7 @@ public class SimplePipelineWithStepTemplateTests
     {
         var result = CreateTester().Run();
 
-        result.AgentPool.Should().HaveVmImage("ubuntu-latest");
+        result.AgentPool!.Should().HaveVmImage("ubuntu-latest");
     }
 
     [TestMethod]
@@ -172,7 +172,7 @@ public class SimplePipelineWithStepTemplateTests
             "Publish Artifacts"
         };
         
-        stepDisplayNames.Should().BeEquivalentTo(expectedOrder);
+        stepDisplayNames.Should().Equal(expectedOrder);
     }
 
     [TestMethod]

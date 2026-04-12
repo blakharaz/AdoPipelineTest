@@ -96,14 +96,9 @@ public class PipelineTestResultAssertions
     [CustomAssertion]
     public AndConstraint<PipelineTestResultAssertions> HaveStep(string stepDisplayName, string because = "", params object[] becauseArgs)
     {
-        var allSteps = Subject.Stages
-            .SelectMany(s => s.Jobs)
-            .SelectMany(j => j.Steps)
-            .ToList();
-
         Execute.Assertion
             .BecauseOf(because, becauseArgs)
-            .ForCondition(allSteps.Any(s => s.DisplayName == stepDisplayName))
+            .ForCondition(Subject.Stages.SelectMany(s => s.Jobs).SelectMany(j => j.Steps).Any(s => s.DisplayName == stepDisplayName))
             .FailWith($"Expected {{context:the pipeline}} to have step '{{0}}', but found steps: {{{1}}}",
                 stepDisplayName, GetAvailableSteps(Subject));
 
@@ -113,15 +108,9 @@ public class PipelineTestResultAssertions
     [CustomAssertion]
     public AndConstraint<PipelineTestResultAssertions> HaveTask(string taskName, string because = "", params object[] becauseArgs)
     {
-        var allTasks = Subject.Stages
-            .SelectMany(s => s.Jobs)
-            .SelectMany(j => j.Steps)
-            .OfType<TaskStep>()
-            .ToList();
-
         Execute.Assertion
             .BecauseOf(because, becauseArgs)
-            .ForCondition(allTasks.Any(t => t.TaskName == taskName))
+            .ForCondition(Subject.Stages.SelectMany(s => s.Jobs).SelectMany(j => j.Steps).OfType<TaskStep>().Any(t => t.TaskName == taskName))
             .FailWith($"Expected {{context:the pipeline}} to have task '{{0}}', but found tasks: {{{1}}}",
                 taskName, GetAvailableTasks(Subject));
 
@@ -217,7 +206,7 @@ public class PipelineTestResultAssertions
             .FailWith("Expected {{context:the pipeline}} to have an agent pool configured, but none was found")
             .Then
             .ForCondition(Subject.AgentPool!.VmImage == vmImage)
-            .FailWith($"Expected VM image to be '{{0}}', but found '{{1}}'", vmImage, Subject.AgentPool.VmImage);
+            .FailWith($"Expected VM image to be '{{0}}', but found '{{1}}'", vmImage, Subject.AgentPool.VmImage ?? "(null)");
 
         return new AndConstraint<PipelineTestResultAssertions>(this);
     }
@@ -225,15 +214,9 @@ public class PipelineTestResultAssertions
     [CustomAssertion]
     public AndConstraint<PipelineTestResultAssertions> HaveScriptStepContaining(string scriptPattern, string because = "", params object[] becauseArgs)
     {
-        var scriptSteps = Subject.Stages
-            .SelectMany(s => s.Jobs)
-            .SelectMany(j => j.Steps)
-            .OfType<ScriptStep>()
-            .ToList();
-
         Execute.Assertion
             .BecauseOf(because, becauseArgs)
-            .ForCondition(scriptSteps.Any(s => s.Script.Contains(scriptPattern)))
+            .ForCondition(Subject.Stages.SelectMany(s => s.Jobs).SelectMany(j => j.Steps).OfType<ScriptStep>().Any(s => s.Script.Contains(scriptPattern)))
             .FailWith($"Expected {{context:the pipeline}} to have a script step containing '{{0}}', but none was found", scriptPattern);
 
         return new AndConstraint<PipelineTestResultAssertions>(this);

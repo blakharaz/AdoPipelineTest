@@ -243,14 +243,14 @@ public class PipelineTestResultAssertionsTests
     [TestMethod]
     public void IncludeBranch_ExistingBranch_ShouldNotThrow()
     {
-        var act = () => _result.Triggers.Should().IncludeBranch("main");
+        var act = () => _result.Triggers!.Should().IncludeBranch("main");
         act.Should().NotThrow();
     }
 
     [TestMethod]
     public void IncludeBranch_NonExistingBranch_ShouldThrow()
     {
-        var act = () => _result.Triggers.Should().IncludeBranch("feature-branch");
+        var act = () => _result.Triggers!.Should().IncludeBranch("feature-branch");
         act.Should().Throw<Exception>();
     }
 

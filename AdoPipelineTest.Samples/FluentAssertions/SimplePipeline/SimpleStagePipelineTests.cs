@@ -16,7 +16,7 @@ public class SimpleStagePipelineTests
     {
         var result = new PipelineTester().WithPipeline(YamlPath).Run();
 
-        result.Triggers.Should().IncludeBranch("main");
+        result.Triggers!.Should().IncludeBranch("main");
         result.Should().HaveVmImage("ubuntu-latest");
         result.Should().HaveStageCount(1);
         result.Stages[0].Jobs.Should().HaveCount(1);

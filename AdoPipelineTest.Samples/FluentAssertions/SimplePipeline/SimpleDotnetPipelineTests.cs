@@ -16,7 +16,7 @@ public class SimpleDotnetPipelineTests
         var result = new PipelineTester().WithPipeline(YamlPath).Run();
         
         result.Should().HaveTriggers();
-        result.Triggers.Should().IncludeBranch("main");
+        result.Triggers!.Should().IncludeBranch("main");
         result.Should().HaveVmImage("ubuntu-latest");
     }
 
