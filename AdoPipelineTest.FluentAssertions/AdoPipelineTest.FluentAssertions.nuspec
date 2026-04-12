@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>AdoPipelineTest.FluentAssertions</id>
+    <version>1.0.0</version>
+    <title>Azure DevOps Pipeline Test Library FluentAssertions</title>
+    <authors>Blakharaz</authors>
+    <owners>Blakharaz</owners>
+    <description>FluentAssertions extensions for Azure DevOps Pipeline Testing Library</description>
+    <readme>docs/README.md</readme>
+  </metadata>
+</package>
