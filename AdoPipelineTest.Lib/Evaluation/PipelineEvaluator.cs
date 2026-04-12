@@ -6,7 +6,7 @@ namespace AdoPipelineTest.Evaluation;
 
 internal static class PipelineEvaluator
 {
-    internal static PipelineStage EvaluateStage(PipelineStageElement stage, Dictionary<string, object> parameters, Dictionary<string, object> variables)
+    internal static PipelineStage EvaluateStage(PipelineStageElement stage, Dictionary<string, object> parameters, Dictionary<string, object?> variables)
     {
         return new PipelineStage
         {
@@ -17,7 +17,7 @@ internal static class PipelineEvaluator
         };
     }
 
-    internal static PipelineJob EvaluateJob(PipelineJobElement job, Dictionary<string, object> parameters, Dictionary<string, object> variables)
+    internal static PipelineJob EvaluateJob(PipelineJobElement job, Dictionary<string, object> parameters, Dictionary<string, object?> variables)
     {
         return new PipelineJob
         {
@@ -32,7 +32,7 @@ internal static class PipelineEvaluator
     /// Evaluates a step element, which may be a conditional expression that expands to multiple steps,
     /// or a regular step that evaluates to a single step.
     /// </summary>
-    internal static IEnumerable<PipelineStep> EvaluateSteps(PipelineStepElement step, Dictionary<string, object> parameters, Dictionary<string, object> variables)
+    internal static IEnumerable<PipelineStep> EvaluateSteps(PipelineStepElement step, Dictionary<string, object> parameters, Dictionary<string, object?> variables)
     {
         if (step is ConditionalStepExpression conditionalStep)
         {
@@ -47,7 +47,7 @@ internal static class PipelineEvaluator
     /// </summary>
     private static IEnumerable<PipelineStep> EvaluateConditionalStep(ConditionalStepExpression conditionalStep, 
         Dictionary<string, object> parameters, 
-        Dictionary<string, object> variables)
+        Dictionary<string, object?> variables)
     {
         var conditionResult = ExpressionEvaluator.EvaluateCondition(conditionalStep.Condition, parameters, variables);
         
@@ -67,7 +67,7 @@ internal static class PipelineEvaluator
         return [];
     }
     
-    internal static PipelineStep EvaluateStep(PipelineStepElement step, Dictionary<string, object> parameters, Dictionary<string, object> variables)
+    internal static PipelineStep EvaluateStep(PipelineStepElement step, Dictionary<string, object> parameters, Dictionary<string, object?> variables)
     {
         if (step is TaskStepElement taskStep)
         {
@@ -82,7 +82,7 @@ internal static class PipelineEvaluator
         throw new ArgumentException($"Unknown step type: {step.GetType().Name}");
     }
 
-    internal static TaskStep EvaluateStep(TaskStepElement taskStep, Dictionary<string, object> parameters, Dictionary<string, object> variables)
+    internal static TaskStep EvaluateStep(TaskStepElement taskStep, Dictionary<string, object> parameters, Dictionary<string, object?> variables)
     {
         var nullableParams = parameters.Cast<KeyValuePair<string, object?>>().ToDictionary(x => x.Key, x => x.Value);
         return new TaskStep
@@ -94,7 +94,7 @@ internal static class PipelineEvaluator
         };
     }
 
-    internal static ScriptStep EvaluateStep(ScriptStepElement scriptStep, Dictionary<string, object> parameters, Dictionary<string, object> variables)
+    internal static ScriptStep EvaluateStep(ScriptStepElement scriptStep, Dictionary<string, object> parameters, Dictionary<string, object?> variables)
     {
         return new ScriptStep
         {

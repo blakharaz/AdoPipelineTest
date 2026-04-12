@@ -8,7 +8,7 @@ namespace AdoPipelineTest;
 public class PipelineTester
 {
     private readonly Dictionary<string, object> _parameters = [];
-    private Dictionary<string, object> _variables = [];
+    private Dictionary<string, object?> _variables = [];
     private string? _pipelinePath;
 
     public PipelineTester WithPipeline(string pipelinePath)
@@ -32,9 +32,9 @@ public class PipelineTester
         return this;
     }
 
-    public PipelineTester WithVariables(Dictionary<string, object> variables)
+    public PipelineTester WithVariables(IDictionary<string, object?> variables)
     {
-        _variables = new Dictionary<string, object>(variables);
+        _variables = new Dictionary<string, object?>(variables);
         return this;
     }
 
@@ -60,26 +60,34 @@ public class PipelineTester
         var mergedVariables = MergeVariables(parseResult.Variables, _variables);
 
         var stagesWithResolvedTemplates = parseResult.Stages.Select(TemplateResolver.ResolveStage);
-        var evaluatedStages = stagesWithResolvedTemplates.Select(stage => PipelineEvaluator.EvaluateStage(stage, parameters.ToDictionary(item => item.Name, item => item.Value!), mergedVariables)).ToList();
+        var evaluatedStages = stagesWithResolvedTemplates.Select(stage => PipelineEvaluator.EvaluateStage(stage, parameters.ToDictionary(item => item.Name, item => item.Value!), mergedVariables!)).ToList();
         
         return new PipelineTestResult
         {
             Triggers = parseResult.Triggers,
             AgentPool = parseResult.AgentPool,
             Parameters = parameters.ToDictionary(item => item.Name),
-            Variables = ConvertVariables(parseResult.Variables),
+            Variables = ConvertVariables(parseResult.Variables, _variables),
             Stages = evaluatedStages,
             Resources = ConvertResources(parseResult.Resources)
         };
     }
 
-    private static List<PipelineVariable> ConvertVariables(IList<PipelineVariableElement> rawVariables)
+    private static List<PipelineVariable> ConvertVariables(IList<PipelineVariableElement> rawVariables, Dictionary<string, object?> userVariables)
     {
-        return rawVariables.Select(rawVar => new PipelineVariable
+        var mergedVariables = MergeVariables(rawVariables, userVariables);
+        var result = new List<PipelineVariable>();
+
+        foreach (var kvp in mergedVariables)
         {
-            Name = rawVar.Name,
-            DefaultValue = rawVar.DefaultValue
-        }).ToList();
+            result.Add(new PipelineVariable
+            {
+                Name = kvp.Key,
+                DefaultValue = kvp.Value
+            });
+        }
+
+        return result;
     }
 
     private static List<PipelineResource> ConvertResources(IList<PipelineResourceElement> rawResources)
@@ -91,9 +99,9 @@ public class PipelineTester
         }).ToList();
     }
 
-    private static Dictionary<string, object> MergeVariables(IList<PipelineVariableElement> defaultVariables, Dictionary<string, object> userVariables)
+    private static Dictionary<string, object?> MergeVariables(IList<PipelineVariableElement> defaultVariables, Dictionary<string, object?> userVariables)
     {
-        var merged = new Dictionary<string, object>();
+        var merged = new Dictionary<string, object?>();
 
         // First, add all default values from the pipeline
         foreach (var variable in defaultVariables)

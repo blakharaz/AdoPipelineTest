@@ -40,7 +40,7 @@ public class PipelineTesterVariablesTest
     [Test]
     public void Run_OverridesVariableDefaults_WithUserProvidedVariables()
     {
-        var customVariables = new Dictionary<string, object>
+        var customVariables = new Dictionary<string, object?>
         {
             ["buildConfiguration"] = "Debug"
         };
@@ -70,7 +70,7 @@ public class PipelineTesterVariablesTest
     [Test]
     public void Run_MergesMultipleVariables()
     {
-        var customVariables = new Dictionary<string, object>
+        var customVariables = new Dictionary<string, object?>
         {
             ["customVar"] = "CustomValue"
         };
@@ -80,9 +80,29 @@ public class PipelineTesterVariablesTest
             .WithVariables(customVariables)
             .Run();
 
-        // Verify both default and custom variables are in the result
-        Assert.That(result.Variables, Has.Count.EqualTo(3));
+        // Verify both default and custom variables are in the result (3 YAML defaults + 1 custom)
+        Assert.That(result.Variables, Has.Count.EqualTo(4));
         var varNames = result.Variables.Select(v => v.Name);
         Assert.That(varNames, Does.Contain("buildConfiguration"));
+        Assert.That(varNames, Does.Contain("customVar"));
+    }
+
+    [Test]
+    public void Run_HandlesNullVariableValues()
+    {
+        var customVariables = new Dictionary<string, object?>
+        {
+            ["buildConfiguration"] = null
+        };
+
+        var result = new PipelineTester()
+            .WithPipeline("test_data/pipeline_parser/pipeline_with_variables.yaml")
+            .WithVariables(customVariables)
+            .Run();
+
+        // Should not throw and variable should be in result with null value
+        var variable = result.Variables.FirstOrDefault(v => v.Name == "buildConfiguration");
+        Assert.That(variable, Is.Not.Null);
+        Assert.That(variable!.DefaultValue, Is.Null);
     }
 }

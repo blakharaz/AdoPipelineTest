@@ -305,6 +305,134 @@ public class PipelineShouldlyExtensionsTests
         ex.Message.ShouldNotBeNullOrEmpty();
     }
 
+    [Test]
+    public void ShouldHaveVariableValue_DictionaryValue_MatchesCorrectly()
+    {
+        var dictResult = new PipelineTestResult
+        {
+            Variables =
+            [
+                new PipelineVariable { Name = "config", DefaultValue = new Dictionary<string, object?> { ["key1"] = "value1", ["key2"] = 42 } }
+            ]
+        };
+
+        dictResult.ShouldHaveVariableValue("config", new Dictionary<string, object?> { ["key1"] = "value1", ["key2"] = 42 });
+    }
+
+    [Test]
+    public void ShouldHaveVariableValue_DictionaryValue_ThrowsOnMismatch()
+    {
+        var dictResult = new PipelineTestResult
+        {
+            Variables =
+            [
+                new PipelineVariable { Name = "config", DefaultValue = new Dictionary<string, object?> { ["key1"] = "value1" } }
+            ]
+        };
+
+        var ex = Should.Throw<ShouldAssertException>(() => dictResult.ShouldHaveVariableValue("config", new Dictionary<string, object?> { ["key1"] = "wrong" }));
+        ex.Message.ShouldNotBeNullOrEmpty();
+    }
+
+    [Test]
+    public void ShouldHaveVariableValue_ListValue_MatchesCorrectly()
+    {
+        var listResult = new PipelineTestResult
+        {
+            Variables =
+            [
+                new PipelineVariable { Name = "versions", DefaultValue = new List<object?> { "1.0", "2.0", "3.0" } }
+            ]
+        };
+
+        listResult.ShouldHaveVariableValue("versions", new List<object?> { "1.0", "2.0", "3.0" });
+    }
+
+    [Test]
+    public void ShouldHaveVariableValue_ListValue_ThrowsOnMismatch()
+    {
+        var listResult = new PipelineTestResult
+        {
+            Variables =
+            [
+                new PipelineVariable { Name = "versions", DefaultValue = new List<object?> { "1.0", "2.0" } }
+            ]
+        };
+
+        var ex = Should.Throw<ShouldAssertException>(() => listResult.ShouldHaveVariableValue("versions", new List<object?> { "1.0", "2.0", "3.0" }));
+        ex.Message.ShouldNotBeNullOrEmpty();
+    }
+
+    [Test]
+    public void ShouldHaveVariableValue_NullValue_MatchesCorrectly()
+    {
+        var nullResult = new PipelineTestResult
+        {
+            Variables =
+            [
+                new PipelineVariable { Name = "optional", DefaultValue = null }
+            ]
+        };
+
+        nullResult.ShouldHaveVariableValue("optional", null);
+    }
+
+    [Test]
+    public void ShouldHaveVariableValue_UserOnlyVariable_IsAccessible()
+    {
+        var userOnlyResult = new PipelineTestResult
+        {
+            Variables =
+            [
+                new PipelineVariable { Name = "userOnlyVar", DefaultValue = "customValue" }
+            ]
+        };
+
+        userOnlyResult.ShouldHaveVariableValue("userOnlyVar", "customValue");
+    }
+
+    [Test]
+    public void ShouldHaveVariableValue_DictionaryMixedNullableTypes_MatchesCorrectly()
+    {
+        var dictResult = new PipelineTestResult
+        {
+            Variables =
+            [
+                new PipelineVariable { Name = "config", DefaultValue = new Dictionary<string, object?> { ["k"] = 1 } }
+            ]
+        };
+
+        dictResult.ShouldHaveVariableValue("config", new Dictionary<string, object> { ["k"] = 1 });
+    }
+
+    [Test]
+    public void ShouldHaveVariableValue_ListMixedNullableTypes_MatchesCorrectly()
+    {
+        var listResult = new PipelineTestResult
+        {
+            Variables =
+            [
+                new PipelineVariable { Name = "values", DefaultValue = new List<object?> { 1, "a" } }
+            ]
+        };
+
+        listResult.ShouldHaveVariableValue("values", new List<object> { 1, "a" });
+    }
+
+    [Test]
+    public void ShouldHaveVariableValue_DictionaryWithList_MatchesCorrectly()
+    {
+        var complexResult = new PipelineTestResult
+        {
+            Variables =
+            [
+                new PipelineVariable { Name = "complex", DefaultValue = new Dictionary<string, object?> { ["items"] = new List<object> { "x", "y" } } }
+            ]
+        };
+
+        complexResult.ShouldHaveVariableValue("complex", new Dictionary<string, object> { ["items"] = new List<object?> { "x", "y" } });
+    }
+
     #endregion
 
     #region ShouldHaveParameter

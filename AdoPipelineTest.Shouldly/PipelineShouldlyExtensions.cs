@@ -1,3 +1,4 @@
+using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -153,7 +154,7 @@ public static partial class PipelineShouldlyExtensions
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    public static void ShouldHaveVariableValue(this PipelineTestResult result, string variableName, string expectedValue, string? customMessage = null)
+    public static void ShouldHaveVariableValue(this PipelineTestResult result, string variableName, object? expectedValue, string? customMessage = null)
     {
         var variable = result.Variables.FirstOrDefault(v => v.Name == variableName);
         if (variable == null)
@@ -162,11 +163,41 @@ public static partial class PipelineShouldlyExtensions
             throw new ShouldAssertException(message);
         }
 
-        if (variable.DefaultValue?.ToString() != expectedValue)
+        if (!AreValuesEqual(variable.DefaultValue, expectedValue))
         {
             var message = customMessage ?? $"Variable '{variableName}' should have value '{expectedValue}' but was '{variable.DefaultValue}'";
             throw new ShouldAssertException(message);
         }
+    }
+
+    private static bool AreValuesEqual(object? actual, object? expected)
+    {
+        if (actual == null && expected == null) return true;
+        if (actual == null || expected == null) return false;
+
+        if (actual is IDictionary actualDict && expected is IDictionary expectedDict)
+        {
+            if (actualDict.Count != expectedDict.Count) return false;
+            foreach (DictionaryEntry kvp in expectedDict)
+            {
+                if (!actualDict.Contains(kvp.Key)) return false;
+                if (!AreValuesEqual(kvp.Value, actualDict[kvp.Key])) return false;
+            }
+            return true;
+        }
+
+        if (actual is IList actualList && expected is IList expectedList)
+        {
+            if (actualList.Count != expectedList.Count) return false;
+            for (int i = 0; i < expectedList.Count; i++)
+            {
+                if (!AreValuesEqual(expectedList[i], actualList[i]))
+                    return false;
+            }
+            return true;
+        }
+
+        return Equals(actual, expected);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]

@@ -217,7 +217,7 @@ public class PipelineTests
 | `ShouldHaveStepCount(count)` | `PipelineJob` | Asserts exact step count |
 | `ShouldHaveTask(taskName)` | `PipelineTestResult` | Asserts a TaskStep with given task name exists |
 | `ShouldHaveVariable(name)` | `PipelineTestResult` | Asserts a variable exists |
-| `ShouldHaveVariableValue(name, value)` | `PipelineTestResult` | Asserts a variable exists with a specific value |
+| `ShouldHaveVariableValue(name, value)` | `PipelineTestResult` | Asserts a variable exists with a specific value (supports scalar, dictionary, and list values) |
 | `ShouldHaveParameter(name)` | `PipelineTestResult` | Asserts a parameter exists |
 | `ShouldHaveTrigger()` | `PipelineTestResult` | Asserts triggers are configured |
 | `ShouldIncludeBranch(name)` | `PipelineTestResult` | Asserts a specific branch is in triggers |
