@@ -24,6 +24,7 @@
         <PackageReference Include="MSTest" Version="3.8.2" />
         <PackageReference Include="MSTest.TestAdapter" Version="3.8.2" />
         <PackageReference Include="MSTest.TestFramework" Version="3.8.2" />
+        <PackageReference Include="FluentAssertions" Version="7.0.0" />
     </ItemGroup>
 
 
@@ -33,6 +34,7 @@
       <ProjectReference Include="..\AdoPipelineTest.Nunit\AdoPipelineTest.Nunit.csproj" />
       <ProjectReference Include="..\AdoPipelineTest.Mstest\AdoPipelineTest.Mstest.csproj" />
       <ProjectReference Include="..\AdoPipelineTest.Xunit\AdoPipelineTest.Xunit.csproj" />
+      <ProjectReference Include="..\AdoPipelineTest.FluentAssertions\AdoPipelineTest.FluentAssertions.csproj" />
     </ItemGroup>
 
     <ItemGroup>
