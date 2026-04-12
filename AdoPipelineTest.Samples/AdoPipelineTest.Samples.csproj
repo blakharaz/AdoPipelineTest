@@ -25,14 +25,14 @@
         <PackageReference Include="MSTest.TestAdapter" Version="3.8.2" />
         <PackageReference Include="MSTest.TestFramework" Version="3.8.2" />
         <PackageReference Include="FluentAssertions" Version="7.0.0" />
+        <PackageReference Include="Shouldly" Version="4.3.0" />
     </ItemGroup>
-
-
 
     <ItemGroup>
       <ProjectReference Include="..\AdoPipelineTest.Lib\AdoPipelineTest.Lib.csproj" />
       <ProjectReference Include="..\AdoPipelineTest.Nunit\AdoPipelineTest.Nunit.csproj" />
       <ProjectReference Include="..\AdoPipelineTest.Mstest\AdoPipelineTest.Mstest.csproj" />
+      <ProjectReference Include="..\AdoPipelineTest.Shouldly\AdoPipelineTest.Shouldly.csproj" />
       <ProjectReference Include="..\AdoPipelineTest.Xunit\AdoPipelineTest.Xunit.csproj" />
       <ProjectReference Include="..\AdoPipelineTest.FluentAssertions\AdoPipelineTest.FluentAssertions.csproj" />
     </ItemGroup>

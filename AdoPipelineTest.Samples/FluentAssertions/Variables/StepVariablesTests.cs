@@ -84,7 +84,7 @@ public class StepVariablesTests
     {
         var result = new PipelineTester()
             .WithPipeline(YamlPath)
-            .WithVariables(new Dictionary<string, object> { ["buildConfiguration"] = "Debug" })
+            .WithVariables(new Dictionary<string, object?> { ["buildConfiguration"] = "Debug" })
             .Run();
 
         var steps = result.Stages[0].Jobs[0].Steps;
@@ -103,7 +103,7 @@ public class StepVariablesTests
     {
         var result = new PipelineTester()
             .WithPipeline(YamlPath)
-            .WithVariables(new Dictionary<string, object> { ["buildConfiguration"] = "Debug" })
+            .WithVariables(new Dictionary<string, object?> { ["buildConfiguration"] = "Debug" })
             .Run();
 
         var steps = result.Stages[0].Jobs[0].Steps;
@@ -139,7 +139,7 @@ public class StepVariablesTests
     {
         var result = new PipelineTester()
             .WithPipeline(YamlPath)
-            .WithVariables(new Dictionary<string, object> { ["buildConfiguration"] = "Release" })
+            .WithVariables(new Dictionary<string, object?> { ["buildConfiguration"] = "Release" })
             .Run();
 
         var steps = result.Stages[0].Jobs[0].Steps;
@@ -154,7 +154,7 @@ public class StepVariablesTests
     {
         var result = new PipelineTester()
             .WithPipeline(YamlPath)
-            .WithVariables(new Dictionary<string, object> { ["buildConfiguration"] = "Debug" })
+            .WithVariables(new Dictionary<string, object?> { ["buildConfiguration"] = "Debug" })
             .Run();
 
         var steps = result.Stages[0].Jobs[0].Steps;

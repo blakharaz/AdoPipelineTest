@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Description>Shouldly assertions for AdoPipelineTest - Unit test Azure DevOps YAML pipelines</Description>
+        <PackageTags>azure-devops;yaml;pipelines;testing;shouldly</PackageTags>
+        <Authors>$(Authors)</Authors>
+        <RepositoryUrl>$(RepositoryUrl)</RepositoryUrl>
+        <PackageProjectUrl>$(PackageProjectUrl)</PackageProjectUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Version>1.0.0</Version>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Shouldly" Version="4.3.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\AdoPipelineTest.Lib\AdoPipelineTest.Lib.csproj" />
+    </ItemGroup>
+
+</Project>
