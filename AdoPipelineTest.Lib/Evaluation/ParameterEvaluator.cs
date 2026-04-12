@@ -5,12 +5,12 @@ namespace AdoPipelineTest.Evaluation;
 
 internal static class ParameterEvaluator
 {
-    internal static IList<PipelineParameter> EvaluateParameters(IList<PipelineParameterElement> astParameterElements, IDictionary<string, object> parameterValues)
+    internal static IList<PipelineParameter> EvaluateParameters(IList<PipelineParameterElement> astParameterElements, IDictionary<string, object?> parameterValues)
     {
         return astParameterElements.Select(param => EvaluateParameter(param, parameterValues)).ToList();
     }
 
-    private static PipelineParameter EvaluateParameter(PipelineParameterElement model, IDictionary<string, object> parameterValues)
+    private static PipelineParameter EvaluateParameter(PipelineParameterElement model, IDictionary<string, object?> parameterValues)
     {
         var result = new PipelineParameter
         {

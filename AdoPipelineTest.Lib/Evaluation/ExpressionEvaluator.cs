@@ -10,7 +10,7 @@ internal static partial class ExpressionEvaluator
     /// Handles parameter references, variables, and logical/comparison functions.
     /// </summary>
     internal static bool EvaluateCondition(TemplateExpression? condition, 
-        Dictionary<string, object> parameters, 
+        Dictionary<string, object?> parameters, 
         Dictionary<string, object?> variables)
     {
         if (condition == null || condition.Children.Count == 0)
@@ -51,7 +51,7 @@ internal static partial class ExpressionEvaluator
     }
 
     private static bool EvaluateBooleanFunctionExpression(FunctionExpression funcExpr,
-        Dictionary<string, object> parameters,
+        Dictionary<string, object?> parameters,
         Dictionary<string, object?> variables)
     {
         return funcExpr.FunctionName.ToLowerInvariant() switch
@@ -73,7 +73,7 @@ internal static partial class ExpressionEvaluator
     }
 
     private static bool EvaluateEq(IList<Expression> parameters,
-        Dictionary<string, object> paramValues,
+        Dictionary<string, object?> paramValues,
         Dictionary<string, object?> variables)
     {
         if (parameters.Count != 2)
@@ -86,7 +86,7 @@ internal static partial class ExpressionEvaluator
     }
 
     private static bool EvaluateNe(IList<Expression> parameters,
-        Dictionary<string, object> paramValues,
+        Dictionary<string, object?> paramValues,
         Dictionary<string, object?> variables)
     {
         if (parameters.Count != 2)
@@ -99,7 +99,7 @@ internal static partial class ExpressionEvaluator
     }
 
     private static bool EvaluateAnd(IList<Expression> parameters,
-        Dictionary<string, object> paramValues,
+        Dictionary<string, object?> paramValues,
         Dictionary<string, object?> variables)
     {
         if (parameters.Count < 2)
@@ -122,7 +122,7 @@ internal static partial class ExpressionEvaluator
     }
 
     private static bool EvaluateOr(IList<Expression> parameters,
-        Dictionary<string, object> paramValues,
+        Dictionary<string, object?> paramValues,
         Dictionary<string, object?> variables)
     {
         if (parameters.Count < 2)
@@ -145,7 +145,7 @@ internal static partial class ExpressionEvaluator
     }
 
     private static bool EvaluateNot(IList<Expression> parameters,
-        Dictionary<string, object> paramValues,
+        Dictionary<string, object?> paramValues,
         Dictionary<string, object?> variables)
     {
         if (parameters.Count != 1)
@@ -160,7 +160,7 @@ internal static partial class ExpressionEvaluator
     }
 
     private static bool EvaluateContains(IList<Expression> parameters,
-        Dictionary<string, object> paramValues,
+        Dictionary<string, object?> paramValues,
         Dictionary<string, object?> variables)
     {
         if (parameters.Count != 2)
@@ -173,7 +173,7 @@ internal static partial class ExpressionEvaluator
     }
 
     private static bool EvaluateStartsWith(IList<Expression> parameters,
-        Dictionary<string, object> paramValues,
+        Dictionary<string, object?> paramValues,
         Dictionary<string, object?> variables)
     {
         if (parameters.Count != 2)
@@ -186,7 +186,7 @@ internal static partial class ExpressionEvaluator
     }
 
     private static bool EvaluateEndsWith(IList<Expression> parameters,
-        Dictionary<string, object> paramValues,
+        Dictionary<string, object?> paramValues,
         Dictionary<string, object?> variables)
     {
         if (parameters.Count != 2)
@@ -199,7 +199,7 @@ internal static partial class ExpressionEvaluator
     }
 
     private static bool EvaluateLt(IList<Expression> parameters,
-        Dictionary<string, object> paramValues,
+        Dictionary<string, object?> paramValues,
         Dictionary<string, object?> variables)
     {
         if (parameters.Count != 2)
@@ -212,7 +212,7 @@ internal static partial class ExpressionEvaluator
     }
 
     private static bool EvaluateLe(IList<Expression> parameters,
-        Dictionary<string, object> paramValues,
+        Dictionary<string, object?> paramValues,
         Dictionary<string, object?> variables)
     {
         if (parameters.Count != 2)
@@ -225,7 +225,7 @@ internal static partial class ExpressionEvaluator
     }
 
     private static bool EvaluateGt(IList<Expression> parameters,
-        Dictionary<string, object> paramValues,
+        Dictionary<string, object?> paramValues,
         Dictionary<string, object?> variables)
     {
         if (parameters.Count != 2)
@@ -238,7 +238,7 @@ internal static partial class ExpressionEvaluator
     }
 
     private static bool EvaluateGe(IList<Expression> parameters,
-        Dictionary<string, object> paramValues,
+        Dictionary<string, object?> paramValues,
         Dictionary<string, object?> variables)
     {
         if (parameters.Count != 2)
@@ -251,7 +251,7 @@ internal static partial class ExpressionEvaluator
     }
 
     private static string ExpressionToString(Expression expr,
-        Dictionary<string, object> parameters,
+        Dictionary<string, object?> parameters,
         Dictionary<string, object?> variables)
     {
         return expr switch
@@ -264,7 +264,7 @@ internal static partial class ExpressionEvaluator
     }
 
     private static double ExpressionToDouble(Expression expr,
-        Dictionary<string, object> parameters,
+        Dictionary<string, object?> parameters,
         Dictionary<string, object?> variables)
     {
         var str = ExpressionToString(expr, parameters, variables);
@@ -306,7 +306,7 @@ internal static partial class ExpressionEvaluator
         return dict.ToDictionary(entry => entry.Key, entry => EvaluateStringNullable(entry.Value, parameters, variables));
     }
     
-    internal static string EvaluateString(string str, Dictionary<string, object> parameters, Dictionary<string, object?> variables)
+    internal static string EvaluateString(string str, Dictionary<string, object?> parameters, Dictionary<string, object?> variables)
     {
         var nullableParams = parameters.Cast<KeyValuePair<string, object?>>().ToDictionary(x => x.Key, x => x.Value);
         return EvaluateStringNullable(str, nullableParams, variables);
@@ -318,7 +318,7 @@ internal static partial class ExpressionEvaluator
         return EvaluateVariables(strWithEvaluatedParameters, variables);
     }
 
-    internal static string EvaluateCompileTimeExpressions(string str, Dictionary<string, object> parameters)
+    internal static string EvaluateCompileTimeExpressions(string str, Dictionary<string, object?> parameters)
     {
         var nullableParams = parameters.Cast<KeyValuePair<string, object?>>().ToDictionary(x => x.Key, x => x.Value);
         return EvaluateCompileTimeExpressionsNullable(str, nullableParams);
@@ -374,14 +374,14 @@ internal static partial class ExpressionEvaluator
     [GeneratedRegex(@"\$\{\{\s*(.+?)\s*\}\}")]
     private static partial Regex CompileTimeExpressionRegex();
 
-    private static string GetParameterValue(string parameterName, Dictionary<string, object> parameters)
+    private static string GetParameterValue(string parameterName, Dictionary<string, object?> parameters)
     {
         if (!parameters.TryGetValue(parameterName, out var value))
         {
             throw new KeyNotFoundException($"Parameter '{parameterName}' not found");
         }
         
-        return value.ToString() ?? string.Empty;
+        return value?.ToString() ?? string.Empty;
     }
 
     private static string GetVariableValue(string variableName, Dictionary<string, object?> variables)

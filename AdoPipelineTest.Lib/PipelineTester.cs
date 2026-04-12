@@ -7,7 +7,7 @@ namespace AdoPipelineTest;
 
 public class PipelineTester
 {
-    private readonly Dictionary<string, object> _parameters = [];
+    private readonly Dictionary<string, object?> _parameters = [];
     private Dictionary<string, object?> _variables = [];
     private string? _pipelinePath;
 
@@ -23,7 +23,7 @@ public class PipelineTester
         return this;
     }
 
-    public PipelineTester WithParameters(Dictionary<string, object> parameters)
+    public PipelineTester WithParameters(Dictionary<string, object?> parameters)
     {
         foreach (var kvp in parameters)
         {
@@ -60,7 +60,7 @@ public class PipelineTester
         var mergedVariables = MergeVariables(parseResult.Variables, _variables);
 
         var stagesWithResolvedTemplates = parseResult.Stages.Select(TemplateResolver.ResolveStage);
-        var evaluatedStages = stagesWithResolvedTemplates.Select(stage => PipelineEvaluator.EvaluateStage(stage, parameters.ToDictionary(item => item.Name, item => item.Value!), mergedVariables!)).ToList();
+        var evaluatedStages = stagesWithResolvedTemplates.Select(stage => PipelineEvaluator.EvaluateStage(stage, parameters.ToDictionary(item => item.Name, item => item.Value), mergedVariables!)).ToList();
         
         return new PipelineTestResult
         {
