@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdoPipelineTest.Xunit.Sourc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdoPipelineTest.FluentAssertions", "AdoPipelineTest.FluentAssertions\AdoPipelineTest.FluentAssertions.csproj", "{90EA5886-9E23-4C90-B545-E2F6C469A05C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdoPipelineTest.Shouldly", "AdoPipelineTest.Shouldly\AdoPipelineTest.Shouldly.csproj", "{A8EBAF3C-AC0D-4CC8-B841-7F4091516878}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -139,6 +141,18 @@ Global
 		{90EA5886-9E23-4C90-B545-E2F6C469A05C}.Release|x64.Build.0 = Release|Any CPU
 		{90EA5886-9E23-4C90-B545-E2F6C469A05C}.Release|x86.ActiveCfg = Release|Any CPU
 		{90EA5886-9E23-4C90-B545-E2F6C469A05C}.Release|x86.Build.0 = Release|Any CPU
+		{A8EBAF3C-AC0D-4CC8-B841-7F4091516878}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8EBAF3C-AC0D-4CC8-B841-7F4091516878}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8EBAF3C-AC0D-4CC8-B841-7F4091516878}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A8EBAF3C-AC0D-4CC8-B841-7F4091516878}.Debug|x64.Build.0 = Debug|Any CPU
+		{A8EBAF3C-AC0D-4CC8-B841-7F4091516878}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A8EBAF3C-AC0D-4CC8-B841-7F4091516878}.Debug|x86.Build.0 = Debug|Any CPU
+		{A8EBAF3C-AC0D-4CC8-B841-7F4091516878}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8EBAF3C-AC0D-4CC8-B841-7F4091516878}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8EBAF3C-AC0D-4CC8-B841-7F4091516878}.Release|x64.ActiveCfg = Release|Any CPU
+		{A8EBAF3C-AC0D-4CC8-B841-7F4091516878}.Release|x64.Build.0 = Release|Any CPU
+		{A8EBAF3C-AC0D-4CC8-B841-7F4091516878}.Release|x86.ActiveCfg = Release|Any CPU
+		{A8EBAF3C-AC0D-4CC8-B841-7F4091516878}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

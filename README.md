@@ -10,6 +10,7 @@ A .NET testing library for Azure DevOps YAML pipelines. Unit test your ADO pipel
 - **Template Support** - Automatically resolves referenced template files
 - **NUnit Integration** - Custom constraints for fluent assertions
 - **MSTest Integration** - Extension methods for fluent assertions
+- **Shouldly Integration** - Human-readable Shouldly-style assertions
 
 ## Quick Start
 
@@ -157,7 +158,73 @@ public class PipelineTests
 | `HasVmImage(image)` | `PipelineTestResult` | Asserts the VM image |
 | `HasScriptStep(pattern)` | `PipelineTestResult` | Asserts a ScriptStep containing a pattern exists |
 
-All methods accept an optional `because` parameter for custom failure messages.
+### Shouldly Extension Methods
+
+The `AdoPipelineTest.Shouldly` package provides Shouldly-style extension methods on `PipelineTestResult`, `PipelineStage`, and `PipelineJob`:
+
+```csharp
+using AdoPipelineTest.Shouldly;
+using Shouldly;
+
+public class PipelineTests
+{
+    [Test]
+    public void Pipeline_HasCorrectStructure()
+    {
+        var result = new PipelineTester()
+            .WithPipeline("azure-pipelines.yaml")
+            .Run();
+
+        result.ShouldHaveTrigger();
+        result.ShouldHaveVmImage("ubuntu-latest");
+        result.ShouldHaveStageCount(1);
+        result.ShouldHaveStage("Build");
+        result.ShouldHaveJob("Build", "Compile");
+        result.ShouldHaveTask("DotNetCoreCLI@2");
+        result.ShouldHaveStep("Build Task");
+        result.ShouldHaveVariable("buildConfiguration");
+        result.ShouldHaveParameter("environment");
+        result.ShouldHaveScriptStepContaining("dotnet build");
+        result.ShouldIncludeBranch("main");
+    }
+
+    [Test]
+    public void Pipeline_JobAssertions()
+    {
+        var result = new PipelineTester()
+            .WithPipeline("azure-pipelines.yaml")
+            .Run();
+
+        var stage = result.Stages[0];
+        stage.ShouldHaveJob("Compile");
+        stage.ShouldHaveJobCount(1);
+        
+        var job = stage.Jobs[0];
+        job.ShouldHaveStepCount(4);
+    }
+}
+```
+
+| Method | Target | Description |
+|--------|--------|-------------|
+| `ShouldHaveStage(name)` | `PipelineTestResult` | Asserts pipeline has a stage with given name |
+| `ShouldHaveStageCount(count)` | `PipelineTestResult` | Asserts exact stage count |
+| `ShouldHaveJob(stageName, jobName)` | `PipelineTestResult` | Asserts a job exists in a named stage |
+| `ShouldHaveJob(jobName)` | `PipelineStage` | Asserts a job exists in a stage |
+| `ShouldHaveJobCount(count)` | `PipelineStage` | Asserts exact job count |
+| `ShouldHaveStep(displayName)` | `PipelineTestResult` | Asserts a step with given display name exists |
+| `ShouldHaveStep(predicate)` | `PipelineTestResult` | Asserts a step matching a predicate exists |
+| `ShouldHaveStepCount(count)` | `PipelineJob` | Asserts exact step count |
+| `ShouldHaveTask(taskName)` | `PipelineTestResult` | Asserts a TaskStep with given task name exists |
+| `ShouldHaveVariable(name)` | `PipelineTestResult` | Asserts a variable exists |
+| `ShouldHaveVariableValue(name, value)` | `PipelineTestResult` | Asserts a variable exists with a specific value |
+| `ShouldHaveParameter(name)` | `PipelineTestResult` | Asserts a parameter exists |
+| `ShouldHaveTrigger()` | `PipelineTestResult` | Asserts triggers are configured |
+| `ShouldIncludeBranch(name)` | `PipelineTestResult` | Asserts a specific branch is in triggers |
+| `ShouldHaveVmImage(image)` | `PipelineTestResult` | Asserts the VM image |
+| `ShouldHaveScriptStepContaining(pattern)` | `PipelineTestResult` | Asserts a ScriptStep containing a pattern exists |
+
+All methods accept an optional `customMessage` parameter for custom failure messages.
 
 ## How It Works
 
