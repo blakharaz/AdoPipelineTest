@@ -7,15 +7,6 @@ namespace AdoPipelineTest.UnitTests.Evaluation;
 
 public class ConditionalStepEvaluatorTest
 {
-    private Dictionary<string, object> _parameters = null!;
-    private Dictionary<string, object?> _variables = null!;
-
-    public ConditionalStepEvaluatorTest()
-    {
-        _parameters = [];
-        _variables = [];
-    }
-
     #region eq() Tests
 
     [Fact]
@@ -29,9 +20,10 @@ public class ConditionalStepEvaluatorTest
             ]
         );
 
-        _parameters["toolset"] = "msbuild";
+        var parameters = new Dictionary<string, object?> { ["toolset"] = "msbuild" };
+        var variables = new Dictionary<string, object?>();
 
-        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     [Fact]
@@ -45,9 +37,10 @@ public class ConditionalStepEvaluatorTest
                 new StringLiteral { Value = "msbuild" }
             ]);
 
-        _parameters["toolset"] = "dotnet";
+        var parameters = new Dictionary<string, object?> { ["toolset"] = "dotnet" };
+        var variables = new Dictionary<string, object?>();
 
-        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     [Fact]
@@ -61,7 +54,10 @@ public class ConditionalStepEvaluatorTest
             ]
         );
 
-        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        var parameters = new Dictionary<string, object?>();
+        var variables = new Dictionary<string, object?>();
+
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     [Fact]
@@ -75,10 +71,10 @@ public class ConditionalStepEvaluatorTest
                 new ParameterExpression("b")
             ]);
 
-        _parameters["a"] = "same";
-        _parameters["b"] = "same";
+        var parameters = new Dictionary<string, object?> { ["a"] = "same", ["b"] = "same" };
+        var variables = new Dictionary<string, object?>();
 
-        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     #endregion
@@ -96,9 +92,10 @@ public class ConditionalStepEvaluatorTest
                 new StringLiteral { Value = "one" }
             ]);
 
-        _parameters["option"] = "two";
+        var parameters = new Dictionary<string, object?> { ["option"] = "two" };
+        var variables = new Dictionary<string, object?>();
 
-        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     [Fact]
@@ -112,9 +109,10 @@ public class ConditionalStepEvaluatorTest
                 new StringLiteral { Value = "one" }
             ]);
 
-        _parameters["option"] = "one";
+        var parameters = new Dictionary<string, object?> { ["option"] = "one" };
+        var variables = new Dictionary<string, object?>();
 
-        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     #endregion
@@ -139,10 +137,10 @@ public class ConditionalStepEvaluatorTest
             )
         ]);
 
-        _parameters["a"] = "x";
-        _parameters["b"] = "y";
+        var parameters = new Dictionary<string, object?> { ["a"] = "x", ["b"] = "y" };
+        var variables = new Dictionary<string, object?>();
 
-        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     [Fact]
@@ -164,10 +162,10 @@ public class ConditionalStepEvaluatorTest
                 )
             ]);
 
-        _parameters["a"] = "wrong";
-        _parameters["b"] = "y";
+        var parameters = new Dictionary<string, object?> { ["a"] = "wrong", ["b"] = "y" };
+        var variables = new Dictionary<string, object?>();
 
-        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     [Fact]
@@ -190,10 +188,10 @@ public class ConditionalStepEvaluatorTest
                 )
             ]);
 
-        _parameters["a"] = "x";
-        _parameters["b"] = "wrong";
+        var parameters = new Dictionary<string, object?> { ["a"] = "x", ["b"] = "wrong" };
+        var variables = new Dictionary<string, object?>();
 
-        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     #endregion
@@ -217,10 +215,10 @@ public class ConditionalStepEvaluatorTest
                 )
             ]);
 
-        _parameters["a"] = "x";
-        _parameters["b"] = "wrong";
+        var parameters = new Dictionary<string, object?> { ["a"] = "x", ["b"] = "wrong" };
+        var variables = new Dictionary<string, object?>();
 
-        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     [Fact]
@@ -241,10 +239,10 @@ public class ConditionalStepEvaluatorTest
             )
         ]);
 
-        _parameters["a"] = "wrong";
-        _parameters["b"] = "y";
+        var parameters = new Dictionary<string, object?> { ["a"] = "wrong", ["b"] = "y" };
+        var variables = new Dictionary<string, object?>();
 
-        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     [Fact]
@@ -264,10 +262,10 @@ public class ConditionalStepEvaluatorTest
             )
         ]);
 
-        _parameters["a"] = "wrong1";
-        _parameters["b"] = "wrong2";
+        var parameters = new Dictionary<string, object?> { ["a"] = "wrong1", ["b"] = "wrong2" };
+        var variables = new Dictionary<string, object?>();
 
-        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     #endregion
@@ -286,9 +284,10 @@ public class ConditionalStepEvaluatorTest
             )
         ]);
 
-        _parameters["option"] = "one";
+        var parameters = new Dictionary<string, object?> { ["option"] = "one" };
+        var variables = new Dictionary<string, object?>();
 
-        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     [Fact]
@@ -302,9 +301,10 @@ public class ConditionalStepEvaluatorTest
             ])
         ]);
 
-        _parameters["option"] = "two";
+        var parameters = new Dictionary<string, object?> { ["option"] = "two" };
+        var variables = new Dictionary<string, object?>();
 
-        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     #endregion
@@ -320,9 +320,10 @@ public class ConditionalStepEvaluatorTest
             new StringLiteral { Value = "production" }
         ]);
 
-        _parameters["tags"] = "staging,production,test";
+        var parameters = new Dictionary<string, object?> { ["tags"] = "staging,production,test" };
+        var variables = new Dictionary<string, object?>();
 
-        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     [Fact]
@@ -334,9 +335,10 @@ public class ConditionalStepEvaluatorTest
             new StringLiteral { Value = "production" }
         ]);
 
-        _parameters["tags"] = "staging,test";
+        var parameters = new Dictionary<string, object?> { ["tags"] = "staging,test" };
+        var variables = new Dictionary<string, object?>();
 
-        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     #endregion
@@ -354,9 +356,10 @@ public class ConditionalStepEvaluatorTest
                 new StringLiteral { Value = "refs/heads/" }
             ]);
 
-        _parameters["branch"] = "refs/heads/main";
+        var parameters = new Dictionary<string, object?> { ["branch"] = "refs/heads/main" };
+        var variables = new Dictionary<string, object?>();
 
-        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     [Fact]
@@ -369,9 +372,10 @@ public class ConditionalStepEvaluatorTest
                 new StringLiteral { Value = "refs/heads/" }
             ]);
 
-        _parameters["branch"] = "refs/tags/v1.0";
+        var parameters = new Dictionary<string, object?> { ["branch"] = "refs/tags/v1.0" };
+        var variables = new Dictionary<string, object?>();
 
-        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     #endregion
@@ -388,9 +392,10 @@ public class ConditionalStepEvaluatorTest
                 new StringLiteral { Value = ".zip" }
             ]);
 
-        _parameters["artifact"] = "build-1.0.0.zip";
+        var parameters = new Dictionary<string, object?> { ["artifact"] = "build-1.0.0.zip" };
+        var variables = new Dictionary<string, object?>();
 
-        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     [Fact]
@@ -402,9 +407,10 @@ public class ConditionalStepEvaluatorTest
             new StringLiteral { Value = ".zip" }
         ]);
 
-        _parameters["artifact"] = "build-1.0.0.tar.gz";
+        var parameters = new Dictionary<string, object?> { ["artifact"] = "build-1.0.0.tar.gz" };
+        var variables = new Dictionary<string, object?>();
 
-        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     #endregion
@@ -420,9 +426,10 @@ public class ConditionalStepEvaluatorTest
             new StringLiteral { Value = "2.0" }
         ]);
 
-        _parameters["version"] = "1.5";
+        var parameters = new Dictionary<string, object?> { ["version"] = "1.5" };
+        var variables = new Dictionary<string, object?>();
 
-        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     [Fact]
@@ -434,9 +441,10 @@ public class ConditionalStepEvaluatorTest
             new StringLiteral { Value = "2.0" }
         ]);
 
-        _parameters["version"] = "2.0";
+        var parameters = new Dictionary<string, object?> { ["version"] = "2.0" };
+        var variables = new Dictionary<string, object?>();
 
-        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     [Fact]
@@ -448,9 +456,10 @@ public class ConditionalStepEvaluatorTest
             new StringLiteral { Value = "1.0" }
         ]);
 
-        _parameters["version"] = "2.5";
+        var parameters = new Dictionary<string, object?> { ["version"] = "2.5" };
+        var variables = new Dictionary<string, object?>();
 
-        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     [Fact]
@@ -463,9 +472,10 @@ public class ConditionalStepEvaluatorTest
             new StringLiteral { Value = "1.0" }
         ]);
 
-        _parameters["version"] = "1.0";
+        var parameters = new Dictionary<string, object?> { ["version"] = "1.0" };
+        var variables = new Dictionary<string, object?>();
 
-        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     #endregion
@@ -481,9 +491,10 @@ public class ConditionalStepEvaluatorTest
             new StringLiteral { Value = "production" }
         ]);
 
-        _variables["environment"] = "production";
+        var parameters = new Dictionary<string, object?>();
+        var variables = new Dictionary<string, object?> { ["environment"] = "production" };
 
-        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     #endregion
@@ -517,12 +528,11 @@ public class ConditionalStepEvaluatorTest
             ]
         );
 
-        _parameters["a"] = "x";
-        _parameters["b"] = "not-y";
-        _parameters["c"] = "z";
+        var parameters = new Dictionary<string, object?> { ["a"] = "x", ["b"] = "not-y", ["c"] = "z" };
+        var variables = new Dictionary<string, object?>();
 
         // a='x' (true) AND (b='y' (false) OR c='z' (true)) = true AND true = true
-        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     [Fact]
@@ -551,11 +561,10 @@ public class ConditionalStepEvaluatorTest
                 )
             ]);
 
-        _parameters["a"] = "x";
-        _parameters["b"] = "y";
-        _parameters["c"] = "z";
+        var parameters = new Dictionary<string, object?> { ["a"] = "x", ["b"] = "y", ["c"] = "z" };
+        var variables = new Dictionary<string, object?>();
 
-        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     #endregion
@@ -566,9 +575,11 @@ public class ConditionalStepEvaluatorTest
     public void EvaluateCondition_WithUnknownFunction_ThrowsInvalidOperationException()
     {
         var condition = CreateCondition("unknownFunc", []);
+        var parameters = new Dictionary<string, object?>();
+        var variables = new Dictionary<string, object?>();
 
         var ex = Assert.Throws<InvalidOperationException>(
-            () => ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables)
+            () => ExpressionEvaluator.EvaluateCondition(condition, parameters, variables)
         );
         Assert.Contains("Unknown function", ex.Message);
     }
@@ -581,9 +592,11 @@ public class ConditionalStepEvaluatorTest
             {
                 new StringLiteral { Value = "only-one-param" }
             });
+        var parameters = new Dictionary<string, object?>();
+        var variables = new Dictionary<string, object?>();
 
         var ex = Assert.Throws<InvalidOperationException>(
-            () => ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables)
+            () => ExpressionEvaluator.EvaluateCondition(condition, parameters, variables)
         );
         Assert.Contains("requires exactly 2 parameters", ex.Message);
     }
@@ -597,9 +610,11 @@ public class ConditionalStepEvaluatorTest
                 new ParameterExpression("nonexistent"),
                 new StringLiteral { Value = "value" }
             });
+        var parameters = new Dictionary<string, object?>();
+        var variables = new Dictionary<string, object?>();
 
-        var ex = Assert.Throws<KeyNotFoundException>(
-            () => ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables)
+        Assert.Throws<KeyNotFoundException>(
+            () => ExpressionEvaluator.EvaluateCondition(condition, parameters, variables)
         );
     }
 
@@ -612,11 +627,11 @@ public class ConditionalStepEvaluatorTest
                 new ParameterExpression("version"),
                 new StringLiteral { Value = "2.0" }
             });
-
-        _parameters["version"] = "not-a-number";
+        var parameters = new Dictionary<string, object?> { ["version"] = "not-a-number" };
+        var variables = new Dictionary<string, object?>();
 
         var ex = Assert.Throws<InvalidOperationException>(
-            () => ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables)
+            () => ExpressionEvaluator.EvaluateCondition(condition, parameters, variables)
         );
         Assert.Contains("Cannot convert", ex.Message);
     }
@@ -629,16 +644,20 @@ public class ConditionalStepEvaluatorTest
     public void EvaluateCondition_WithNullCondition_ReturnsTrue()
     {
         TemplateExpression? condition = null;
+        var parameters = new Dictionary<string, object?>();
+        var variables = new Dictionary<string, object?>();
 
-        Assert.True(ExpressionEvaluator.EvaluateCondition(condition!, _parameters, _variables));
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition!, parameters, variables));
     }
 
     [Fact]
     public void EvaluateCondition_WithEmptyChildren_ReturnsTrue()
     {
         var condition = new TemplateExpression { Children = [] };
+        var parameters = new Dictionary<string, object?>();
+        var variables = new Dictionary<string, object?>();
 
-        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, parameters, variables));
     }
 
     #endregion

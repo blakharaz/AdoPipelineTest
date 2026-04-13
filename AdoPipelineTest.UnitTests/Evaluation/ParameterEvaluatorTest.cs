@@ -27,7 +27,7 @@ public class ParameterEvaluatorTest
                 DefaultValue = true
             }
         };
-        var parameterValues = new Dictionary<string, object>();
+        var parameterValues = new Dictionary<string, object?>();
 
         var result = ParameterEvaluator.EvaluateParameters(rawParameters, parameterValues);
 
@@ -62,7 +62,7 @@ public class ParameterEvaluatorTest
                 DefaultValue = "Release"
             }
         };
-        var parameterValues = new Dictionary<string, object>
+        var parameterValues = new Dictionary<string, object?>
         {
             { "projectName", "CustomProject" },
             { "buildConfiguration", "Debug" }
@@ -98,7 +98,7 @@ public class ParameterEvaluatorTest
                 DefaultValue = 3
             }
         };
-        var parameterValues = new Dictionary<string, object>();
+        var parameterValues = new Dictionary<string, object?>();
 
         var result = ParameterEvaluator.EvaluateParameters(rawParameters, parameterValues);
 
@@ -121,7 +121,7 @@ public class ParameterEvaluatorTest
                 AllowedValues = allowedConfigs
             }
         };
-        var parameterValues = new Dictionary<string, object>();
+        var parameterValues = new Dictionary<string, object?>();
 
         var result = ParameterEvaluator.EvaluateParameters(rawParameters, parameterValues);
 
@@ -146,7 +146,7 @@ public class ParameterEvaluatorTest
                 DefaultValue = defaultSettings
             }
         };
-        var parameterValues = new Dictionary<string, object>();
+        var parameterValues = new Dictionary<string, object?>();
 
         var result = ParameterEvaluator.EvaluateParameters(rawParameters, parameterValues);
 
@@ -167,7 +167,7 @@ public class ParameterEvaluatorTest
                 DefaultValue = "$(Build.ArtifactStagingDirectory)"
             }
         };
-        var parameterValues = new Dictionary<string, object>();
+        var parameterValues = new Dictionary<string, object?>();
 
         var result = ParameterEvaluator.EvaluateParameters(rawParameters, parameterValues);
 
@@ -199,7 +199,7 @@ public class ParameterEvaluatorTest
                 DefaultValue = 30
             }
         };
-        var parameterValues = new Dictionary<string, object>
+        var parameterValues = new Dictionary<string, object?>
         {
             { "projectName", "CustomProject" }
         };
@@ -230,7 +230,7 @@ public class ParameterEvaluatorTest
                 DefaultValue = null
             }
         };
-        var parameterValues = new Dictionary<string, object>();
+        var parameterValues = new Dictionary<string, object?>();
 
         var result = ParameterEvaluator.EvaluateParameters(rawParameters, parameterValues);
 
@@ -243,7 +243,7 @@ public class ParameterEvaluatorTest
     public void EvaluateParameters_WithEmptyParameterList_ReturnsEmpty()
     {
         var rawParameters = new List<PipelineParameterElement>();
-        var parameterValues = new Dictionary<string, object>();
+        var parameterValues = new Dictionary<string, object?>();
 
         var result = ParameterEvaluator.EvaluateParameters(rawParameters, parameterValues);
 
@@ -263,7 +263,7 @@ public class ParameterEvaluatorTest
                 DefaultValue = "MySampleProject"
             }
         };
-        var parameterValues = new Dictionary<string, object>();
+        var parameterValues = new Dictionary<string, object?>();
 
         var result = ParameterEvaluator.EvaluateParameters(rawParameters, parameterValues);
 
