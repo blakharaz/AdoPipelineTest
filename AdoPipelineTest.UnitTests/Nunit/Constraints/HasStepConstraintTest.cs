@@ -2,6 +2,7 @@ using AdoPipelineTest.Model;
 using AdoPipelineTest.Model.Steps;
 using AdoPipelineTest.Nunit.Constraints;
 using Xunit;
+using Assert = Xunit.Assert;
 
 namespace AdoPipelineTest.UnitTests.Nunit.Constraints;
 

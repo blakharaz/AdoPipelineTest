@@ -1,5 +1,6 @@
 using AdoPipelineTest.Evaluation;
 using Xunit;
+using Assert = Xunit.Assert;
 
 namespace AdoPipelineTest.UnitTests.Evaluation;
 

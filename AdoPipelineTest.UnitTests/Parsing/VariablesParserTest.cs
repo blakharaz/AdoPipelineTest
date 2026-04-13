@@ -1,5 +1,6 @@
 using AdoPipelineTest.Parsing;
 using Xunit;
+using Assert = Xunit.Assert;
 
 namespace AdoPipelineTest.UnitTests.Parsing;
 

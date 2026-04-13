@@ -6,7 +6,7 @@ using Xunit;
 
 namespace AdoPipelineTest.UnitTests.FluentAssertions;
 
-public class PipelineTestResultAssertionsTests
+public partial class PipelineTestResultAssertionsTests
 {
     private PipelineTestResult _result = null!;
 
@@ -283,6 +283,81 @@ public class PipelineTestResultAssertionsTests
     public void HaveScriptStepContaining_NonExistingPattern_ShouldThrow()
     {
         var act = () => _result.Should().HaveScriptStepContaining("npm build");
+        act.Should().Throw<Exception>();
+    }
+
+    #endregion
+
+    #region PipelineStageAssertions (HaveJob, HaveJobCount)
+
+    [Fact]
+    public void Stage_HaveJob_ExistingJob_ShouldNotThrow()
+    {
+        var act = () => _result.Stages[0].Should().HaveJob("BuildJob");
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    public void Stage_HaveJob_ByDisplayName_ShouldNotThrow()
+    {
+        var act = () => _result.Stages[0].Should().HaveJob("Build Job");
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    public void Stage_HaveJob_NonExisting_ShouldThrow()
+    {
+        var act = () => _result.Stages[0].Should().HaveJob("NonExistent");
+        act.Should().Throw<Exception>();
+    }
+
+    [Fact]
+    public void Stage_HaveJobCount_CorrectCount_ShouldNotThrow()
+    {
+        var act = () => _result.Stages[0].Should().HaveJobCount(1);
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    public void Stage_HaveJobCount_WrongCount_ShouldThrow()
+    {
+        var act = () => _result.Stages[0].Should().HaveJobCount(5);
+        act.Should().Throw<Exception>();
+    }
+
+    #endregion
+
+    #region PipelineJobAssertions (HaveStepCount)
+
+    [Fact]
+    public void Job_HaveStepCount_CorrectCount_ShouldNotThrow()
+    {
+        var act = () => _result.Stages[0].Jobs[0].Should().HaveStepCount(3);
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    public void Job_HaveStepCount_WrongCount_ShouldThrow()
+    {
+        var act = () => _result.Stages[0].Jobs[0].Should().HaveStepCount(5);
+        act.Should().Throw<Exception>();
+    }
+
+    #endregion
+
+    #region PipelineAgentPoolAssertions (HaveVmImage)
+
+    [Fact]
+    public void AgentPool_HaveVmImage_CorrectImage_ShouldNotThrow()
+    {
+        var act = () => _result.AgentPool!.Should().HaveVmImage("ubuntu-latest");
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    public void AgentPool_HaveVmImage_WrongImage_ShouldThrow()
+    {
+        var act = () => _result.AgentPool!.Should().HaveVmImage("windows-latest");
         act.Should().Throw<Exception>();
     }
 

@@ -2,6 +2,7 @@ using AdoPipelineTest.Model;
 using AdoPipelineTest.Parsing;
 using AdoPipelineTest.Parsing.Ast;
 using Xunit;
+using Assert = Xunit.Assert;
 
 namespace AdoPipelineTest.UnitTests.Parsing;
 

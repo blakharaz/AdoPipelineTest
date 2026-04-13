@@ -19,6 +19,7 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
+        <PackageReference Include="MSTest" Version="4.2.1" />
         <!-- xUnit v3 for test framework -->
         <PackageReference Include="xunit.v3" Version="3.2.2"/>
         <PackageReference Include="xunit.v3.mtp-off" Version="3.2.2"/>
@@ -33,6 +34,7 @@
     
     <ItemGroup>
         <ProjectReference Include="..\AdoPipelineTest.Lib\AdoPipelineTest.Lib.csproj" />
+        <ProjectReference Include="..\AdoPipelineTest.Mstest\AdoPipelineTest.Mstest.csproj" />
         <ProjectReference Include="..\AdoPipelineTest.Nunit\AdoPipelineTest.Nunit.csproj" />
         <ProjectReference Include="..\AdoPipelineTest.Shouldly\AdoPipelineTest.Shouldly.csproj" />
         <ProjectReference Include="..\AdoPipelineTest.Xunit\AdoPipelineTest.Xunit.csproj" />
