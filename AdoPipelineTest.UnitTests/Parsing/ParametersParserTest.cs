@@ -1,97 +1,74 @@
-using NUnit.Framework;
+using Xunit;
 using AdoPipelineTest.Parsing;
 using AdoPipelineTest.UnitTests.Utils;
 using YamlDotNet.RepresentationModel;
+using Assert = Xunit.Assert;
 
 namespace AdoPipelineTest.UnitTests.Parsing;
 
-[TestFixture]
 public class ParametersParserTest
 {
     private const string PipelineNoParametersPath = "test_data/pipeline_parser/simple_pipeline_just_steps.yaml";
     private const string PipelineWithParametersPath = "test_data/pipeline_parser/pipeline_with_parameters.yaml";
     
-    [Test]
+    [Fact]
     public void PipelineWithNoVariables()
     {
         var parameters = ParametersParser.ParseParameters(LoadPipeline(PipelineNoParametersPath));
 
-        Assert.That(parameters, Is.Empty);
+        Assert.Empty(parameters);
     }
 
-    [Test]
+    [Fact]
     public void ParseParameters()
     {
         var parameters = ParametersParser.ParseParameters(LoadPipeline(PipelineWithParametersPath));
 
-        Assert.That(parameters, Has.Count.EqualTo(6));
+        Assert.Equal(6, parameters.Count);
 
-        // String parameter: projectName
         var projectNameParam = parameters.First(p => p.Name == "projectName");
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(projectNameParam.Type, Is.EqualTo("string"));
-            Assert.That(projectNameParam.DisplayName, Is.EqualTo("Project Name"));
-            Assert.That(projectNameParam.DefaultValue, Is.EqualTo("MySampleProject"));
-            Assert.That(projectNameParam.AllowedValues, Is.Null);
-        }
+        Assert.Equal("string", projectNameParam.Type);
+        Assert.Equal("Project Name", projectNameParam.DisplayName);
+        Assert.Equal("MySampleProject", projectNameParam.DefaultValue);
+        Assert.Null(projectNameParam.AllowedValues);
 
-        // Boolean parameter: enableTests
         var enableTestsParam = parameters.First(p => p.Name == "enableTests");
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(enableTestsParam.Type, Is.EqualTo("boolean"));
-            Assert.That(enableTestsParam.DisplayName, Is.EqualTo("Enable Unit Tests"));
-            Assert.That(enableTestsParam.DefaultValue, Is.EqualTo(true));
-            Assert.That(enableTestsParam.AllowedValues, Is.Null);
-        }
+        Assert.Equal("boolean", enableTestsParam.Type);
+        Assert.Equal("Enable Unit Tests", enableTestsParam.DisplayName);
+        var defaultValue = (bool?)enableTestsParam.DefaultValue;
+        Assert.Equal(true, defaultValue);
+        Assert.Null(enableTestsParam.AllowedValues);
 
-        // Number parameter: timeoutMinutes
         var timeoutParam = parameters.First(p => p.Name == "timeoutMinutes");
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(timeoutParam.Type, Is.EqualTo("number"));
-            Assert.That(timeoutParam.DisplayName, Is.EqualTo("Timeout in Minutes"));
-            Assert.That(timeoutParam.DefaultValue, Is.EqualTo(30));
-            Assert.That(timeoutParam.AllowedValues, Is.Null);
-        }
+        Assert.Equal("number", timeoutParam.Type);
+        Assert.Equal("Timeout in Minutes", timeoutParam.DisplayName);
+        Assert.Equal(30, timeoutParam.DefaultValue);
+        Assert.Null(timeoutParam.AllowedValues);
 
-        // String with allowed values: buildConfiguration
         var buildConfigParam = parameters.First(p => p.Name == "buildConfiguration");
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(buildConfigParam.Type, Is.EqualTo("string"));
-            Assert.That(buildConfigParam.DisplayName, Is.EqualTo("Build Configuration"));
-            Assert.That(buildConfigParam.DefaultValue, Is.EqualTo("Release"));
-            Assert.That(buildConfigParam.AllowedValues, Is.Not.Null);
-            Assert.That(buildConfigParam.AllowedValues, Has.Count.EqualTo(3));
-            Assert.That(buildConfigParam.AllowedValues, Contains.Item("Debug"));
-            Assert.That(buildConfigParam.AllowedValues, Contains.Item("Release"));
-            Assert.That(buildConfigParam.AllowedValues, Contains.Item("CI"));
-        }
+        Assert.Equal("string", buildConfigParam.Type);
+        Assert.Equal("Build Configuration", buildConfigParam.DisplayName);
+        Assert.Equal("Release", buildConfigParam.DefaultValue);
+        Assert.NotNull(buildConfigParam.AllowedValues);
+        Assert.Equal(3, buildConfigParam.AllowedValues.Count);
+        Assert.Contains("Debug", buildConfigParam.AllowedValues);
+        Assert.Contains("Release", buildConfigParam.AllowedValues);
+        Assert.Contains("CI", buildConfigParam.AllowedValues);
 
-        // String with environment variable: outputDirectory
         var outputDirParam = parameters.First(p => p.Name == "outputDirectory");
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(outputDirParam.Type, Is.EqualTo("string"));
-            Assert.That(outputDirParam.DisplayName, Is.EqualTo("Output Directory"));
-            Assert.That(outputDirParam.DefaultValue, Is.EqualTo("$(Build.ArtifactStagingDirectory)"));
-            Assert.That(outputDirParam.AllowedValues, Is.Null);
-        }
+        Assert.Equal("string", outputDirParam.Type);
+        Assert.Equal("Output Directory", outputDirParam.DisplayName);
+        Assert.Equal("$(Build.ArtifactStagingDirectory)", outputDirParam.DefaultValue);
+        Assert.Null(outputDirParam.AllowedValues);
 
-        // Object parameter: buildSettings
         var buildSettingsParam = parameters.First(p => p.Name == "buildSettings");
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(buildSettingsParam.Type, Is.EqualTo("object"));
-            Assert.That(buildSettingsParam.DisplayName, Is.EqualTo("Build Settings"));
-            Assert.That(buildSettingsParam.DefaultValue, Is.Not.Null);
-            Assert.That(buildSettingsParam.DefaultValue, Is.InstanceOf<Dictionary<object, object>>());
-            var settingsDict = (Dictionary<object, object>)buildSettingsParam.DefaultValue!;
-            Assert.That(settingsDict, Is.Empty);
-            Assert.That(buildSettingsParam.AllowedValues, Is.Null);
-        }
+        Assert.Equal("object", buildSettingsParam.Type);
+        Assert.Equal("Build Settings", buildSettingsParam.DisplayName);
+        Assert.NotNull(buildSettingsParam.DefaultValue);
+        Assert.IsType<Dictionary<object, object>>(buildSettingsParam.DefaultValue);
+        var settingsDict = (Dictionary<object, object>)buildSettingsParam.DefaultValue!;
+        Assert.Empty(settingsDict);
+        Assert.Null(buildSettingsParam.AllowedValues);
     }
 
     private static YamlMappingNode LoadPipeline(string path) => YamlUtils.LoadPipelineFile(path);

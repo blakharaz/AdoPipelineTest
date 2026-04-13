@@ -1,12 +1,13 @@
-using NUnit.Framework;
 using AdoPipelineTest.Model;
 using AdoPipelineTest.Nunit.Constraints;
+using Xunit;
+using Assert = Xunit.Assert;
 
 namespace AdoPipelineTest.UnitTests.Nunit.Constraints;
 
 public class HasJobConstraintTest
 {
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineStage_HasJobByName_ReturnsSuccess()
     {
         var stage = new PipelineStage
@@ -17,10 +18,10 @@ public class HasJobConstraintTest
         var constraint = new HasJobConstraint("Compile");
         var result = constraint.ApplyTo(stage);
         
-        Assert.That(result.IsSuccess, Is.True);
+        Assert.True(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineStage_HasJobByDisplayName_ReturnsSuccess()
     {
         var stage = new PipelineStage
@@ -31,10 +32,10 @@ public class HasJobConstraintTest
         var constraint = new HasJobConstraint("Compile Job");
         var result = constraint.ApplyTo(stage);
         
-        Assert.That(result.IsSuccess, Is.True);
+        Assert.True(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineStage_JobNotFound_ReturnsFailure()
     {
         var stage = new PipelineStage
@@ -45,10 +46,10 @@ public class HasJobConstraintTest
         var constraint = new HasJobConstraint("Test");
         var result = constraint.ApplyTo(stage);
         
-        Assert.That(result.IsSuccess, Is.False);
+        Assert.False(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineStage_EmptyJobs_ReturnsFailure()
     {
         var stage = new PipelineStage { Jobs = [] };
@@ -56,22 +57,22 @@ public class HasJobConstraintTest
         var constraint = new HasJobConstraint("Compile");
         var result = constraint.ApplyTo(stage);
         
-        Assert.That(result.IsSuccess, Is.False);
+        Assert.False(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_NotPipelineStage_ReturnsFailure()
     {
         var constraint = new HasJobConstraint("Compile");
         var result = constraint.ApplyTo("not a stage");
         
-        Assert.That(result.IsSuccess, Is.False);
+        Assert.False(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void Description_ReturnsCorrectMessage()
     {
         var constraint = new HasJobConstraint("Compile");
-        Assert.That(constraint.Description, Is.EqualTo("Stage has job 'Compile'"));
+        Assert.Equal("Stage has job 'Compile'", constraint.Description);
     }
 }

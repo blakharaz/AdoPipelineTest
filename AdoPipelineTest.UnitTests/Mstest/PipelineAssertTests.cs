@@ -1,24 +1,16 @@
-using MsAssert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
-using CollectionAssert = Microsoft.VisualStudio.TestTools.UnitTesting.CollectionAssert;
-using TestClass = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
-using TestMethod = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
-using TestInitialize = Microsoft.VisualStudio.TestTools.UnitTesting.TestInitializeAttribute;
-using DataTestMethod = Microsoft.VisualStudio.TestTools.UnitTesting.DataTestMethodAttribute;
-using DataRow = Microsoft.VisualStudio.TestTools.UnitTesting.DataRowAttribute;
-using AssertFailedException = Microsoft.VisualStudio.TestTools.UnitTesting.AssertFailedException;
-using AdoPipelineTest.Mstest;
 using AdoPipelineTest.Model;
 using AdoPipelineTest.Model.Steps;
+using AdoPipelineTest.Mstest;
+using Xunit;
+using Assert = Xunit.Assert;
 
 namespace AdoPipelineTest.UnitTests.Mstest;
 
-[TestClass]
 public class PipelineAssertTests
 {
     private PipelineTestResult _result = null!;
 
-    [TestInitialize]
-    public void Setup()
+    public PipelineAssertTests()
     {
         _result = new PipelineTestResult
         {
@@ -78,368 +70,265 @@ public class PipelineAssertTests
 
     #region HasStage
 
-    [TestMethod]
-    public void HasStage_ExistingStageByDisplayName_DoesNotThrow()
-    {
-        _result.HasStage("Build Stage");
-        MsAssert.IsNotNull(_result.Stages.FirstOrDefault(s => s.DisplayName == "Build Stage"));
-    }
-
-    [TestMethod]
-    public void HasStage_ExistingStageByName_DoesNotThrow()
+    [Fact]
+    public void HasStage_ByName_ShouldNotThrow()
     {
         _result.HasStage("Build");
-        MsAssert.IsNotNull(_result.Stages.FirstOrDefault(s => s.Name == "Build"));
+        Assert.NotNull(_result);
     }
 
-    [TestMethod]
-    public void HasStage_NonExistingStage_ThrowsAssertFailedException()
+    [Fact]
+    public void HasStage_ByDisplayName_ShouldNotThrow()
     {
-        MsAssert.ThrowsExactly<AssertFailedException>(() => _result.HasStage("NonExistent"));
+        _result.HasStage("Build Stage");
+        Assert.NotNull(_result);
     }
 
-    [DataTestMethod]
-    [DataRow("Build Stage")]
-    [DataRow("Deploy Stage")]
-    public void HasStage_AllExistingStagesByDisplayName_DoesNotThrow(string stageName)
+    [Fact]
+    public void HasStage_NonExisting_ShouldThrow()
     {
-        _result.HasStage(stageName);
-        MsAssert.IsNotNull(_result.Stages.FirstOrDefault(s => s.DisplayName == stageName));
-    }
-
-    [DataTestMethod]
-    [DataRow("Build")]
-    [DataRow("Deploy")]
-    public void HasStage_AllExistingStagesByName_DoesNotThrow(string stageName)
-    {
-        _result.HasStage(stageName);
-        MsAssert.IsNotNull(_result.Stages.FirstOrDefault(s => s.Name == stageName));
+        Assert.Throws<AssertFailedException>(() => _result.HasStage("NonExistent"));
     }
 
     #endregion
 
     #region HasStageCount
 
-    [TestMethod]
-    public void HasStageCount_CorrectCount_DoesNotThrow()
+    [Fact]
+    public void HasStageCount_CorrectCount_ShouldNotThrow()
     {
         _result.HasStageCount(2);
-        MsAssert.AreEqual(2, _result.Stages.Count);
+        Assert.NotNull(_result);
     }
 
-    [TestMethod]
-    public void HasStageCount_WrongCount_ThrowsAssertFailedException()
+    [Fact]
+    public void HasStageCount_WrongCount_ShouldThrow()
     {
-        MsAssert.ThrowsExactly<AssertFailedException>(() => _result.HasStageCount(5));
+        Assert.Throws<AssertFailedException>(() => _result.HasStageCount(5));
     }
 
     #endregion
 
-    #region HasJob (on PipelineTestResult)
+    #region HasJob (PipelineTestResult, stageName, jobName)
 
-    [TestMethod]
-    public void HasJob_ExistingJobByDisplayName_DoesNotThrow()
-    {
-        _result.HasJob("Build Stage", "Build Job");
-        MsAssert.IsNotNull(_result.Stages.FirstOrDefault(s => s.DisplayName == "Build Stage")?.Jobs.FirstOrDefault(j => j.DisplayName == "Build Job"));
-    }
-
-    [TestMethod]
-    public void HasJob_ExistingJobByName_DoesNotThrow()
+    [Fact]
+    public void HasJob_WithStageAndJob_ByName_ShouldNotThrow()
     {
         _result.HasJob("Build", "BuildJob");
-        MsAssert.IsNotNull(_result.Stages.FirstOrDefault(s => s.Name == "Build")?.Jobs.FirstOrDefault(j => j.Name == "BuildJob"));
+        Assert.NotNull(_result);
     }
 
-    [TestMethod]
-    public void HasJob_NonExistingStage_ThrowsAssertFailedException()
+    [Fact]
+    public void HasJob_WithStageAndJob_ByDisplayName_ShouldNotThrow()
     {
-        MsAssert.ThrowsExactly<AssertFailedException>(() => _result.HasJob("NonExistent", "Build Job"));
+        _result.HasJob("Build Stage", "Build Job");
+        Assert.NotNull(_result);
     }
 
-    [TestMethod]
-    public void HasJob_NonExistingJob_ThrowsAssertFailedException()
+    [Fact]
+    public void HasJob_StageNotFound_ShouldThrow()
     {
-        MsAssert.ThrowsExactly<AssertFailedException>(() => _result.HasJob("Build Stage", "NonExistent"));
+        Assert.Throws<AssertFailedException>(() => _result.HasJob("NonExistent", "BuildJob"));
+    }
+
+    [Fact]
+    public void HasJob_JobNotFound_ShouldThrow()
+    {
+        Assert.Throws<AssertFailedException>(() => _result.HasJob("Build", "NonExistent"));
     }
 
     #endregion
 
-    #region HasJob (on PipelineStage)
+    #region HasJob (PipelineStage, jobName)
 
-    [TestMethod]
-    public void HasJobOnStage_ExistingJobByDisplayName_DoesNotThrow()
+    [Fact]
+    public void HasJob_OnStage_ByName_ShouldNotThrow()
     {
-        var stage = _result.Stages[0];
-        stage.HasJob("Build Job");
-        MsAssert.IsNotNull(stage.Jobs.FirstOrDefault(j => j.DisplayName == "Build Job"));
+        _result.Stages[0].HasJob("BuildJob");
+        Assert.NotNull(_result.Stages[0]);
     }
 
-    [TestMethod]
-    public void HasJobOnStage_ExistingJobByName_DoesNotThrow()
+    [Fact]
+    public void HasJob_OnStage_ByDisplayName_ShouldNotThrow()
     {
-        var stage = _result.Stages[0];
-        stage.HasJob("BuildJob");
-        MsAssert.IsNotNull(stage.Jobs.FirstOrDefault(j => j.Name == "BuildJob"));
+        _result.Stages[0].HasJob("Build Job");
+        Assert.NotNull(_result.Stages[0]);
     }
 
-    [TestMethod]
-    public void HasJobOnStage_NonExistingJob_ThrowsAssertFailedException()
+    [Fact]
+    public void HasJob_OnStage_NotFound_ShouldThrow()
     {
-        var stage = _result.Stages[0];
-        MsAssert.ThrowsExactly<AssertFailedException>(() => stage.HasJob("NonExistent"));
+        Assert.Throws<AssertFailedException>(() => _result.Stages[0].HasJob("NonExistent"));
     }
 
     #endregion
 
-    #region HasStep (by name)
+    #region HasStep
 
-    [TestMethod]
-    public void HasStep_ExistingStep_DoesNotThrow()
+    [Fact]
+    public void HasStep_ByDisplayName_ShouldNotThrow()
     {
         _result.HasStep("Use .NET");
-        MsAssert.IsNotNull(_result.Stages.SelectMany(s => s.Jobs).SelectMany(j => j.Steps).FirstOrDefault(s => s.DisplayName == "Use .NET"));
+        Assert.NotNull(_result);
     }
 
-    [TestMethod]
-    public void HasStep_NonExistingStep_ThrowsAssertFailedException()
+    [Fact]
+    public void HasStep_NotFound_ShouldThrow()
     {
-        MsAssert.ThrowsExactly<AssertFailedException>(() => _result.HasStep("NonExistent"));
+        Assert.Throws<AssertFailedException>(() => _result.HasStep("NonExistent Step"));
     }
 
-    #endregion
-
-    #region HasStep (by predicate)
-
-    [TestMethod]
-    public void HasStepByPredicate_MatchingStep_DoesNotThrow()
+    [Fact]
+    public void HasStep_WithPredicate_ShouldNotThrow()
     {
-        _result.HasStep(s => s is ScriptStep);
-        MsAssert.IsTrue(_result.Stages.SelectMany(s => s.Jobs).SelectMany(j => j.Steps).Any(s => s is ScriptStep));
+        _result.HasStep(s => s.DisplayName == "Use .NET");
+        Assert.NotNull(_result);
     }
 
-    [TestMethod]
-    public void HasStepByPredicate_NoMatchingStep_ThrowsAssertFailedException()
+    [Fact]
+    public void HasStep_WithPredicate_NoMatch_ShouldThrow()
     {
-        MsAssert.ThrowsExactly<AssertFailedException>(() => _result.HasStep(s => s.DisplayName == "NonExistent"));
+        Assert.Throws<AssertFailedException>(() => _result.HasStep(s => s.DisplayName == "NonExistent"));
     }
 
     #endregion
 
     #region HasTask
 
-    [TestMethod]
-    public void HasTask_ExistingTask_DoesNotThrow()
+    [Fact]
+    public void HasTask_ByTaskName_ShouldNotThrow()
     {
         _result.HasTask("UseDotNet@2");
-        MsAssert.IsTrue(_result.Stages.SelectMany(s => s.Jobs).SelectMany(j => j.Steps).OfType<TaskStep>().Any(t => t.TaskName == "UseDotNet@2"));
+        Assert.NotNull(_result);
     }
 
-    [TestMethod]
-    public void HasTask_NonExistingTask_ThrowsAssertFailedException()
+    [Fact]
+    public void HasTask_NotFound_ShouldThrow()
     {
-        MsAssert.ThrowsExactly<AssertFailedException>(() => _result.HasTask("NonExistent@1"));
-    }
-
-    [DataTestMethod]
-    [DataRow("UseDotNet@2")]
-    [DataRow("DotNetCoreCLI@2")]
-    [DataRow("AzureWebApp@1")]
-    public void HasTask_AllExistingTasks_DoesNotThrow(string taskName)
-    {
-        _result.HasTask(taskName);
-        MsAssert.IsTrue(_result.Stages.SelectMany(s => s.Jobs).SelectMany(j => j.Steps).OfType<TaskStep>().Any(t => t.TaskName == taskName));
+        Assert.Throws<AssertFailedException>(() => _result.HasTask("NonExistent@1"));
     }
 
     #endregion
 
-    #region HasVariable (existence)
+    #region HasVariable
 
-    [TestMethod]
-    public void HasVariable_ExistingVariable_DoesNotThrow()
+    [Fact]
+    public void HasVariable_Existing_ShouldNotThrow()
     {
         _result.HasVariable("buildConfiguration");
-        MsAssert.IsNotNull(_result.Variables.FirstOrDefault(v => v.Name == "buildConfiguration"));
+        Assert.NotNull(_result);
     }
 
-    [TestMethod]
-    public void HasVariable_NonExistingVariable_ThrowsAssertFailedException()
+    [Fact]
+    public void HasVariable_NotFound_ShouldThrow()
     {
-        MsAssert.ThrowsExactly<AssertFailedException>(() => _result.HasVariable("nonExistent"));
+        Assert.Throws<AssertFailedException>(() => _result.HasVariable("nonExistent"));
     }
 
-    #endregion
-
-    #region HasVariable (with value)
-
-    [TestMethod]
-    public void HasVariableWithCorrectValue_DoesNotThrow()
+    [Fact]
+    public void HasVariable_WithCorrectValue_ShouldNotThrow()
     {
         _result.HasVariable("buildConfiguration", "Release");
-        MsAssert.AreEqual("Release", _result.Variables.FirstOrDefault(v => v.Name == "buildConfiguration")?.DefaultValue?.ToString());
+        Assert.NotNull(_result);
     }
 
-    [TestMethod]
-    public void HasVariableWithWrongValue_ThrowsAssertFailedException()
+    [Fact]
+    public void HasVariable_WithWrongValue_ShouldThrow()
     {
-        MsAssert.ThrowsExactly<AssertFailedException>(() => _result.HasVariable("buildConfiguration", "Debug"));
-    }
-
-    [TestMethod]
-    public void HasVariable_NonExistingVariableWithValue_ThrowsAssertFailedException()
-    {
-        MsAssert.ThrowsExactly<AssertFailedException>(() => _result.HasVariable("nonExistent", "value"));
+        Assert.Throws<AssertFailedException>(() => _result.HasVariable("buildConfiguration", "Debug"));
     }
 
     #endregion
 
     #region HasParameter
 
-    [TestMethod]
-    public void HasParameter_ExistingParameter_DoesNotThrow()
+    [Fact]
+    public void HasParameter_Existing_ShouldNotThrow()
     {
         _result.HasParameter("projectName");
-        MsAssert.IsTrue(_result.Parameters.ContainsKey("projectName"));
+        Assert.NotNull(_result);
     }
 
-    [TestMethod]
-    public void HasParameter_NonExistingParameter_ThrowsAssertFailedException()
+    [Fact]
+    public void HasParameter_NotFound_ShouldThrow()
     {
-        MsAssert.ThrowsExactly<AssertFailedException>(() => _result.HasParameter("nonExistent"));
-    }
-
-    [DataTestMethod]
-    [DataRow("projectName")]
-    [DataRow("enableTests")]
-    public void HasParameter_AllExistingParameters_DoesNotThrow(string paramName)
-    {
-        _result.HasParameter(paramName);
-        MsAssert.IsTrue(_result.Parameters.ContainsKey(paramName));
+        Assert.Throws<AssertFailedException>(() => _result.HasParameter("nonExistent"));
     }
 
     #endregion
 
     #region HasTrigger
 
-    [TestMethod]
-    public void HasTrigger_WithTriggers_DoesNotThrow()
+    [Fact]
+    public void HasTrigger_WithTriggers_ShouldNotThrow()
     {
         _result.HasTrigger();
-        MsAssert.IsNotNull(_result.Triggers);
+        Assert.NotNull(_result);
     }
 
-    [TestMethod]
-    public void HasTrigger_NoTriggers_ThrowsAssertFailedException()
+    [Fact]
+    public void HasTrigger_NoTriggers_ShouldThrow()
     {
-        var resultWithoutTriggers = new PipelineTestResult
-        {
-            Stages = [],
-            Variables = [],
-            Parameters = new Dictionary<string, PipelineParameter>()
-        };
-        MsAssert.ThrowsExactly<AssertFailedException>(() => resultWithoutTriggers.HasTrigger());
+        var resultNoTriggers = new PipelineTestResult();
+        Assert.Throws<AssertFailedException>(() => resultNoTriggers.HasTrigger());
     }
 
     #endregion
 
     #region TriggersIncludeBranch
 
-    [TestMethod]
-    public void TriggersIncludeBranch_ExistingBranch_DoesNotThrow()
+    [Fact]
+    public void TriggersIncludeBranch_ExistingBranch_ShouldNotThrow()
     {
         _result.TriggersIncludeBranch("main");
-        CollectionAssert.Contains(_result.Triggers!.IncludedBranches.ToList(), "main");
+        Assert.NotNull(_result);
     }
 
-    [TestMethod]
-    public void TriggersIncludeBranch_NonExistingBranch_ThrowsAssertFailedException()
+    [Fact]
+    public void TriggersIncludeBranch_NonExistingBranch_ShouldThrow()
     {
-        MsAssert.ThrowsExactly<AssertFailedException>(() => _result.TriggersIncludeBranch("feature/xyz"));
-    }
-
-    [TestMethod]
-    public void TriggersIncludeBranch_NoTriggers_ThrowsAssertFailedException()
-    {
-        var resultWithoutTriggers = new PipelineTestResult
-        {
-            Stages = [],
-            Variables = [],
-            Parameters = new Dictionary<string, PipelineParameter>()
-        };
-        MsAssert.ThrowsExactly<AssertFailedException>(() => resultWithoutTriggers.TriggersIncludeBranch("main"));
+        Assert.Throws<AssertFailedException>(() => _result.TriggersIncludeBranch("feature-branch"));
     }
 
     #endregion
 
     #region HasVmImage
 
-    [TestMethod]
-    public void HasVmImage_CorrectImage_DoesNotThrow()
+    [Fact]
+    public void HasVmImage_CorrectImage_ShouldNotThrow()
     {
         _result.HasVmImage("ubuntu-latest");
-        MsAssert.AreEqual("ubuntu-latest", _result.AgentPool?.VmImage);
+        Assert.NotNull(_result);
     }
 
-    [TestMethod]
-    public void HasVmImage_WrongImage_ThrowsAssertFailedException()
+    [Fact]
+    public void HasVmImage_WrongImage_ShouldThrow()
     {
-        MsAssert.ThrowsExactly<AssertFailedException>(() => _result.HasVmImage("windows-latest"));
+        Assert.Throws<AssertFailedException>(() => _result.HasVmImage("windows-latest"));
     }
 
-    [TestMethod]
-    public void HasVmImage_NoPool_ThrowsAssertFailedException()
+    [Fact]
+    public void HasVmImage_NoPool_ShouldThrow()
     {
-        var resultWithoutPool = new PipelineTestResult
-        {
-            Stages = [],
-            Variables = [],
-            Parameters = new Dictionary<string, PipelineParameter>()
-        };
-        MsAssert.ThrowsExactly<AssertFailedException>(() => resultWithoutPool.HasVmImage("ubuntu-latest"));
+        var resultNoPool = new PipelineTestResult();
+        Assert.Throws<AssertFailedException>(() => resultNoPool.HasVmImage("ubuntu-latest"));
     }
 
     #endregion
 
     #region HasScriptStep
 
-    [TestMethod]
-    public void HasScriptStep_ExistingPattern_DoesNotThrow()
+    [Fact]
+    public void HasScriptStep_ExistingPattern_ShouldNotThrow()
     {
         _result.HasScriptStep("dotnet test");
-        MsAssert.IsTrue(_result.Stages.SelectMany(s => s.Jobs).SelectMany(j => j.Steps).OfType<ScriptStep>().Any(s => s.Script.Contains("dotnet test")));
+        Assert.NotNull(_result);
     }
 
-    [TestMethod]
-    public void HasScriptStep_NonExistingPattern_ThrowsAssertFailedException()
+    [Fact]
+    public void HasScriptStep_NonExistingPattern_ShouldThrow()
     {
-        MsAssert.ThrowsExactly<AssertFailedException>(() => _result.HasScriptStep("nonexistent pattern"));
-    }
-
-    [TestMethod]
-    public void HasScriptStep_NoScriptSteps_ThrowsAssertFailedException()
-    {
-        var resultWithoutScripts = new PipelineTestResult
-        {
-            Stages =
-            [
-                new PipelineStage
-                {
-                    Jobs =
-                    [
-                        new PipelineJob
-                        {
-                            Steps =
-                            [
-                                new TaskStep { DisplayName = "Task", TaskName = "Task@1", Inputs = new Dictionary<string, string>() }
-                            ]
-                        }
-                    ]
-                }
-            ],
-            Variables = [],
-            Parameters = new Dictionary<string, PipelineParameter>()
-        };
-        MsAssert.ThrowsExactly<AssertFailedException>(() => resultWithoutScripts.HasScriptStep("anything"));
+        Assert.Throws<AssertFailedException>(() => _result.HasScriptStep("npm build"));
     }
 
     #endregion

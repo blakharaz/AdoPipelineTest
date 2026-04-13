@@ -1,13 +1,14 @@
-using NUnit.Framework;
 using AdoPipelineTest.Model;
 using AdoPipelineTest.Model.Steps;
 using AdoPipelineTest.Nunit.Constraints;
+using Xunit;
+using Assert = Xunit.Assert;
 
 namespace AdoPipelineTest.UnitTests.Nunit.Constraints;
 
 public class HasStepConstraintTest
 {
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineJob_HasStep_ReturnsSuccess()
     {
         var job = new PipelineJob
@@ -18,10 +19,10 @@ public class HasStepConstraintTest
         var constraint = new HasStepConstraint("Build");
         var result = constraint.ApplyTo(job);
         
-        Assert.That(result.IsSuccess, Is.True);
+        Assert.True(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineJob_StepNotFound_ReturnsFailure()
     {
         var job = new PipelineJob
@@ -32,10 +33,10 @@ public class HasStepConstraintTest
         var constraint = new HasStepConstraint("Test");
         var result = constraint.ApplyTo(job);
         
-        Assert.That(result.IsSuccess, Is.False);
+        Assert.False(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineJob_StepWithNullDisplayName_ReturnsFailure()
     {
         var job = new PipelineJob
@@ -46,10 +47,10 @@ public class HasStepConstraintTest
         var constraint = new HasStepConstraint("Build");
         var result = constraint.ApplyTo(job);
         
-        Assert.That(result.IsSuccess, Is.False);
+        Assert.False(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineJob_EmptySteps_ReturnsFailure()
     {
         var job = new PipelineJob { Steps = [] };
@@ -57,22 +58,22 @@ public class HasStepConstraintTest
         var constraint = new HasStepConstraint("Build");
         var result = constraint.ApplyTo(job);
         
-        Assert.That(result.IsSuccess, Is.False);
+        Assert.False(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_NotPipelineJob_ReturnsFailure()
     {
         var constraint = new HasStepConstraint("Build");
         var result = constraint.ApplyTo("not a job");
         
-        Assert.That(result.IsSuccess, Is.False);
+        Assert.False(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void Description_ReturnsCorrectMessage()
     {
         var constraint = new HasStepConstraint("Build");
-        Assert.That(constraint.Description, Is.EqualTo("Job has step with display name 'Build'"));
+        Assert.Equal("Job has step with display name 'Build'", constraint.Description);
     }
 }

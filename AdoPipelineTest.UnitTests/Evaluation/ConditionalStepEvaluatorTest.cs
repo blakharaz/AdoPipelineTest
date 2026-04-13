@@ -1,17 +1,16 @@
-using NUnit.Framework;
+using Xunit;
 using AdoPipelineTest.Evaluation;
 using AdoPipelineTest.Parsing.Ast;
+using Assert = Xunit.Assert;
 
 namespace AdoPipelineTest.UnitTests.Evaluation;
 
-[TestFixture]
 public class ConditionalStepEvaluatorTest
 {
     private Dictionary<string, object> _parameters = null!;
-    private Dictionary<string, object> _variables = null!;
+    private Dictionary<string, object?> _variables = null!;
 
-    [SetUp]
-    public void Setup()
+    public ConditionalStepEvaluatorTest()
     {
         _parameters = [];
         _variables = [];
@@ -19,7 +18,7 @@ public class ConditionalStepEvaluatorTest
 
     #region eq() Tests
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithEqFunction_ReturnsTrueWhenEqual()
     {
         // Condition: eq(parameters.toolset, 'msbuild')
@@ -32,10 +31,10 @@ public class ConditionalStepEvaluatorTest
 
         _parameters["toolset"] = "msbuild";
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.True);
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithEqFunction_ReturnsFalseWhenNotEqual()
     {
         // Condition: eq(parameters.toolset, 'msbuild')
@@ -48,10 +47,10 @@ public class ConditionalStepEvaluatorTest
 
         _parameters["toolset"] = "dotnet";
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.False);
+        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithEqFunction_ComparesTwoStringLiterals()
     {
         // Condition: eq('value1', 'value1')
@@ -62,10 +61,10 @@ public class ConditionalStepEvaluatorTest
             ]
         );
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.True);
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithEqFunction_ComparesTwoParameters()
     {
         // Condition: eq(parameters.a, parameters.b)
@@ -79,14 +78,14 @@ public class ConditionalStepEvaluatorTest
         _parameters["a"] = "same";
         _parameters["b"] = "same";
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.True);
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
     #endregion
 
     #region ne() Tests
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithNeFunction_ReturnsTrueWhenNotEqual()
     {
         // Condition: ne(parameters.option, 'one')
@@ -99,10 +98,10 @@ public class ConditionalStepEvaluatorTest
 
         _parameters["option"] = "two";
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.True);
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithNeFunction_ReturnsFalseWhenEqual()
     {
         // Condition: ne(parameters.option, 'one')
@@ -115,14 +114,14 @@ public class ConditionalStepEvaluatorTest
 
         _parameters["option"] = "one";
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.False);
+        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
     #endregion
 
     #region and() Tests
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithAndFunction_ReturnsTrueWhenBothTrue()
     {
         // Condition: and(eq(parameters.a, 'x'), eq(parameters.b, 'y'))
@@ -143,10 +142,10 @@ public class ConditionalStepEvaluatorTest
         _parameters["a"] = "x";
         _parameters["b"] = "y";
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.True);
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithAndFunction_ReturnsFalseWhenFirstFalse()
     {
         // Condition: and(eq(parameters.a, 'x'), eq(parameters.b, 'y'))
@@ -168,10 +167,10 @@ public class ConditionalStepEvaluatorTest
         _parameters["a"] = "wrong";
         _parameters["b"] = "y";
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.False);
+        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithAndFunction_ReturnsFalseWhenSecondFalse()
     {
         // Condition: and(eq(parameters.a, 'x'), eq(parameters.b, 'y'))
@@ -194,14 +193,14 @@ public class ConditionalStepEvaluatorTest
         _parameters["a"] = "x";
         _parameters["b"] = "wrong";
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.False);
+        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
     #endregion
 
     #region or() Tests
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithOrFunction_ReturnsTrueWhenFirstTrue()
     {
         // Condition: or(eq(parameters.a, 'x'), eq(parameters.b, 'y'))
@@ -221,10 +220,10 @@ public class ConditionalStepEvaluatorTest
         _parameters["a"] = "x";
         _parameters["b"] = "wrong";
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.True);
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithOrFunction_ReturnsTrueWhenSecondTrue()
     {
         // Condition: or(eq(parameters.a, 'x'), eq(parameters.b, 'y'))
@@ -245,10 +244,10 @@ public class ConditionalStepEvaluatorTest
         _parameters["a"] = "wrong";
         _parameters["b"] = "y";
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.True);
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithOrFunction_ReturnsFalseWhenBothFalse()
     {
         // Condition: or(eq(parameters.a, 'x'), eq(parameters.b, 'y'))
@@ -268,14 +267,14 @@ public class ConditionalStepEvaluatorTest
         _parameters["a"] = "wrong1";
         _parameters["b"] = "wrong2";
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.False);
+        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
     #endregion
 
     #region not() Tests
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithNotFunction_InvertsTrue()
     {
         // Condition: not(eq(parameters.option, 'one'))
@@ -289,10 +288,10 @@ public class ConditionalStepEvaluatorTest
 
         _parameters["option"] = "one";
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.False);
+        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithNotFunction_InvertsFalse()
     {
         // Condition: not(eq(parameters.option, 'one'))
@@ -305,14 +304,14 @@ public class ConditionalStepEvaluatorTest
 
         _parameters["option"] = "two";
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.True);
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
     #endregion
 
     #region contains() Tests
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithContainsFunction_ReturnsTrueWhenFound()
     {
         // Condition: contains(parameters.tags, 'production')
@@ -323,10 +322,10 @@ public class ConditionalStepEvaluatorTest
 
         _parameters["tags"] = "staging,production,test";
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.True);
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithContainsFunction_ReturnsFalseWhenNotFound()
     {
         // Condition: contains(parameters.tags, 'production')
@@ -337,14 +336,14 @@ public class ConditionalStepEvaluatorTest
 
         _parameters["tags"] = "staging,test";
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.False);
+        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
     #endregion
 
     #region startswith() Tests
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithStartsWithFunction_ReturnsTrueWhenMatches()
     {
         // Condition: startswith(parameters.branch, 'refs/heads/')
@@ -357,10 +356,10 @@ public class ConditionalStepEvaluatorTest
 
         _parameters["branch"] = "refs/heads/main";
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.True);
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithStartsWithFunction_ReturnsFalseWhenNotMatches()
     {
         // Condition: startswith(parameters.branch, 'refs/heads/')
@@ -372,14 +371,14 @@ public class ConditionalStepEvaluatorTest
 
         _parameters["branch"] = "refs/tags/v1.0";
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.False);
+        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
     #endregion
 
     #region endswith() Tests
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithEndsWithFunction_ReturnsTrueWhenMatches()
     {
         // Condition: endswith(parameters.artifact, '.zip')
@@ -391,10 +390,10 @@ public class ConditionalStepEvaluatorTest
 
         _parameters["artifact"] = "build-1.0.0.zip";
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.True);
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithEndsWithFunction_ReturnsFalseWhenNotMatches()
     {
         // Condition: endswith(parameters.artifact, '.zip')
@@ -405,14 +404,14 @@ public class ConditionalStepEvaluatorTest
 
         _parameters["artifact"] = "build-1.0.0.tar.gz";
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.False);
+        Assert.False(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
     #endregion
 
     #region Numeric Comparison Tests
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithLtFunction_ReturnsTrueWhenLess()
     {
         // Condition: lt(parameters.version, '2.0')
@@ -423,10 +422,10 @@ public class ConditionalStepEvaluatorTest
 
         _parameters["version"] = "1.5";
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.True);
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithLeFunction_ReturnsTrueWhenLessOrEqual()
     {
         // Condition: le(parameters.version, '2.0')
@@ -437,10 +436,10 @@ public class ConditionalStepEvaluatorTest
 
         _parameters["version"] = "2.0";
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.True);
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithGtFunction_ReturnsTrueWhenGreater()
     {
         // Condition: gt(parameters.version, '1.0')
@@ -451,10 +450,10 @@ public class ConditionalStepEvaluatorTest
 
         _parameters["version"] = "2.5";
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.True);
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithGeFunction_ReturnsTrueWhenGreaterOrEqual()
     {
         // Condition: ge(parameters.version, '1.0')
@@ -466,14 +465,14 @@ public class ConditionalStepEvaluatorTest
 
         _parameters["version"] = "1.0";
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.True);
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
     #endregion
 
     #region Variable Tests
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithVariableExpression_ResolvesVariable()
     {
         // Condition: eq(variables.environment, 'production')
@@ -484,14 +483,14 @@ public class ConditionalStepEvaluatorTest
 
         _variables["environment"] = "production";
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.True);
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
     #endregion
 
     #region Complex Logic Tests
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithNestedAndOr_EvaluatesCorrectly()
     {
         // Condition: and(eq(parameters.a, 'x'), or(eq(parameters.b, 'y'), eq(parameters.c, 'z')))
@@ -523,10 +522,10 @@ public class ConditionalStepEvaluatorTest
         _parameters["c"] = "z";
 
         // a='x' (true) AND (b='y' (false) OR c='z' (true)) = true AND true = true
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.True);
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithMultipleAndConditions_EvaluatesAll()
     {
         // Condition: and(eq(parameters.a, 'x'), eq(parameters.b, 'y'), eq(parameters.c, 'z'))
@@ -556,25 +555,25 @@ public class ConditionalStepEvaluatorTest
         _parameters["b"] = "y";
         _parameters["c"] = "z";
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.True);
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
     #endregion
 
     #region Error Handling Tests
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithUnknownFunction_ThrowsInvalidOperationException()
     {
         var condition = CreateCondition("unknownFunc", []);
 
-        Assert.That(
-            () => ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables),
-            Throws.TypeOf<InvalidOperationException>().With.Message.Contains("Unknown function")
+        var ex = Assert.Throws<InvalidOperationException>(
+            () => ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables)
         );
+        Assert.Contains("Unknown function", ex.Message);
     }
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithWrongParameterCount_ThrowsInvalidOperationException()
     {
         var condition = CreateCondition("eq",
@@ -583,13 +582,13 @@ public class ConditionalStepEvaluatorTest
                 new StringLiteral { Value = "only-one-param" }
             });
 
-        Assert.That(
-            () => ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables),
-            Throws.TypeOf<InvalidOperationException>().With.Message.Contains("requires exactly 2 parameters")
+        var ex = Assert.Throws<InvalidOperationException>(
+            () => ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables)
         );
+        Assert.Contains("requires exactly 2 parameters", ex.Message);
     }
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithMissingParameter_ThrowsKeyNotFoundException()
     {
         var condition = CreateCondition("eq",
@@ -599,13 +598,12 @@ public class ConditionalStepEvaluatorTest
                 new StringLiteral { Value = "value" }
             });
 
-        Assert.That(
-            () => ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables),
-            Throws.TypeOf<KeyNotFoundException>()
+        var ex = Assert.Throws<KeyNotFoundException>(
+            () => ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables)
         );
     }
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithInvalidNumberForNumericComparison_ThrowsInvalidOperationException()
     {
         var condition = CreateCondition("lt",
@@ -617,30 +615,30 @@ public class ConditionalStepEvaluatorTest
 
         _parameters["version"] = "not-a-number";
 
-        Assert.That(
-            () => ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables),
-            Throws.TypeOf<InvalidOperationException>().With.Message.Contains("Cannot convert")
+        var ex = Assert.Throws<InvalidOperationException>(
+            () => ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables)
         );
+        Assert.Contains("Cannot convert", ex.Message);
     }
 
     #endregion
 
     #region Empty Condition Tests
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithNullCondition_ReturnsTrue()
     {
         TemplateExpression? condition = null;
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition!, _parameters, _variables), Is.True);
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition!, _parameters, _variables));
     }
 
-    [Test]
+    [Fact]
     public void EvaluateCondition_WithEmptyChildren_ReturnsTrue()
     {
         var condition = new TemplateExpression { Children = [] };
 
-        Assert.That(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables), Is.True);
+        Assert.True(ExpressionEvaluator.EvaluateCondition(condition, _parameters, _variables));
     }
 
     #endregion

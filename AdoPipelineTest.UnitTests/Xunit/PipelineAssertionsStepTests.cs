@@ -1,75 +1,79 @@
 using AdoPipelineTest.Model;
 using AdoPipelineTest.Model.Steps;
-using NUnit.Framework;
-using NUnitAssert = NUnit.Framework.Assert;
-using Assert = AdoPipelineTest.Xunit.Assert;
+using Xunit;
+using PipelineAssert = AdoPipelineTest.Xunit.Assert;
+using Assert = Xunit.Assert;
 
 namespace AdoPipelineTest.UnitTests.Xunit;
 
 public class PipelineAssertionsStepTests
 {
-    [Test]
+    [Fact]
     public void HasTask_WhenTaskExists_DoesNotThrow()
     {
         var result = CreateResultWithTask("UseDotNet@2");
 
-        NUnitAssert.DoesNotThrow(() => Assert.HasTask(result, "UseDotNet@2"));
+        var ex = Record.Exception(() => PipelineAssert.HasTask(result, "UseDotNet@2"));
+        Assert.Null(ex);
     }
 
-    [Test]
+    [Fact]
     public void HasTask_WhenTaskDoesNotExist_Throws()
     {
         var result = CreateResultWithTask("UseDotNet@2");
 
-        NUnitAssert.That(() => Assert.HasTask(result, "NonExistent@1"), Throws.Exception);
+        Assert.ThrowsAny<Exception>(() => PipelineAssert.HasTask(result, "NonExistent@1"));
     }
 
-    [Test]
+    [Fact]
     public void TaskHasInput_WhenInputExists_DoesNotThrow()
     {
         var result = CreateResultWithTaskAndInput("UseDotNet@2", "version", "8.0.x");
 
-        NUnitAssert.DoesNotThrow(() => Assert.TaskHasInput(result, "UseDotNet@2", "version"));
+        var ex = Record.Exception(() => PipelineAssert.TaskHasInput(result, "UseDotNet@2", "version"));
+        Assert.Null(ex);
     }
 
-    [Test]
+    [Fact]
     public void TaskHasInput_WhenInputExistsAndValueMatches_DoesNotThrow()
     {
         var result = CreateResultWithTaskAndInput("UseDotNet@2", "version", "8.0.x");
 
-        NUnitAssert.DoesNotThrow(() => Assert.TaskHasInput(result, "UseDotNet@2", "version", "8.0.x"));
+        var ex = Record.Exception(() => PipelineAssert.TaskHasInput(result, "UseDotNet@2", "version", "8.0.x"));
+        Assert.Null(ex);
     }
 
-    [Test]
+    [Fact]
     public void TaskHasInput_WhenInputExistsButValueDiffers_Throws()
     {
         var result = CreateResultWithTaskAndInput("UseDotNet@2", "version", "8.0.x");
 
-        NUnitAssert.That(() => Assert.TaskHasInput(result, "UseDotNet@2", "version", "9.0.x"), Throws.Exception);
+        Assert.ThrowsAny<Exception>(() => PipelineAssert.TaskHasInput(result, "UseDotNet@2", "version", "9.0.x"));
     }
 
-    [Test]
+    [Fact]
     public void TaskHasInput_WhenInputDoesNotExist_Throws()
     {
         var result = CreateResultWithTaskAndInput("UseDotNet@2", "version", "8.0.x");
 
-        NUnitAssert.That(() => Assert.TaskHasInput(result, "UseDotNet@2", "nonexistent"), Throws.Exception);
+        Assert.ThrowsAny<Exception>(() => PipelineAssert.TaskHasInput(result, "UseDotNet@2", "nonexistent"));
     }
 
-    [Test]
+    [Fact]
     public void HasScriptStep_WhenScriptContainsContent_DoesNotThrow()
     {
         var result = CreateResultWithScriptStep("echo hello world");
 
-        NUnitAssert.DoesNotThrow(() => Assert.HasScriptStep(result, "hello"));
+        var ex = Record.Exception(() => PipelineAssert.HasScriptStep(result, "hello"));
+        Assert.Null(ex);
     }
 
-    [Test]
+    [Fact]
     public void HasScriptStep_WhenScriptDoesNotContainContent_Throws()
     {
         var result = CreateResultWithScriptStep("echo hello world");
 
-        NUnitAssert.That(() => Assert.HasScriptStep(result, "goodbye"), Throws.Exception);
+        Assert.ThrowsAny<Exception>(() => PipelineAssert.HasScriptStep(result, "goodbye"));
     }
 
     private static PipelineTestResult CreateResultWithTask(string taskName)

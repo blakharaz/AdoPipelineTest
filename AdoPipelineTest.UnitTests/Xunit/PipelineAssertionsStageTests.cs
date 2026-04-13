@@ -1,13 +1,13 @@
 using AdoPipelineTest.Model;
-using NUnit.Framework;
-using NUnitAssert = NUnit.Framework.Assert;
-using Assert = AdoPipelineTest.Xunit.Assert;
+using Xunit;
+using PipelineAssert = AdoPipelineTest.Xunit.Assert;
+using Assert = Xunit.Assert;
 
 namespace AdoPipelineTest.UnitTests.Xunit;
 
 public class PipelineAssertionsStageTests
 {
-    [Test]
+    [Fact]
     public void HasStage_WhenStageExists_DoesNotThrow()
     {
         var result = new PipelineTestResult
@@ -15,10 +15,11 @@ public class PipelineAssertionsStageTests
             Stages = new List<PipelineStage> { new() { DisplayName = "Build" } }
         };
 
-        NUnitAssert.DoesNotThrow(() => Assert.HasStage(result, "Build"));
+        var ex = Record.Exception(() => PipelineAssert.HasStage(result, "Build"));
+        Assert.Null(ex);
     }
 
-    [Test]
+    [Fact]
     public void HasStage_WhenStageDoesNotExist_Throws()
     {
         var result = new PipelineTestResult
@@ -26,10 +27,10 @@ public class PipelineAssertionsStageTests
             Stages = new List<PipelineStage> { new() { DisplayName = "Build" } }
         };
 
-        NUnitAssert.That(() => Assert.HasStage(result, "Deploy"), Throws.Exception);
+        Assert.ThrowsAny<Exception>(() => PipelineAssert.HasStage(result, "Deploy"));
     }
 
-    [Test]
+    [Fact]
     public void StageCount_WhenCountMatches_DoesNotThrow()
     {
         var result = new PipelineTestResult
@@ -37,10 +38,11 @@ public class PipelineAssertionsStageTests
             Stages = new List<PipelineStage> { new(), new() }
         };
 
-        NUnitAssert.DoesNotThrow(() => Assert.StageCount(result, 2));
+        var ex = Record.Exception(() => PipelineAssert.StageCount(result, 2));
+        Assert.Null(ex);
     }
 
-    [Test]
+    [Fact]
     public void StageCount_WhenCountDiffers_Throws()
     {
         var result = new PipelineTestResult
@@ -48,6 +50,6 @@ public class PipelineAssertionsStageTests
             Stages = new List<PipelineStage> { new() }
         };
 
-        NUnitAssert.That(() => Assert.StageCount(result, 2), Throws.Exception);
+        Assert.ThrowsAny<Exception>(() => PipelineAssert.StageCount(result, 2));
     }
 }

@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using AdoPipelineTest.Model.Steps;
+using Assert = NUnit.Framework.Assert;
 
 namespace AdoPipelineTest.Samples.Nunit.Variables;
 

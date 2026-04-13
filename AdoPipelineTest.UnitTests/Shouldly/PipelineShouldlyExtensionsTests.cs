@@ -1,18 +1,16 @@
 using AdoPipelineTest.Model;
 using AdoPipelineTest.Model.Steps;
 using AdoPipelineTest.Shouldly;
-using NUnit.Framework;
 using Shouldly;
+using Xunit;
 
 namespace AdoPipelineTest.UnitTests.Shouldly;
 
-[TestFixture]
 public class PipelineShouldlyExtensionsTests
 {
     private PipelineTestResult _result = null!;
 
-    [SetUp]
-    public void Setup()
+    public PipelineShouldlyExtensionsTests()
     {
         _result = new PipelineTestResult
         {
@@ -72,19 +70,19 @@ public class PipelineShouldlyExtensionsTests
 
     #region ShouldHaveStage
 
-    [Test]
+    [Fact]
     public void ShouldHaveStage_ExistingStageByDisplayName_DoesNotThrow()
     {
         _result.ShouldHaveStage("Build Stage");
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveStage_ExistingStageByName_DoesNotThrow()
     {
         _result.ShouldHaveStage("Build");
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveStage_NonExistingStage_ThrowsShouldAssertException()
     {
         var act = () => _result.ShouldHaveStage("NonExistent");
@@ -96,13 +94,13 @@ public class PipelineShouldlyExtensionsTests
 
     #region ShouldHaveStageCount
 
-    [Test]
+    [Fact]
     public void ShouldHaveStageCount_CorrectCount_DoesNotThrow()
     {
         _result.ShouldHaveStageCount(2);
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveStageCount_WrongCount_ThrowsShouldAssertException()
     {
         var act = () => _result.ShouldHaveStageCount(5);
@@ -114,19 +112,19 @@ public class PipelineShouldlyExtensionsTests
 
     #region ShouldHaveJob (on PipelineTestResult)
 
-    [Test]
+    [Fact]
     public void ShouldHaveJob_ExistingJobByDisplayName_DoesNotThrow()
     {
         _result.ShouldHaveJob("Build Stage", "Build Job");
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveJob_ExistingJobByName_DoesNotThrow()
     {
         _result.ShouldHaveJob("Build", "BuildJob");
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveJob_NonExistingStage_ThrowsShouldAssertException()
     {
         var act = () => _result.ShouldHaveJob("NonExistent", "Build Job");
@@ -134,7 +132,7 @@ public class PipelineShouldlyExtensionsTests
             .Message.ShouldContain("Stage 'NonExistent' not found");
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveJob_NonExistingJob_ThrowsShouldAssertException()
     {
         var act = () => _result.ShouldHaveJob("Build Stage", "NonExistent");
@@ -146,21 +144,21 @@ public class PipelineShouldlyExtensionsTests
 
     #region ShouldHaveJob (on PipelineStage)
 
-    [Test]
+    [Fact]
     public void ShouldHaveJobOnStage_ExistingJobByDisplayName_DoesNotThrow()
     {
         var stage = _result.Stages[0];
         stage.ShouldHaveJob("Build Job");
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveJobOnStage_ExistingJobByName_DoesNotThrow()
     {
         var stage = _result.Stages[0];
         stage.ShouldHaveJob("BuildJob");
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveJobOnStage_NonExistingJob_ThrowsShouldAssertException()
     {
         var stage = _result.Stages[0];
@@ -173,14 +171,14 @@ public class PipelineShouldlyExtensionsTests
 
     #region ShouldHaveJobCount
 
-    [Test]
+    [Fact]
     public void ShouldHaveJobCount_CorrectCount_DoesNotThrow()
     {
         var stage = _result.Stages[0];
         stage.ShouldHaveJobCount(1);
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveJobCount_WrongCount_ThrowsShouldAssertException()
     {
         var stage = _result.Stages[0];
@@ -193,13 +191,13 @@ public class PipelineShouldlyExtensionsTests
 
     #region ShouldHaveStep (by name)
 
-    [Test]
+    [Fact]
     public void ShouldHaveStep_ExistingStep_DoesNotThrow()
     {
         _result.ShouldHaveStep("Use .NET");
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveStep_NonExistingStep_ThrowsShouldAssertException()
     {
         var act = () => _result.ShouldHaveStep("NonExistent");
@@ -211,13 +209,13 @@ public class PipelineShouldlyExtensionsTests
 
     #region ShouldHaveStep (by predicate)
 
-    [Test]
+    [Fact]
     public void ShouldHaveStepByPredicate_MatchingStep_DoesNotThrow()
     {
         _result.ShouldHaveStep(s => s is ScriptStep);
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveStepByPredicate_NoMatchingStep_ThrowsShouldAssertException()
     {
         var act = () => _result.ShouldHaveStep(s => s.DisplayName == "NonExistent");
@@ -229,14 +227,14 @@ public class PipelineShouldlyExtensionsTests
 
     #region ShouldHaveStepCount
 
-    [Test]
+    [Fact]
     public void ShouldHaveStepCount_CorrectCount_DoesNotThrow()
     {
         var job = _result.Stages[0].Jobs[0];
         job.ShouldHaveStepCount(3);
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveStepCount_WrongCount_ThrowsShouldAssertException()
     {
         var job = _result.Stages[0].Jobs[0];
@@ -249,13 +247,13 @@ public class PipelineShouldlyExtensionsTests
 
     #region ShouldHaveTask
 
-    [Test]
+    [Fact]
     public void ShouldHaveTask_ExistingTask_DoesNotThrow()
     {
         _result.ShouldHaveTask("UseDotNet@2");
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveTask_NonExistingTask_ThrowsShouldAssertException()
     {
         var act = () => _result.ShouldHaveTask("NonExistent@1");
@@ -267,13 +265,13 @@ public class PipelineShouldlyExtensionsTests
 
     #region ShouldHaveVariable (existence)
 
-    [Test]
+    [Fact]
     public void ShouldHaveVariable_ExistingVariable_DoesNotThrow()
     {
         _result.ShouldHaveVariable("buildConfiguration");
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveVariable_NonExistingVariable_ThrowsShouldAssertException()
     {
         var act = () => _result.ShouldHaveVariable("nonExistent");
@@ -285,27 +283,27 @@ public class PipelineShouldlyExtensionsTests
 
     #region ShouldHaveVariable (with value)
 
-    [Test]
+    [Fact]
     public void ShouldHaveVariableValue_CorrectValue_DoesNotThrow()
     {
         _result.ShouldHaveVariableValue("buildConfiguration", "Release");
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveVariableValue_WrongValue_ThrowsShouldAssertException()
     {
         var ex = Should.Throw<ShouldAssertException>(() => _result.ShouldHaveVariableValue("buildConfiguration", "Debug"));
         ex.Message.ShouldNotBeNullOrEmpty();
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveVariableValue_NonExistingVariable_ThrowsShouldAssertException()
     {
         var ex = Should.Throw<ShouldAssertException>(() => _result.ShouldHaveVariableValue("nonExistent", "value"));
         ex.Message.ShouldNotBeNullOrEmpty();
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveVariableValue_DictionaryValue_MatchesCorrectly()
     {
         var dictResult = new PipelineTestResult
@@ -319,7 +317,7 @@ public class PipelineShouldlyExtensionsTests
         dictResult.ShouldHaveVariableValue("config", new Dictionary<string, object?> { ["key1"] = "value1", ["key2"] = 42 });
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveVariableValue_DictionaryValue_ThrowsOnMismatch()
     {
         var dictResult = new PipelineTestResult
@@ -334,7 +332,7 @@ public class PipelineShouldlyExtensionsTests
         ex.Message.ShouldNotBeNullOrEmpty();
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveVariableValue_ListValue_MatchesCorrectly()
     {
         var listResult = new PipelineTestResult
@@ -348,7 +346,7 @@ public class PipelineShouldlyExtensionsTests
         listResult.ShouldHaveVariableValue("versions", new List<object?> { "1.0", "2.0", "3.0" });
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveVariableValue_ListValue_ThrowsOnMismatch()
     {
         var listResult = new PipelineTestResult
@@ -363,7 +361,7 @@ public class PipelineShouldlyExtensionsTests
         ex.Message.ShouldNotBeNullOrEmpty();
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveVariableValue_NullValue_MatchesCorrectly()
     {
         var nullResult = new PipelineTestResult
@@ -377,7 +375,7 @@ public class PipelineShouldlyExtensionsTests
         nullResult.ShouldHaveVariableValue("optional", null);
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveVariableValue_UserOnlyVariable_IsAccessible()
     {
         var userOnlyResult = new PipelineTestResult
@@ -391,7 +389,7 @@ public class PipelineShouldlyExtensionsTests
         userOnlyResult.ShouldHaveVariableValue("userOnlyVar", "customValue");
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveVariableValue_DictionaryMixedNullableTypes_MatchesCorrectly()
     {
         var dictResult = new PipelineTestResult
@@ -405,7 +403,7 @@ public class PipelineShouldlyExtensionsTests
         dictResult.ShouldHaveVariableValue("config", new Dictionary<string, object> { ["k"] = 1 });
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveVariableValue_ListMixedNullableTypes_MatchesCorrectly()
     {
         var listResult = new PipelineTestResult
@@ -419,7 +417,7 @@ public class PipelineShouldlyExtensionsTests
         listResult.ShouldHaveVariableValue("values", new List<object> { 1, "a" });
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveVariableValue_DictionaryWithList_MatchesCorrectly()
     {
         var complexResult = new PipelineTestResult
@@ -437,13 +435,13 @@ public class PipelineShouldlyExtensionsTests
 
     #region ShouldHaveParameter
 
-    [Test]
+    [Fact]
     public void ShouldHaveParameter_ExistingParameter_DoesNotThrow()
     {
         _result.ShouldHaveParameter("projectName");
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveParameter_NonExistingParameter_ThrowsShouldAssertException()
     {
         var act = () => _result.ShouldHaveParameter("nonExistent");
@@ -455,13 +453,13 @@ public class PipelineShouldlyExtensionsTests
 
     #region ShouldHaveTrigger
 
-    [Test]
+    [Fact]
     public void ShouldHaveTrigger_WithTriggers_DoesNotThrow()
     {
         _result.ShouldHaveTrigger();
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveTrigger_NoTriggers_ThrowsShouldAssertException()
     {
         var resultWithoutTriggers = new PipelineTestResult
@@ -479,13 +477,13 @@ public class PipelineShouldlyExtensionsTests
 
     #region ShouldIncludeBranch
 
-    [Test]
+    [Fact]
     public void ShouldIncludeBranch_ExistingBranch_DoesNotThrow()
     {
         _result.ShouldIncludeBranch("main");
     }
 
-    [Test]
+    [Fact]
     public void ShouldIncludeBranch_NonExistingBranch_ThrowsShouldAssertException()
     {
         var act = () => _result.ShouldIncludeBranch("feature/xyz");
@@ -493,7 +491,7 @@ public class PipelineShouldlyExtensionsTests
             .Message.ShouldContain("Branch 'feature/xyz' not in trigger branches");
     }
 
-    [Test]
+    [Fact]
     public void ShouldIncludeBranch_NoTriggers_ThrowsShouldAssertException()
     {
         var resultWithoutTriggers = new PipelineTestResult
@@ -511,13 +509,13 @@ public class PipelineShouldlyExtensionsTests
 
     #region ShouldHaveVmImage
 
-    [Test]
+    [Fact]
     public void ShouldHaveVmImage_CorrectImage_DoesNotThrow()
     {
         _result.ShouldHaveVmImage("ubuntu-latest");
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveVmImage_WrongImage_ThrowsShouldAssertException()
     {
         var act = () => _result.ShouldHaveVmImage("windows-latest");
@@ -525,7 +523,7 @@ public class PipelineShouldlyExtensionsTests
             .Message.ShouldContain("Expected VM image 'windows-latest', found 'ubuntu-latest'");
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveVmImage_NoPool_ThrowsShouldAssertException()
     {
         var resultWithoutPool = new PipelineTestResult
@@ -543,13 +541,13 @@ public class PipelineShouldlyExtensionsTests
 
     #region ShouldHaveScriptStepContaining
 
-    [Test]
+    [Fact]
     public void ShouldHaveScriptStepContaining_ExistingPattern_DoesNotThrow()
     {
         _result.ShouldHaveScriptStepContaining("dotnet test");
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveScriptStepContaining_NonExistingPattern_ThrowsShouldAssertException()
     {
         var act = () => _result.ShouldHaveScriptStepContaining("nonexistent pattern");
@@ -557,7 +555,7 @@ public class PipelineShouldlyExtensionsTests
             .Message.ShouldContain("No script step containing 'nonexistent pattern' found");
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveScriptStepContaining_NoScriptSteps_ThrowsShouldAssertException()
     {
         var resultWithoutScripts = new PipelineTestResult
@@ -590,7 +588,7 @@ public class PipelineShouldlyExtensionsTests
 
     #region Custom Message
 
-    [Test]
+    [Fact]
     public void ShouldHaveStage_WithCustomMessage_UsesCustomMessage()
     {
         var act = () => _result.ShouldHaveStage("NonExistent", "My custom message");
@@ -598,7 +596,7 @@ public class PipelineShouldlyExtensionsTests
             .Message.ShouldContain("My custom message");
     }
 
-    [Test]
+    [Fact]
     public void ShouldHaveVariable_WithCustomMessage_UsesCustomMessage()
     {
         var act = () => _result.ShouldHaveVariable("nonExistent", "Custom var message");

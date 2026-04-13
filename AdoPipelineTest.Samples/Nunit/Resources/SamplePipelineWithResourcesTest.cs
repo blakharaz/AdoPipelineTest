@@ -1,5 +1,6 @@
 using AdoPipelineTest.Parsing;
 using NUnit.Framework;
+using Assert = NUnit.Framework.Assert;
 using Is = AdoPipelineTest.Nunit.Is;
 
 namespace AdoPipelineTest.Samples.Nunit.Resources;

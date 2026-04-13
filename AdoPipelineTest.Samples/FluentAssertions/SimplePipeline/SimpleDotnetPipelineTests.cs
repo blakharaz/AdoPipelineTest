@@ -1,7 +1,4 @@
 using AdoPipelineTest.PipelineAssertions;
-using FluentAssertions;
-using TestClass = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
-using TestMethod = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
 
 namespace AdoPipelineTest.Samples.FluentAssertions.SimplePipeline;
 

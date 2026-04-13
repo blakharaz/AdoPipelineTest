@@ -1,143 +1,99 @@
-using NUnit.Framework;
 using AdoPipelineTest.Model;
 using AdoPipelineTest.Parsing;
 using AdoPipelineTest.Parsing.Ast;
+using Xunit;
+using Assert = Xunit.Assert;
 
 namespace AdoPipelineTest.UnitTests.Parsing;
 
-[TestFixture]
 public class PipelineParserTest
 {
-    [Test]
+    [Fact]
     public void SimplePipelineWithJustSteps()
     {
         var pipeline = PipelineParser.Parse("test_data/pipeline_parser/simple_pipeline_just_steps.yaml");
 
-        Assert.That(pipeline, Is.Not.Null);
+        Assert.NotNull(pipeline);
 
-        // Verify triggers
-        Assert.That(pipeline.Triggers, Is.Not.Null);
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(pipeline.Triggers.IncludedBranches, Has.Count.EqualTo(1));
-            Assert.That(pipeline.Triggers.IncludedBranches, Does.Contain("main"));
-        }
+        Assert.NotNull(pipeline.Triggers);
+        Assert.Single(pipeline.Triggers.IncludedBranches);
+        Assert.Contains("main", pipeline.Triggers.IncludedBranches);
 
-        // Verify pool
-        Assert.That(pipeline.AgentPool, Is.Not.Null);
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(pipeline.AgentPool.VmImage, Is.EqualTo("ubuntu-latest"));
+        Assert.NotNull(pipeline.AgentPool);
+        Assert.Equal("ubuntu-latest", pipeline.AgentPool.VmImage);
 
-            // Verify stages and jobs
-            Assert.That(pipeline.Stages, Has.Count.EqualTo(1));
-        }
-        Assert.That(pipeline.Stages[0].Jobs, Has.Count.EqualTo(1));
+        Assert.Single(pipeline.Stages);
+        Assert.Single(pipeline.Stages[0].Jobs);
 
-        // Verify steps
         var steps = pipeline.Stages[0].Jobs[0].Steps;
-        Assert.That(steps, Has.Count.EqualTo(3));
+        Assert.Equal(3, steps.Count);
 
-        // Verify step 1 - NodeTool task
         var step1 = steps[0] as TaskStepElement;
-        Assert.That(step1, Is.Not.Null);
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(step1.DisplayName, Is.EqualTo("Install Node.js"));
-            Assert.That(step1.TaskName, Is.EqualTo("NodeTool@0"));
-            Assert.That(step1.ContinueOnError, Is.Null);
+        Assert.NotNull(step1);
+        Assert.Equal("Install Node.js", step1.DisplayName);
+        Assert.Equal("NodeTool@0", step1.TaskName);
+        Assert.Null(step1.ContinueOnError);
+        Assert.NotNull(step1.Inputs);
+        Assert.Contains("versionSpec", step1.Inputs!.Keys);
+        Assert.Equal("20.x", step1.Inputs["versionSpec"]);
 
-            // Verify step 1 inputs
-            Assert.That(step1.Inputs, Is.Not.Null);
-            Assert.That(step1.Inputs!, Does.ContainKey("versionSpec"));
-            Assert.That(step1.Inputs!["versionSpec"], Is.EqualTo("20.x"));
-        }
-
-        // Verify step 2 - npm install and build script
         var step2 = steps[1] as ScriptStepElement;
-        Assert.That(step2, Is.Not.Null);
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(step2.DisplayName, Is.EqualTo("npm install and build"));
-            Assert.That(step2.ContinueOnError, Is.Null);
-        }
+        Assert.NotNull(step2);
+        Assert.Equal("npm install and build", step2.DisplayName);
+        Assert.Null(step2.ContinueOnError);
 
-        // Verify step 3 - npm test script with continueOnError
         var step3 = steps[2] as ScriptStepElement;
-        Assert.That(step3, Is.Not.Null);
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(step3.DisplayName, Is.EqualTo("npm test"));
-            Assert.That(step3.ContinueOnError, Is.EqualTo("true"));
-        }
+        Assert.NotNull(step3);
+        Assert.Equal("npm test", step3.DisplayName);
+        Assert.Equal("true", step3.ContinueOnError);
     }
 
-    [Test]
+    [Fact]
     public void PipelineWithVariables()
     {
         var pipeline = PipelineParser.Parse("test_data/pipeline_parser/pipeline_with_variables.yaml");
 
-        Assert.That(pipeline, Is.Not.Null);
+        Assert.NotNull(pipeline);
 
-        // Verify variables exist
-        Assert.That(pipeline.Variables, Has.Count.EqualTo(3));
+        Assert.Equal(3, pipeline.Variables.Count);
 
-        // Verify buildConfiguration variable
         var buildConfigVar = pipeline.Variables.FirstOrDefault(v => v.Name == "buildConfiguration");
-        Assert.That(buildConfigVar, Is.Not.Null);
-        Assert.That(buildConfigVar!.DefaultValue, Is.EqualTo("Release"));
+        Assert.NotNull(buildConfigVar);
+        Assert.Equal("Release", buildConfigVar!.DefaultValue);
 
-        // Verify debugSymbols variable (boolean)
         var debugSymbolsVar = pipeline.Variables.FirstOrDefault(v => v.Name == "debugSymbols");
-        Assert.That(debugSymbolsVar, Is.Not.Null);
-        Assert.That(debugSymbolsVar!.DefaultValue, Is.EqualTo("true"));
+        Assert.NotNull(debugSymbolsVar);
+        Assert.Equal("true", debugSymbolsVar!.DefaultValue);
 
-        // Verify dotnetVersion variable
         var dotnetVersionVar = pipeline.Variables.FirstOrDefault(v => v.Name == "dotnetVersion");
-        Assert.That(dotnetVersionVar, Is.Not.Null);
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(dotnetVersionVar.DefaultValue, Is.EqualTo("8.0.x"));
+        Assert.NotNull(dotnetVersionVar);
+        Assert.Equal("8.0.x", dotnetVersionVar!.DefaultValue);
 
-            // Verify triggers
-            Assert.That(pipeline.Triggers, Is.Not.Null);
-        }
+        Assert.NotNull(pipeline.Triggers);
+        Assert.Single(pipeline.Triggers.IncludedBranches);
+        Assert.Contains("main", pipeline.Triggers.IncludedBranches);
 
-        Assert.That(pipeline.Triggers!.IncludedBranches, Has.Count.EqualTo(1));
+        Assert.NotNull(pipeline.AgentPool);
+        Assert.Equal("ubuntu-latest", pipeline.AgentPool!.VmImage);
 
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(pipeline.Triggers.IncludedBranches, Does.Contain("main"));
-
-            // Verify pool
-            Assert.That(pipeline.AgentPool, Is.Not.Null);
-        }
-
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(pipeline.AgentPool!.VmImage, Is.EqualTo("ubuntu-latest"));
-
-            // Verify steps
-            Assert.That(pipeline.Stages, Has.Count.EqualTo(1));
-        }
-
-        Assert.That(pipeline.Stages[0].Jobs, Has.Count.EqualTo(1));
+        Assert.Single(pipeline.Stages);
+        Assert.Single(pipeline.Stages[0].Jobs);
         var steps = pipeline.Stages[0].Jobs[0].Steps;
-        Assert.That(steps, Has.Count.EqualTo(2));
+        Assert.Equal(2, steps.Count);
     }
 
-    [Test]
+    [Fact]
     public void PipelineWithEmptyScriptNode_ThrowsInvalidPipelineException()
     {
         var ex = Assert.Throws<InvalidPipelineException>(
             () => PipelineParser.Parse("test_data/pipeline_parser/pipeline_with_empty_script.yaml")
         );
 
-        Assert.That(ex, Is.Not.Null);
-        Assert.That(ex?.Message, Does.Contain("script node has no content"));
+        Assert.NotNull(ex);
+        Assert.Contains("script node has no content", ex!.Message);
     }
 
-    [Test]
+    [Fact]
     public void PipelineWithUnterminatedStringInTemplateExpression_ThrowsInvalidPipelineException()
     {
         Assert.Throws<InvalidPipelineException>(() =>
@@ -145,66 +101,51 @@ public class PipelineParserTest
         );
     }
 
-    [Test]
+    [Fact]
     public void PipelineWithConditionalStepInsertion1()
     {
         var pipeline = PipelineParser.Parse("test_data/pipeline_parser/simple_conditional_insertion.yaml");
 
-        Assert.That(pipeline, Is.Not.Null);
+        Assert.NotNull(pipeline);
 
-        Assert.That(pipeline.Stages, Has.Count.EqualTo(1));
-        Assert.That(pipeline.Stages[0].Jobs, Has.Count.EqualTo(1));
+        Assert.Single(pipeline.Stages);
+        Assert.Single(pipeline.Stages[0].Jobs);
         
         var steps = pipeline.Stages[0].Jobs[0].Steps;
-        Assert.That(steps, Has.Count.EqualTo(2));
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(steps[0], Is.InstanceOf<ConditionalStepExpression>());
-            Assert.That(steps[1], Is.InstanceOf<ConditionalStepExpression>());
-        }
+        Assert.Equal(2, steps.Count);
+        Assert.IsType<ConditionalStepExpression>(steps[0]);
+        Assert.IsType<ConditionalStepExpression>(steps[1]);
     }
 
-    [Test]
+    [Fact]
     public void PipelineWithConditionalStepInsertion2()
     {
         var pipeline = PipelineParser.Parse("test_data/pipeline_parser/ifelse_conditional_step_insertion.yaml");
 
-        Assert.That(pipeline, Is.Not.Null);
+        Assert.NotNull(pipeline);
 
-        Assert.That(pipeline.Stages, Has.Count.EqualTo(1));
-        Assert.That(pipeline.Stages[0].Jobs, Has.Count.EqualTo(1));
+        Assert.Single(pipeline.Stages);
+        Assert.Single(pipeline.Stages[0].Jobs);
         
         var steps = pipeline.Stages[0].Jobs[0].Steps;
         
-        // Now we should have only 1 top-level conditional (the if-elseif-else chain)
-        Assert.That(steps, Has.Count.EqualTo(1));
-        Assert.That(steps[0], Is.InstanceOf<ConditionalStepExpression>());
+        Assert.Single(steps);
+        Assert.IsType<ConditionalStepExpression>(steps[0]);
         
         var ifStatement = steps[0] as ConditionalStepExpression;
-        Assert.That(ifStatement, Is.Not.Null);
-        using (Assert.EnterMultipleScope())
-        {
+        Assert.NotNull(ifStatement);
+        Assert.Single(ifStatement!.ThenSteps);
+        Assert.IsType<TaskStepElement>(ifStatement.ThenSteps[0]);
 
-            // Verify the "if" branch
-            Assert.That(ifStatement!.ThenSteps, Has.Count.EqualTo(1));
-            Assert.That(ifStatement.ThenSteps[0], Is.InstanceOf<TaskStepElement>());
-
-            // Verify the "else if" branch (nested in ElseBranch)
-            Assert.That(ifStatement.ElseBranch, Is.InstanceOf<ConditionalStepExpression>());
-        }
+        Assert.IsType<ConditionalStepExpression>(ifStatement.ElseBranch);
         var elseIfStatement = ifStatement.ElseBranch as ConditionalStepExpression;
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(elseIfStatement!.ThenSteps, Has.Count.EqualTo(3));
+        Assert.NotNull(elseIfStatement);
+        Assert.Equal(3, elseIfStatement!.ThenSteps.Count);
 
-            // Verify the "else" branch (nested in the else-if's ElseBranch)
-            Assert.That(elseIfStatement.ElseBranch, Is.InstanceOf<ConditionalStepExpression>());
-        }
+        Assert.IsType<ConditionalStepExpression>(elseIfStatement.ElseBranch);
         var elseStatement = elseIfStatement.ElseBranch as ConditionalStepExpression;
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(elseStatement!.ThenSteps, Has.Count.EqualTo(1));
-            Assert.That(elseStatement.ThenSteps[0], Is.InstanceOf<ScriptStepElement>());
-        }
+        Assert.NotNull(elseStatement);
+        Assert.Single(elseStatement!.ThenSteps);
+        Assert.IsType<ScriptStepElement>(elseStatement.ThenSteps[0]);
     }
 }
