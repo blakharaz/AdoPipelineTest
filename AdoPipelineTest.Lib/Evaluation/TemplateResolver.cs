@@ -57,7 +57,8 @@ internal static class TemplateResolver
     {
         if (step is TemplateStepElement stepTemplate)
         {
-            return ResolveStepTemplate(stepTemplate);
+            var resolvedSteps = ResolveStepTemplate(stepTemplate);
+            return resolvedSteps.SelectMany(ResolveStep).ToList();
         }
 
         return [step];
