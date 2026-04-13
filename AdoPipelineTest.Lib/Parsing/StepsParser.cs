@@ -259,8 +259,7 @@ internal static class StepsParser
         {
             return ParseTemplateStep(templateNode, pipelinePath);
         }
-        
-        throw new InvalidDataException("unknown step type"); 
+throw new InvalidPipelineException($"unknown step type", pipelinePath, stepNode);
     }
 
     private static TemplateStepElement ParseTemplateStep(YamlScalarNode templateNode, string pipelinePath)
