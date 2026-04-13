@@ -15,7 +15,7 @@ public class ExpressionParserTest
         var result = ExpressionParser.ParseStringExpression("Hello world");
 
         Assert.NotNull(result);
-        Assert.Equal(1, result.Children.Count);
+        Assert.Single(result.Children);
         Assert.IsType<StringLiteral>(result.Children[0]);
     }
 
@@ -25,7 +25,7 @@ public class ExpressionParserTest
         var result = ExpressionParser.ParseStringExpression("${{parameters.Foo}}");
 
         Assert.NotNull(result);
-        Assert.Equal(1, result.Children.Count);
+        Assert.Single(result.Children);
         Assert.IsType<TemplateExpression>(result.Children[0]);
     }
 
@@ -83,7 +83,7 @@ public class ExpressionParserTest
         var result = ExpressionParser.ParseStringExpression(string.Empty);
 
         Assert.NotNull(result);
-        Assert.Equal(1, result.Children.Count);
+        Assert.Single(result.Children);
         Assert.IsType<StringLiteral>(result.Children[0]);
         Assert.Equal("", (result.Children[0] as StringLiteral)?.Value);
     }
@@ -94,14 +94,15 @@ public class ExpressionParserTest
         var result = ExpressionParser.ParseStringExpression("${{  parameters.Foo   }}");
 
         Assert.NotNull(result);
-        Assert.Equal(1, result.Children.Count);
+        Assert.Single(result.Children);
         Assert.IsType<TemplateExpression>(result.Children[0]);
 
-        var firstChild = result.Children[0] as TemplateExpression; 
-        Assert.Equal(1, firstChild?.Children.Count);
-        Assert.IsType<ParameterExpression>(firstChild?.Children[0]);
-        Assert.IsType<ParameterExpression>(firstChild?.Children[0]);
-        Assert.Equal("Foo", (firstChild?.Children[0] as ParameterExpression)?.ParameterName);
+        var firstChild = result.Children[0] as TemplateExpression;
+        Assert.NotNull(firstChild);
+        Assert.Single(firstChild.Children);
+        Assert.IsType<ParameterExpression>(firstChild.Children[0]);
+        Assert.IsType<ParameterExpression>(firstChild.Children[0]);
+        Assert.Equal("Foo", (firstChild.Children[0] as ParameterExpression)?.ParameterName);
     }
 
     [Fact]
@@ -113,14 +114,16 @@ public class ExpressionParserTest
         Assert.Equal(2, result.Children.Count);
   
         Assert.IsType<TemplateExpression>(result.Children[0]);
-        var firstChild = result.Children[0] as TemplateExpression; 
-        Assert.Equal(1, firstChild?.Children.Count);
-        Assert.Equal("Foo", (firstChild?.Children[0] as ParameterExpression)?.ParameterName);
+        var firstChild = result.Children[0] as TemplateExpression;
+        Assert.NotNull(firstChild);
+        Assert.Single(firstChild.Children);
+        Assert.Equal("Foo", (firstChild.Children[0] as ParameterExpression)?.ParameterName);
 
         Assert.IsType<TemplateExpression>(result.Children[1]);
-        var secondChild = result.Children[1] as TemplateExpression; 
-        Assert.Equal(1, secondChild?.Children.Count);
-        Assert.Equal("Bar", (secondChild?.Children[0] as ParameterExpression)?.ParameterName);
+        var secondChild = result.Children[1] as TemplateExpression;
+        Assert.NotNull(secondChild);
+        Assert.Single(secondChild.Children);
+        Assert.Equal("Bar", (secondChild.Children[0] as ParameterExpression)?.ParameterName);
     }
 
     [Fact]

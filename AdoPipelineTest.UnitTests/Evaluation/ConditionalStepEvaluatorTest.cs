@@ -8,7 +8,7 @@ namespace AdoPipelineTest.UnitTests.Evaluation;
 public class ConditionalStepEvaluatorTest
 {
     private Dictionary<string, object> _parameters = null!;
-    private Dictionary<string, object> _variables = null!;
+    private Dictionary<string, object?> _variables = null!;
 
     public ConditionalStepEvaluatorTest()
     {

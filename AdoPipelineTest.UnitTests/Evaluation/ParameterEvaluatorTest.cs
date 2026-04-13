@@ -38,8 +38,10 @@ public class ParameterEvaluatorTest
         Assert.Equal("MySampleProject", projectName.DefaultValue);
 
         var enableTests = result.First(p => p.Name == "enableTests");
-        Assert.Equal(true, enableTests.Value);
-        Assert.Equal(true, enableTests.DefaultValue);
+        var value = (bool?)enableTests.Value;
+        var defaultValue = (bool?)enableTests.DefaultValue;
+        Assert.Equal(true, value);
+        Assert.Equal(true, defaultValue);
     }
 
     [Fact]

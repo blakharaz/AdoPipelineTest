@@ -25,7 +25,7 @@ public class ExpressionEvaluatorTest
     public void EvaluateVariables_ReplacesVariableExpressions()
     {
         const string stringWithVariables = "hello $(foo) $(bar) world";
-        var variables = new Dictionary<string, object> { ["foo"] = "to", ["bar"] = "the" };
+        var variables = new Dictionary<string, object?> { ["foo"] = "to", ["bar"] = "the" };
 
         Assert.Equal("hello to the world", ExpressionEvaluator.EvaluateVariables(stringWithVariables, variables));
     }
@@ -227,7 +227,7 @@ public class ExpressionEvaluatorTest
     {
         const string input = "Project: ${{parameters.projectName}}";
         var parameters = new Dictionary<string, object>();
-        var variables = new Dictionary<string, object>();
+        var variables = new Dictionary<string, object?>();
 
         var ex = Assert.Throws<InvalidOperationException>(() =>
             ExpressionEvaluator.EvaluateString(input, parameters, variables));
@@ -240,7 +240,7 @@ public class ExpressionEvaluatorTest
     {
         const string input = "Value: $(missingVar)";
         var parameters = new Dictionary<string, object>();
-        var variables = new Dictionary<string, object>();
+        var variables = new Dictionary<string, object?>();
 
         var result = ExpressionEvaluator.EvaluateString(input, parameters, variables);
 
@@ -251,7 +251,7 @@ public class ExpressionEvaluatorTest
     public void EvaluateVariables_WithMissingVariable_DoesNotThrowButLeavesVariableUnreplaced()
     {
         const string input = "Value: $(missingVar)";
-        var variables = new Dictionary<string, object>();
+        var variables = new Dictionary<string, object?>();
 
         var result = ExpressionEvaluator.EvaluateVariables(input, variables);
 

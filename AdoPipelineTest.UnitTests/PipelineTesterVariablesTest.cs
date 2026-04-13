@@ -16,7 +16,7 @@ public class PipelineTesterVariablesTest
         Assert.Equal(3, result.Variables.Count);
         Assert.Contains(result.Variables.Select(v => v.Name), v => v == "buildConfiguration");
 
-        Assert.Equal(1, result.Stages.Count);
+        Assert.Single(result.Stages);
         var steps = result.Stages[0].Jobs[0].Steps;
         Assert.Equal(2, steps.Count);
 
@@ -39,7 +39,7 @@ public class PipelineTesterVariablesTest
             .WithVariables(customVariables)
             .Run();
 
-        Assert.Equal(1, result.Stages.Count);
+        Assert.Single(result.Stages);
         var steps = result.Stages[0].Jobs[0].Steps;
 
         var buildTask = steps[1] as TaskStep;

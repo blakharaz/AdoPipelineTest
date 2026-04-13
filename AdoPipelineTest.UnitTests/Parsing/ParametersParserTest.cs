@@ -35,7 +35,8 @@ public class ParametersParserTest
         var enableTestsParam = parameters.First(p => p.Name == "enableTests");
         Assert.Equal("boolean", enableTestsParam.Type);
         Assert.Equal("Enable Unit Tests", enableTestsParam.DisplayName);
-        Assert.Equal(true, enableTestsParam.DefaultValue);
+        var defaultValue = (bool?)enableTestsParam.DefaultValue;
+        Assert.Equal(true, defaultValue);
         Assert.Null(enableTestsParam.AllowedValues);
 
         var timeoutParam = parameters.First(p => p.Name == "timeoutMinutes");

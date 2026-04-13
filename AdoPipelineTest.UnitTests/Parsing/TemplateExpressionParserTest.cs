@@ -83,7 +83,7 @@ public class TemplateExpressionParserTest
         var funcExpr = (FunctionExpression)result;
         
         Assert.Equal("upper", funcExpr.FunctionName);
-        Assert.Equal(1, funcExpr.FunctionParameters.Count);
+        Assert.Single(funcExpr.FunctionParameters);
         Assert.IsType<StringLiteral>(funcExpr.FunctionParameters[0]);
     }
 

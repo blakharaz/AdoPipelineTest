@@ -39,7 +39,7 @@ public class ResourcesParserTest
     {
         var pipeline = PipelineParser.Parse("test_data/resources/pipeline_with_versioned_resource.yaml");
 
-        Assert.Equal(1, pipeline.Resources.Count);
+        Assert.Single(pipeline.Resources);
 
         var resource = pipeline.Resources[0];
         Assert.NotNull(resource);
@@ -60,7 +60,7 @@ public class ResourcesParserTest
     {
         var pipeline = PipelineParser.Parse("test_data/resources/pipeline_with_endpoints.yaml");
 
-        Assert.Equal(1, pipeline.Resources.Count);
+        Assert.Single(pipeline.Resources);
 
         var resource = pipeline.Resources[0];
         Assert.Equal("docker-registry", resource.Name);
@@ -74,7 +74,7 @@ public class ResourcesParserTest
     {
         var pipeline = PipelineParser.Parse("test_data/resources/pipeline_with_partial_resource.yaml");
 
-        Assert.Equal(1, pipeline.Resources.Count);
+        Assert.Single(pipeline.Resources);
 
         var resource = pipeline.Resources[0];
         Assert.NotNull(resource.Name);
@@ -119,7 +119,7 @@ public class ResourcesParserTest
     {
         var pipeline = PipelineParser.Parse("test_data/resources/pipeline_with_container_group.yaml");
 
-        Assert.Equal(1, pipeline.Resources.Count);
+        Assert.Single(pipeline.Resources);
 
         var container = pipeline.Resources[0];
         Assert.Equal("myContainer", container.Name);
@@ -131,7 +131,7 @@ public class ResourcesParserTest
     {
         var pipeline = PipelineParser.Parse("test_data/resources/pipeline_with_package_group.yaml");
 
-        Assert.Equal(1, pipeline.Resources.Count);
+        Assert.Single(pipeline.Resources);
 
         var package = pipeline.Resources[0];
         Assert.Equal("myPackage", package.Name);
@@ -143,11 +143,11 @@ public class ResourcesParserTest
     {
         var pipeline = PipelineParser.Parse("test_data/resources/pipeline_with_endpoint_auth.yaml");
 
-        Assert.Equal(1, pipeline.Resources.Count);
+        Assert.Single(pipeline.Resources);
 
         var resource = pipeline.Resources[0];
         Assert.NotNull(resource.Endpoints);
-        Assert.Equal(1, resource.Endpoints.Count);
+        Assert.Single(resource.Endpoints);
 
         var endpoint = resource.Endpoints[0];
         Assert.Equal("docker-auth", endpoint.Name);
@@ -163,11 +163,11 @@ public class ResourcesParserTest
     {
         var pipeline = PipelineParser.Parse("test_data/resources/pipeline_with_endpoint_no_value.yaml");
 
-        Assert.Equal(1, pipeline.Resources.Count);
+        Assert.Single(pipeline.Resources);
 
         var resource = pipeline.Resources[0];
         Assert.NotNull(resource.Endpoints);
-        Assert.Equal(1, resource.Endpoints!.Count);
+        Assert.Single(resource.Endpoints!);
 
         var endpoint = resource.Endpoints[0];
         Assert.Equal("docker-auth", endpoint.Name);
@@ -180,7 +180,7 @@ public class ResourcesParserTest
     {
         var pipeline = PipelineParser.Parse("test_data/resources/pipeline_with_nested_auth.yaml");
 
-        Assert.Equal(1, pipeline.Resources.Count);
+        Assert.Single(pipeline.Resources);
 
         var resource = pipeline.Resources[0];
         var endpoint = resource.Endpoints![0];
@@ -202,7 +202,7 @@ public class ResourcesParserTest
     {
         var pipeline = PipelineParser.Parse("test_data/resources/pipeline_with_null_trigger.yaml");
 
-        Assert.Equal(1, pipeline.Resources.Count);
+        Assert.Single(pipeline.Resources);
 
         var resource = pipeline.Resources[0];
         Assert.NotNull(resource.Trigger);
@@ -216,7 +216,7 @@ public class ResourcesParserTest
     {
         var pipeline = PipelineParser.Parse("test_data/resources/pipeline_with_null_trigger_scalar.yaml");
 
-        Assert.Equal(1, pipeline.Resources.Count);
+        Assert.Single(pipeline.Resources);
 
         var resource = pipeline.Resources[0];
         Assert.Null(resource.Trigger);
