@@ -1,17 +1,22 @@
 using System.Diagnostics;
 using AdoPipelineTest.Model;
+using FluentAssertions;
+using FluentAssertions.Execution;
 
 namespace AdoPipelineTest.PipelineAssertions;
 
 [DebuggerNonUserCode]
 public class PipelineStageAssertions
 {
-    public PipelineStageAssertions(PipelineStage subject)
+    public PipelineStageAssertions(PipelineStage subject, AssertionChain assertionChain)
     {
         Subject = subject;
+        AssertionChain = assertionChain;
     }
 
     public PipelineStage Subject { get; }
+
+    private readonly AssertionChain AssertionChain;
 
     private static string FormatJobLabel(PipelineJob j) =>
         string.IsNullOrWhiteSpace(j.DisplayName)
@@ -24,7 +29,7 @@ public class PipelineStageAssertions
     [CustomAssertion]
     public AndConstraint<PipelineStageAssertions> HaveJob(string jobName, string because = "", params object[] becauseArgs)
     {
-        Execute.Assertion
+        AssertionChain
             .BecauseOf(because, becauseArgs)
             .ForCondition(Subject.Jobs.Any(j => j.Name == jobName || j.DisplayName == jobName))
             .FailWith($"Expected {{context:the stage}} to have job '{{0}}', but found jobs: {{{1}}}",
@@ -36,7 +41,7 @@ public class PipelineStageAssertions
     [CustomAssertion]
     public AndConstraint<PipelineStageAssertions> HaveJobCount(int expectedCount, string because = "", params object[] becauseArgs)
     {
-        Execute.Assertion
+        AssertionChain
             .BecauseOf(because, becauseArgs)
             .ForCondition(Subject.Jobs.Count == expectedCount)
             .FailWith($"Expected {{context:the stage}} to have {expectedCount} job(s), but found {Subject.Jobs.Count}");
