@@ -1,59 +1,47 @@
-using NUnit.Framework;
+using Xunit;
 using AdoPipelineTest.Model;
 using AdoPipelineTest.Parsing;
+using Assert = Xunit.Assert;
 
 namespace AdoPipelineTest.UnitTests.Parsing;
 
-[TestFixture]
 public class StepsParserTest
 {
-    [Test]
+    [Fact]
     public void ParseStep_WithEmptyScriptNode_ThrowsInvalidPipelineException()
     {
         var ex = Assert.Throws<InvalidPipelineException>(
             () => PipelineParser.Parse("test_data/pipeline_parser/pipeline_with_empty_script.yaml")
         );
         
-        Assert.That(ex?.Message, Does.Contain("script node has no content"));
+        Assert.Contains("script node has no content", ex?.Message);
     }
 
-    [Test]
+    [Fact]
     public void Parse_PipelineWithStageAndJobNames_ParsesCorrectly()
     {
         var result = PipelineParser.Parse("test_data/pipeline_parser/pipeline_with_stage_and_job_names.yaml");
         
-        Assert.That(result.Stages, Has.Count.EqualTo(2));
+        Assert.Equal(2, result.Stages.Count);
         
         var buildStage = result.Stages[0];
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(buildStage.Name, Is.EqualTo("Build"));
-            Assert.That(buildStage.DisplayName, Is.EqualTo("Build Stage"));
-            Assert.That(buildStage.DependsOn, Does.Contain("Prep"));
-        }
+        Assert.Equal("Build", buildStage.Name);
+        Assert.Equal("Build Stage", buildStage.DisplayName);
+        Assert.Contains("Prep", buildStage.DependsOn);
 
         var compileJob = buildStage.Jobs[0];
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(compileJob.Name, Is.EqualTo("Compile"));
-            Assert.That(compileJob.DisplayName, Is.EqualTo("Compile Job"));
-            Assert.That(compileJob.DependsOn, Does.Contain("Setup"));
-        }
+        Assert.Equal("Compile", compileJob.Name);
+        Assert.Equal("Compile Job", compileJob.DisplayName);
+        Assert.Contains("Setup", compileJob.DependsOn);
 
         var deployStage = result.Stages[1];
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(deployStage.Name, Is.EqualTo("Deploy"));
-            Assert.That(deployStage.DependsOn, Has.Count.EqualTo(2));
-        }
-        Assert.That(deployStage.DependsOn, Does.Contain("Build"));
-        Assert.That(deployStage.DependsOn, Does.Contain("Test"));
+        Assert.Equal("Deploy", deployStage.Name);
+        Assert.Equal(2, deployStage.DependsOn.Count);
+        Assert.Contains("Build", deployStage.DependsOn);
+        Assert.Contains("Test", deployStage.DependsOn);
         
         var releaseJob = deployStage.Jobs[0];
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(releaseJob.Name, Is.EqualTo("Release"));
-            Assert.That(releaseJob.DependsOn, Does.Contain("Package"));
-        }
+        Assert.Equal("Release", releaseJob.Name);
+        Assert.Contains("Package", releaseJob.DependsOn);
     }
 }

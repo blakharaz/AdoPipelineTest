@@ -6,35 +6,33 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
-        <UseAppHost>true</UseAppHost>
+        <OutputType>Exe</OutputType>
+        <StartupObject>AdoPipelineTest.UnitTests.Program</StartupObject>
+        <GenerateMSBuildEditorConfigFileDuringBuild>false</GenerateMSBuildEditorConfigFileDuringBuild>
+        <TestingPlatformIntegration>false</TestingPlatformIntegration>
+        <RootNamespace>AdoPipelineTest.UnitTests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="coverlet.collector" Version="8.0.1">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
-        <PackageReference Include="NUnit" Version="4.5.1" />
-        <PackageReference Include="NUnit.Analyzers" Version="4.12.0">
+        <!-- xUnit v3 for test framework -->
+        <PackageReference Include="xunit.v3" Version="3.2.2"/>
+        <PackageReference Include="xunit.v3.mtp-off" Version="3.2.2"/>
+        <PackageReference Include="xunit.v3.assert" Version="3.2.2"/>
+        <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="NUnit3TestAdapter" Version="6.2.0" />
-        <PackageReference Include="MSTest" Version="3.8.2" />
-        <PackageReference Include="MSTest.TestAdapter" Version="3.8.2" />
-        <PackageReference Include="MSTest.TestFramework" Version="3.8.2" />
         <PackageReference Include="FluentAssertions" Version="7.0.0" />
         <PackageReference Include="Shouldly" Version="4.3.0" />
     </ItemGroup>
     
     <ItemGroup>
-      <ProjectReference Include="..\AdoPipelineTest.Lib\AdoPipelineTest.Lib.csproj" />
-      <ProjectReference Include="..\AdoPipelineTest.Mstest\AdoPipelineTest.Mstest.csproj" />
-      <ProjectReference Include="..\AdoPipelineTest.Nunit\AdoPipelineTest.Nunit.csproj" />
-      <ProjectReference Include="..\AdoPipelineTest.Shouldly\AdoPipelineTest.Shouldly.csproj" />
-      <ProjectReference Include="..\AdoPipelineTest.Xunit\AdoPipelineTest.Xunit.csproj" />
-      <ProjectReference Include="..\AdoPipelineTest.FluentAssertions\AdoPipelineTest.FluentAssertions.csproj" />
+        <ProjectReference Include="..\AdoPipelineTest.Lib\AdoPipelineTest.Lib.csproj" />
+        <ProjectReference Include="..\AdoPipelineTest.Nunit\AdoPipelineTest.Nunit.csproj" />
+        <ProjectReference Include="..\AdoPipelineTest.Shouldly\AdoPipelineTest.Shouldly.csproj" />
+        <ProjectReference Include="..\AdoPipelineTest.Xunit\AdoPipelineTest.Xunit.csproj" />
+        <ProjectReference Include="..\AdoPipelineTest.FluentAssertions\AdoPipelineTest.FluentAssertions.csproj" />
     </ItemGroup>
 
     <ItemGroup>

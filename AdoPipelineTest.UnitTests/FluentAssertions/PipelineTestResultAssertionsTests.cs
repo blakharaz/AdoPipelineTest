@@ -1,20 +1,16 @@
-using TestClass = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
-using TestMethod = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
-using TestInitialize = Microsoft.VisualStudio.TestTools.UnitTesting.TestInitializeAttribute;
 using AdoPipelineTest.Model;
 using AdoPipelineTest.Model.Steps;
 using FluentAssertions;
 using AdoPipelineTest.PipelineAssertions;
+using Xunit;
 
 namespace AdoPipelineTest.UnitTests.FluentAssertions;
 
-[TestClass]
 public class PipelineTestResultAssertionsTests
 {
     private PipelineTestResult _result = null!;
 
-    [TestInitialize]
-    public void Setup()
+    public PipelineTestResultAssertionsTests()
     {
         _result = new PipelineTestResult
         {
@@ -74,21 +70,21 @@ public class PipelineTestResultAssertionsTests
 
     #region HaveStage
 
-    [TestMethod]
+    [Fact]
     public void HaveStage_ExistingStageByName_ShouldNotThrow()
     {
         var act = () => _result.Should().HaveStage("Build");
         act.Should().NotThrow();
     }
 
-    [TestMethod]
+    [Fact]
     public void HaveStage_ExistingStageByDisplayName_ShouldNotThrow()
     {
         var act = () => _result.Should().HaveStage("Build Stage");
         act.Should().NotThrow();
     }
 
-    [TestMethod]
+    [Fact]
     public void HaveStage_NonExistingStage_ShouldThrow()
     {
         var act = () => _result.Should().HaveStage("NonExistent");
@@ -99,14 +95,14 @@ public class PipelineTestResultAssertionsTests
 
     #region HaveStageCount
 
-    [TestMethod]
+    [Fact]
     public void HaveStageCount_CorrectCount_ShouldNotThrow()
     {
         var act = () => _result.Should().HaveStageCount(2);
         act.Should().NotThrow();
     }
 
-    [TestMethod]
+    [Fact]
     public void HaveStageCount_WrongCount_ShouldThrow()
     {
         var act = () => _result.Should().HaveStageCount(5);
@@ -117,14 +113,14 @@ public class PipelineTestResultAssertionsTests
 
     #region HaveJob
 
-    [TestMethod]
+    [Fact]
     public void HaveJob_ExistingJobByStageAndJobName_ShouldNotThrow()
     {
         var act = () => _result.Should().HaveJob("Build", "BuildJob");
         act.Should().NotThrow();
     }
 
-    [TestMethod]
+    [Fact]
     public void HaveJob_NonExistingJob_ShouldThrow()
     {
         var act = () => _result.Should().HaveJob("Build", "NonExistentJob");
@@ -135,14 +131,14 @@ public class PipelineTestResultAssertionsTests
 
     #region HaveStep
 
-    [TestMethod]
+    [Fact]
     public void HaveStep_ExistingStep_ShouldNotThrow()
     {
         var act = () => _result.Should().HaveStep("Use .NET");
         act.Should().NotThrow();
     }
 
-    [TestMethod]
+    [Fact]
     public void HaveStep_NonExistingStep_ShouldThrow()
     {
         var act = () => _result.Should().HaveStep("NonExistent Step");
@@ -153,14 +149,14 @@ public class PipelineTestResultAssertionsTests
 
     #region HaveTask
 
-    [TestMethod]
+    [Fact]
     public void HaveTask_ExistingTask_ShouldNotThrow()
     {
         var act = () => _result.Should().HaveTask("UseDotNet@2");
         act.Should().NotThrow();
     }
 
-    [TestMethod]
+    [Fact]
     public void HaveTask_MultipleTasks_ShouldNotThrow()
     {
         _result.Should().HaveTask("UseDotNet@2");
@@ -168,7 +164,7 @@ public class PipelineTestResultAssertionsTests
         _result.Should().HaveTask("AzureWebApp@1");
     }
 
-    [TestMethod]
+    [Fact]
     public void HaveTask_NonExistingTask_ShouldThrow()
     {
         var act = () => _result.Should().HaveTask("NonExistent@1");
@@ -179,21 +175,21 @@ public class PipelineTestResultAssertionsTests
 
     #region HaveVariable
 
-    [TestMethod]
+    [Fact]
     public void HaveVariable_ExistingVariable_ShouldNotThrow()
     {
         var act = () => _result.Should().HaveVariable("buildConfiguration");
         act.Should().NotThrow();
     }
 
-    [TestMethod]
+    [Fact]
     public void HaveVariable_WithCorrectValue_ShouldNotThrow()
     {
         var act = () => _result.Should().HaveVariable("buildConfiguration", "Release");
         act.Should().NotThrow();
     }
 
-    [TestMethod]
+    [Fact]
     public void HaveVariable_NonExistingVariable_ShouldThrow()
     {
         var act = () => _result.Should().HaveVariable("nonExistent");
@@ -204,14 +200,14 @@ public class PipelineTestResultAssertionsTests
 
     #region HaveParameter
 
-    [TestMethod]
+    [Fact]
     public void HaveParameter_ExistingParameter_ShouldNotThrow()
     {
         var act = () => _result.Should().HaveParameter("projectName");
         act.Should().NotThrow();
     }
 
-    [TestMethod]
+    [Fact]
     public void HaveParameter_NonExistingParameter_ShouldThrow()
     {
         var act = () => _result.Should().HaveParameter("nonExistent");
@@ -222,14 +218,14 @@ public class PipelineTestResultAssertionsTests
 
     #region HaveTrigger
 
-    [TestMethod]
+    [Fact]
     public void HaveTrigger_WithTriggers_ShouldNotThrow()
     {
         var act = () => _result.Should().HaveTrigger();
         act.Should().NotThrow();
     }
 
-    [TestMethod]
+    [Fact]
     public void HaveTriggers_ShouldNotThrow()
     {
         var act = () => _result.Should().HaveTriggers();
@@ -240,14 +236,14 @@ public class PipelineTestResultAssertionsTests
 
     #region IncludeBranch (via PipelineTriggersAssertions)
 
-    [TestMethod]
+    [Fact]
     public void IncludeBranch_ExistingBranch_ShouldNotThrow()
     {
         var act = () => _result.Triggers!.Should().IncludeBranch("main");
         act.Should().NotThrow();
     }
 
-    [TestMethod]
+    [Fact]
     public void IncludeBranch_NonExistingBranch_ShouldThrow()
     {
         var act = () => _result.Triggers!.Should().IncludeBranch("feature-branch");
@@ -258,14 +254,14 @@ public class PipelineTestResultAssertionsTests
 
     #region HaveVmImage
 
-    [TestMethod]
+    [Fact]
     public void HaveVmImage_CorrectImage_ShouldNotThrow()
     {
         var act = () => _result.Should().HaveVmImage("ubuntu-latest");
         act.Should().NotThrow();
     }
 
-    [TestMethod]
+    [Fact]
     public void HaveVmImage_WrongImage_ShouldThrow()
     {
         var act = () => _result.Should().HaveVmImage("windows-latest");
@@ -276,14 +272,14 @@ public class PipelineTestResultAssertionsTests
 
     #region HaveScriptStepContaining
 
-    [TestMethod]
+    [Fact]
     public void HaveScriptStepContaining_ExistingPattern_ShouldNotThrow()
     {
         var act = () => _result.Should().HaveScriptStepContaining("dotnet test");
         act.Should().NotThrow();
     }
 
-    [TestMethod]
+    [Fact]
     public void HaveScriptStepContaining_NonExistingPattern_ShouldThrow()
     {
         var act = () => _result.Should().HaveScriptStepContaining("npm build");

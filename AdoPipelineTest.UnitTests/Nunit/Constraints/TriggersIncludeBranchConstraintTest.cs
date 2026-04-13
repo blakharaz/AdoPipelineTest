@@ -1,12 +1,12 @@
-using NUnit.Framework;
 using AdoPipelineTest.Model;
 using AdoPipelineTest.Nunit.Constraints;
+using Xunit;
 
 namespace AdoPipelineTest.UnitTests.Nunit.Constraints;
 
 public class TriggersIncludeBranchConstraintTest
 {
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineTriggers_IncludesBranch_ReturnsSuccess()
     {
         var triggers = new PipelineTriggers
@@ -17,10 +17,10 @@ public class TriggersIncludeBranchConstraintTest
         var constraint = new TriggersIncludeBranchConstraint("main");
         var result = constraint.ApplyTo(triggers);
         
-        Assert.That(result.IsSuccess, Is.True);
+        Assert.True(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineTriggers_DoesNotIncludeBranch_ReturnsFailure()
     {
         var triggers = new PipelineTriggers
@@ -31,10 +31,10 @@ public class TriggersIncludeBranchConstraintTest
         var constraint = new TriggersIncludeBranchConstraint("feature/test");
         var result = constraint.ApplyTo(triggers);
         
-        Assert.That(result.IsSuccess, Is.False);
+        Assert.False(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineTriggers_EmptyBranches_ReturnsFailure()
     {
         var triggers = new PipelineTriggers
@@ -45,31 +45,32 @@ public class TriggersIncludeBranchConstraintTest
         var constraint = new TriggersIncludeBranchConstraint("main");
         var result = constraint.ApplyTo(triggers);
         
-        Assert.That(result.IsSuccess, Is.False);
+        Assert.False(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_NotPipelineTriggers_ReturnsFailure()
     {
         var constraint = new TriggersIncludeBranchConstraint("main");
         var result = constraint.ApplyTo("not a pipeline triggers object");
         
-        Assert.That(result.IsSuccess, Is.False);
+        Assert.False(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void Description_ReturnsCorrectMessage()
     {
         var constraint = new TriggersIncludeBranchConstraint("main");
-        Assert.That(constraint.Description, Is.EqualTo("Triggers include branch main"));
+        Assert.Equal("Triggers include branch main", constraint.Description);
     }
 
-    [TestCase(new[] { "*" }, "*", ExpectedResult = true)]
-    [TestCase(new[] { "main" }, "main", ExpectedResult = true)]
-    [TestCase(new[] { "main" }, "other", ExpectedResult = false)]
-    [TestCase(new[] { "feature/*" }, "feature/*", ExpectedResult = true)]
-    [TestCase(new[] { "release/*" }, "release/*", ExpectedResult = true)]
-    public bool ApplyTo_WithExactBranchMatch_HandlesCorrectly(string[] branches, string branchToCheck)
+    [Theory]
+    [InlineData(new[] { "*" }, "*", true)]
+    [InlineData(new[] { "main" }, "main", true)]
+    [InlineData(new[] { "main" }, "other", false)]
+    [InlineData(new[] { "feature/*" }, "feature/*", true)]
+    [InlineData(new[] { "release/*" }, "release/*", true)]
+    public void ApplyTo_WithExactBranchMatch_HandlesCorrectly(string[] branches, string branchToCheck, bool expected)
     {
         var triggers = new PipelineTriggers
         {
@@ -79,6 +80,6 @@ public class TriggersIncludeBranchConstraintTest
         var constraint = new TriggersIncludeBranchConstraint(branchToCheck);
         var result = constraint.ApplyTo(triggers);
         
-        return result.IsSuccess;
+        Assert.Equal(expected, result.IsSuccess);
     }
 }

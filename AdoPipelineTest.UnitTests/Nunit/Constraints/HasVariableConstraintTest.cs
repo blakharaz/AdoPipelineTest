@@ -1,12 +1,12 @@
-using NUnit.Framework;
 using AdoPipelineTest.Model;
 using AdoPipelineTest.Nunit.Constraints;
+using Xunit;
 
 namespace AdoPipelineTest.UnitTests.Nunit.Constraints;
 
 public class HasVariableConstraintTest
 {
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineTestResult_HasVariable_ReturnsSuccess()
     {
         var result = new PipelineTestResult
@@ -17,10 +17,10 @@ public class HasVariableConstraintTest
         var constraint = new HasVariableConstraint("buildConfiguration");
         var res = constraint.ApplyTo(result);
         
-        Assert.That(res.IsSuccess, Is.True);
+        Assert.True(res.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineTestResult_VariableNotFound_ReturnsFailure()
     {
         var result = new PipelineTestResult
@@ -31,10 +31,10 @@ public class HasVariableConstraintTest
         var constraint = new HasVariableConstraint("otherVar");
         var res = constraint.ApplyTo(result);
         
-        Assert.That(res.IsSuccess, Is.False);
+        Assert.False(res.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineTestResult_EmptyVariables_ReturnsFailure()
     {
         var result = new PipelineTestResult { Variables = [] };
@@ -42,22 +42,22 @@ public class HasVariableConstraintTest
         var constraint = new HasVariableConstraint("buildConfiguration");
         var res = constraint.ApplyTo(result);
         
-        Assert.That(res.IsSuccess, Is.False);
+        Assert.False(res.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_NotPipelineTestResult_ReturnsFailure()
     {
         var constraint = new HasVariableConstraint("buildConfiguration");
         var res = constraint.ApplyTo("not a result");
         
-        Assert.That(res.IsSuccess, Is.False);
+        Assert.False(res.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void Description_ReturnsCorrectMessage()
     {
         var constraint = new HasVariableConstraint("buildConfiguration");
-        Assert.That(constraint.Description, Is.EqualTo("Pipeline has variable 'buildConfiguration'"));
+        Assert.Equal("Pipeline has variable 'buildConfiguration'", constraint.Description);
     }
 }

@@ -1,6 +1,7 @@
 using NUnit.Framework;
 ﻿using System.Reflection;
 using AdoPipelineTest.Model.Steps;
+using Assert = NUnit.Framework.Assert;
 
 namespace AdoPipelineTest.Samples.Nunit.SimplePipeline;
 

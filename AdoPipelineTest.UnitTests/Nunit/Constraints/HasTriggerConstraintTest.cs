@@ -1,12 +1,12 @@
-using NUnit.Framework;
 using AdoPipelineTest.Model;
 using AdoPipelineTest.Nunit.Constraints;
+using Xunit;
 
 namespace AdoPipelineTest.UnitTests.Nunit.Constraints;
 
 public class HasTriggerConstraintTest
 {
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineTriggers_HasBranches_ReturnsSuccess()
     {
         var triggers = new PipelineTriggers
@@ -17,10 +17,10 @@ public class HasTriggerConstraintTest
         var constraint = new HasTriggerConstraint();
         var result = constraint.ApplyTo(triggers);
         
-        Assert.That(result.IsSuccess, Is.True);
+        Assert.True(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineTriggers_EmptyBranches_ReturnsFailure()
     {
         var triggers = new PipelineTriggers
@@ -31,22 +31,22 @@ public class HasTriggerConstraintTest
         var constraint = new HasTriggerConstraint();
         var result = constraint.ApplyTo(triggers);
         
-        Assert.That(result.IsSuccess, Is.False);
+        Assert.False(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_NotPipelineTriggers_ReturnsFailure()
     {
         var constraint = new HasTriggerConstraint();
         var result = constraint.ApplyTo("not triggers");
         
-        Assert.That(result.IsSuccess, Is.False);
+        Assert.False(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void Description_ReturnsCorrectMessage()
     {
         var constraint = new HasTriggerConstraint();
-        Assert.That(constraint.Description, Is.EqualTo("Pipeline has triggers configured"));
+        Assert.Equal("Pipeline has triggers configured", constraint.Description);
     }
 }

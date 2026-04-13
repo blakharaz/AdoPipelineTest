@@ -1,12 +1,12 @@
-using NUnit.Framework;
 using AdoPipelineTest.Model;
 using AdoPipelineTest.Nunit.Constraints;
+using Xunit;
 
 namespace AdoPipelineTest.UnitTests.Nunit.Constraints;
 
 public class HasResourceConstraintTest
 {
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineTestResult_HasResource_ReturnsSuccess()
     {
         var result = new PipelineTestResult
@@ -17,10 +17,10 @@ public class HasResourceConstraintTest
         var constraint = new HasResourceConstraint("repositories");
         var res = constraint.ApplyTo(result);
         
-        Assert.That(res.IsSuccess, Is.True);
+        Assert.True(res.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineTestResult_ResourceNotFound_ReturnsFailure()
     {
         var result = new PipelineTestResult
@@ -31,10 +31,10 @@ public class HasResourceConstraintTest
         var constraint = new HasResourceConstraint("pipelines");
         var res = constraint.ApplyTo(result);
         
-        Assert.That(res.IsSuccess, Is.False);
+        Assert.False(res.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineTestResult_EmptyResources_ReturnsFailure()
     {
         var result = new PipelineTestResult { Resources = [] };
@@ -42,22 +42,22 @@ public class HasResourceConstraintTest
         var constraint = new HasResourceConstraint("repositories");
         var res = constraint.ApplyTo(result);
         
-        Assert.That(res.IsSuccess, Is.False);
+        Assert.False(res.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_NotPipelineTestResult_ReturnsFailure()
     {
         var constraint = new HasResourceConstraint("repositories");
         var res = constraint.ApplyTo("not a result");
         
-        Assert.That(res.IsSuccess, Is.False);
+        Assert.False(res.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void Description_ReturnsCorrectMessage()
     {
         var constraint = new HasResourceConstraint("repositories");
-        Assert.That(constraint.Description, Is.EqualTo("Pipeline has resource of type 'repositories'"));
+        Assert.Equal("Pipeline has resource of type 'repositories'", constraint.Description);
     }
 }

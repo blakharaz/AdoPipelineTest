@@ -1,12 +1,12 @@
-using NUnit.Framework;
 using AdoPipelineTest.Model;
 using AdoPipelineTest.Nunit.Constraints;
+using Xunit;
 
 namespace AdoPipelineTest.UnitTests.Nunit.Constraints;
 
 public class DependsOnConstraintTest
 {
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineStage_HasDependency_ReturnsSuccess()
     {
         var stage = new PipelineStage
@@ -17,10 +17,10 @@ public class DependsOnConstraintTest
         var constraint = new DependsOnConstraint("Build");
         var result = constraint.ApplyTo(stage);
         
-        Assert.That(result.IsSuccess, Is.True);
+        Assert.True(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineStage_DependencyNotFound_ReturnsFailure()
     {
         var stage = new PipelineStage
@@ -31,10 +31,10 @@ public class DependsOnConstraintTest
         var constraint = new DependsOnConstraint("Deploy");
         var result = constraint.ApplyTo(stage);
         
-        Assert.That(result.IsSuccess, Is.False);
+        Assert.False(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineStage_EmptyDependsOn_ReturnsFailure()
     {
         var stage = new PipelineStage { DependsOn = [] };
@@ -42,10 +42,10 @@ public class DependsOnConstraintTest
         var constraint = new DependsOnConstraint("Build");
         var result = constraint.ApplyTo(stage);
         
-        Assert.That(result.IsSuccess, Is.False);
+        Assert.False(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineJob_HasDependency_ReturnsSuccess()
     {
         var job = new PipelineJob
@@ -56,10 +56,10 @@ public class DependsOnConstraintTest
         var constraint = new DependsOnConstraint("Compile");
         var result = constraint.ApplyTo(job);
         
-        Assert.That(result.IsSuccess, Is.True);
+        Assert.True(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineJob_DependencyNotFound_ReturnsFailure()
     {
         var job = new PipelineJob
@@ -70,22 +70,22 @@ public class DependsOnConstraintTest
         var constraint = new DependsOnConstraint("Test");
         var result = constraint.ApplyTo(job);
         
-        Assert.That(result.IsSuccess, Is.False);
+        Assert.False(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_NotStageOrJob_ReturnsFailure()
     {
         var constraint = new DependsOnConstraint("Build");
         var result = constraint.ApplyTo("not a stage or job");
         
-        Assert.That(result.IsSuccess, Is.False);
+        Assert.False(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void Description_ReturnsCorrectMessage()
     {
         var constraint = new DependsOnConstraint("Build");
-        Assert.That(constraint.Description, Is.EqualTo("Depends on 'Build'"));
+        Assert.Equal("Depends on 'Build'", constraint.Description);
     }
 }

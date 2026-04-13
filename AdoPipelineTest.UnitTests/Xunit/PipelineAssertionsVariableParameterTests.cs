@@ -1,13 +1,13 @@
 using AdoPipelineTest.Model;
-using NUnit.Framework;
-using NUnitAssert = NUnit.Framework.Assert;
-using Assert = AdoPipelineTest.Xunit.Assert;
+using Xunit;
+using PipelineAssert = AdoPipelineTest.Xunit.Assert;
+using Assert = Xunit.Assert;
 
 namespace AdoPipelineTest.UnitTests.Xunit;
 
 public class PipelineAssertionsVariableParameterTests
 {
-    [Test]
+    [Fact]
     public void HasParameter_WhenParameterExists_DoesNotThrow()
     {
         var result = new PipelineTestResult
@@ -18,10 +18,11 @@ public class PipelineAssertionsVariableParameterTests
             }
         };
 
-        NUnitAssert.DoesNotThrow(() => Assert.HasParameter(result, "env"));
+        var ex = Record.Exception(() => PipelineAssert.HasParameter(result, "env"));
+        Assert.Null(ex);
     }
 
-    [Test]
+    [Fact]
     public void HasParameter_WhenParameterDoesNotExist_Throws()
     {
         var result = new PipelineTestResult
@@ -29,10 +30,10 @@ public class PipelineAssertionsVariableParameterTests
             Parameters = new Dictionary<string, PipelineParameter>()
         };
 
-        NUnitAssert.That(() => Assert.HasParameter(result, "env"), Throws.Exception);
+        Assert.ThrowsAny<Exception>(() => PipelineAssert.HasParameter(result, "env"));
     }
 
-    [Test]
+    [Fact]
     public void ParameterHasValue_WhenValueMatches_DoesNotThrow()
     {
         var result = new PipelineTestResult
@@ -43,10 +44,11 @@ public class PipelineAssertionsVariableParameterTests
             }
         };
 
-        NUnitAssert.DoesNotThrow(() => Assert.ParameterHasValue(result, "env", "prod"));
+        var ex = Record.Exception(() => PipelineAssert.ParameterHasValue(result, "env", "prod"));
+        Assert.Null(ex);
     }
 
-    [Test]
+    [Fact]
     public void ParameterHasValue_WhenValueDiffers_Throws()
     {
         var result = new PipelineTestResult
@@ -57,10 +59,10 @@ public class PipelineAssertionsVariableParameterTests
             }
         };
 
-        NUnitAssert.That(() => Assert.ParameterHasValue(result, "env", "dev"), Throws.Exception);
+        Assert.ThrowsAny<Exception>(() => PipelineAssert.ParameterHasValue(result, "env", "dev"));
     }
 
-    [Test]
+    [Fact]
     public void HasVariable_WhenVariableExists_DoesNotThrow()
     {
         var result = new PipelineTestResult
@@ -71,10 +73,11 @@ public class PipelineAssertionsVariableParameterTests
             }
         };
 
-        NUnitAssert.DoesNotThrow(() => Assert.HasVariable(result, "buildConfig"));
+        var ex = Record.Exception(() => PipelineAssert.HasVariable(result, "buildConfig"));
+        Assert.Null(ex);
     }
 
-    [Test]
+    [Fact]
     public void HasVariable_WhenVariableDoesNotExist_Throws()
     {
         var result = new PipelineTestResult
@@ -82,10 +85,10 @@ public class PipelineAssertionsVariableParameterTests
             Variables = new List<PipelineVariable>()
         };
 
-        NUnitAssert.That(() => Assert.HasVariable(result, "buildConfig"), Throws.Exception);
+        Assert.ThrowsAny<Exception>(() => PipelineAssert.HasVariable(result, "buildConfig"));
     }
 
-    [Test]
+    [Fact]
     public void HasVariable_WithValueMatches_DoesNotThrow()
     {
         var result = new PipelineTestResult
@@ -96,6 +99,7 @@ public class PipelineAssertionsVariableParameterTests
             }
         };
 
-        NUnitAssert.DoesNotThrow(() => Assert.HasVariable(result, "buildConfig", "Release"));
+        var ex = Record.Exception(() => PipelineAssert.HasVariable(result, "buildConfig", "Release"));
+        Assert.Null(ex);
     }
 }

@@ -1,16 +1,15 @@
-using NUnit.Framework;
+using Xunit;
 using AdoPipelineTest.Evaluation;
 using AdoPipelineTest.Parsing.Ast;
+using Assert = Xunit.Assert;
 
 namespace AdoPipelineTest.UnitTests.Evaluation;
 
-[TestFixture]
 public class ParameterEvaluatorTest
 {
-    [Test]
+    [Fact]
     public void EvaluateParameters_WithDefaultValues_UsesDefaults()
     {
-        // Arrange
         var rawParameters = new List<PipelineParameterElement>
         {
             new()
@@ -30,31 +29,22 @@ public class ParameterEvaluatorTest
         };
         var parameterValues = new Dictionary<string, object>();
 
-        // Act
         var result = ParameterEvaluator.EvaluateParameters(rawParameters, parameterValues);
 
-        // Assert
-        Assert.That(result, Has.Count.EqualTo(2));
+        Assert.Equal(2, result.Count);
         var projectName = result.First(p => p.Name == "projectName");
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(projectName.Value, Is.EqualTo("MySampleProject"));
-            Assert.That(projectName.DisplayName, Is.EqualTo("Project Name"));
-            Assert.That(projectName.DefaultValue, Is.EqualTo("MySampleProject"));
-        }
+        Assert.Equal("MySampleProject", projectName.Value);
+        Assert.Equal("Project Name", projectName.DisplayName);
+        Assert.Equal("MySampleProject", projectName.DefaultValue);
 
         var enableTests = result.First(p => p.Name == "enableTests");
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(enableTests.Value, Is.EqualTo(true));
-            Assert.That(enableTests.DefaultValue, Is.EqualTo(true));
-        }
+        Assert.Equal(true, enableTests.Value);
+        Assert.Equal(true, enableTests.DefaultValue);
     }
 
-    [Test]
+    [Fact]
     public void EvaluateParameters_WithSuppliedValues_OverridesDefaults()
     {
-        // Arrange
         var rawParameters = new List<PipelineParameterElement>
         {
             new()
@@ -76,30 +66,21 @@ public class ParameterEvaluatorTest
             { "buildConfiguration", "Debug" }
         };
 
-        // Act
         var result = ParameterEvaluator.EvaluateParameters(rawParameters, parameterValues);
 
-        // Assert
-        Assert.That(result, Has.Count.EqualTo(2));
+        Assert.Equal(2, result.Count);
         var projectName = result.First(p => p.Name == "projectName");
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(projectName.Value, Is.EqualTo("CustomProject"));
-            Assert.That(projectName.DefaultValue, Is.EqualTo("DefaultProject"));
-        }
+        Assert.Equal("CustomProject", projectName.Value);
+        Assert.Equal("DefaultProject", projectName.DefaultValue);
 
         var buildConfig = result.First(p => p.Name == "buildConfiguration");
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(buildConfig.Value, Is.EqualTo("Debug"));
-            Assert.That(buildConfig.DefaultValue, Is.EqualTo("Release"));
-        }
+        Assert.Equal("Debug", buildConfig.Value);
+        Assert.Equal("Release", buildConfig.DefaultValue);
     }
 
-    [Test]
+    [Fact]
     public void EvaluateParameters_WithNumericDefaults_PreservesType()
     {
-        // Arrange
         var rawParameters = new List<PipelineParameterElement>
         {
             new()
@@ -117,22 +98,16 @@ public class ParameterEvaluatorTest
         };
         var parameterValues = new Dictionary<string, object>();
 
-        // Act
         var result = ParameterEvaluator.EvaluateParameters(rawParameters, parameterValues);
 
-        // Assert
         var timeout = result.First(p => p.Name == "timeoutMinutes");
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(timeout.Value, Is.EqualTo(30));
-            Assert.That(timeout.DefaultValue, Is.EqualTo(30));
-        }
+        Assert.Equal(30, timeout.Value);
+        Assert.Equal(30, timeout.DefaultValue);
     }
 
-    [Test]
+    [Fact]
     public void EvaluateParameters_WithAllowedValues_IncludesConstraints()
     {
-        // Arrange
         var allowedConfigs = new List<object> { "Debug", "Release", "CI" };
         var rawParameters = new List<PipelineParameterElement>
         {
@@ -146,25 +121,19 @@ public class ParameterEvaluatorTest
         };
         var parameterValues = new Dictionary<string, object>();
 
-        // Act
         var result = ParameterEvaluator.EvaluateParameters(rawParameters, parameterValues);
 
-        // Assert
         var buildConfig = result.First();
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(buildConfig.AllowedValues, Is.Not.Null);
-            Assert.That(buildConfig.AllowedValues, Has.Count.EqualTo(3));
-            Assert.That(buildConfig.AllowedValues, Contains.Item("Debug"));
-            Assert.That(buildConfig.AllowedValues, Contains.Item("Release"));
-            Assert.That(buildConfig.AllowedValues, Contains.Item("CI"));
-        }
+        Assert.NotNull(buildConfig.AllowedValues);
+        Assert.Equal(3, buildConfig.AllowedValues.Count);
+        Assert.Contains("Debug", buildConfig.AllowedValues);
+        Assert.Contains("Release", buildConfig.AllowedValues);
+        Assert.Contains("CI", buildConfig.AllowedValues);
     }
 
-    [Test]
+    [Fact]
     public void EvaluateParameters_WithObjectDefaults_PreservesObjectType()
     {
-        // Arrange
         var defaultSettings = new Dictionary<object, object>();
         var rawParameters = new List<PipelineParameterElement>
         {
@@ -177,22 +146,16 @@ public class ParameterEvaluatorTest
         };
         var parameterValues = new Dictionary<string, object>();
 
-        // Act
         var result = ParameterEvaluator.EvaluateParameters(rawParameters, parameterValues);
 
-        // Assert
         var buildSettings = result.First();
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(buildSettings.Value, Is.InstanceOf<Dictionary<object, object>>());
-            Assert.That(buildSettings.DefaultValue, Is.InstanceOf<Dictionary<object, object>>());
-        }
+        Assert.IsType<Dictionary<object, object>>(buildSettings.Value);
+        Assert.IsType<Dictionary<object, object>>(buildSettings.DefaultValue);
     }
 
-    [Test]
+    [Fact]
     public void EvaluateParameters_WithEnvironmentVariableDefault_PreservesAsString()
     {
-        // Arrange
         var rawParameters = new List<PipelineParameterElement>
         {
             new()
@@ -204,18 +167,15 @@ public class ParameterEvaluatorTest
         };
         var parameterValues = new Dictionary<string, object>();
 
-        // Act
         var result = ParameterEvaluator.EvaluateParameters(rawParameters, parameterValues);
 
-        // Assert
         var outputDir = result.First();
-        Assert.That(outputDir.Value, Is.EqualTo("$(Build.ArtifactStagingDirectory)"));
+        Assert.Equal("$(Build.ArtifactStagingDirectory)", outputDir.Value);
     }
 
-    [Test]
+    [Fact]
     public void EvaluateParameters_WithMixedProvidedAndDefault_UsesCorrectValues()
     {
-        // Arrange
         var rawParameters = new List<PipelineParameterElement>
         {
             new()
@@ -240,29 +200,25 @@ public class ParameterEvaluatorTest
         var parameterValues = new Dictionary<string, object>
         {
             { "projectName", "CustomProject" }
-            // buildConfiguration and timeoutMinutes are not provided
         };
 
-        // Act
         var result = ParameterEvaluator.EvaluateParameters(rawParameters, parameterValues);
 
-        // Assert
-        Assert.That(result, Has.Count.EqualTo(3));
+        Assert.Equal(3, result.Count);
         
         var projectName = result.First(p => p.Name == "projectName");
-        Assert.That(projectName.Value, Is.EqualTo("CustomProject"));
+        Assert.Equal("CustomProject", projectName.Value);
         
         var buildConfig = result.First(p => p.Name == "buildConfiguration");
-        Assert.That(buildConfig.Value, Is.EqualTo("Release"));
+        Assert.Equal("Release", buildConfig.Value);
         
         var timeout = result.First(p => p.Name == "timeoutMinutes");
-        Assert.That(timeout.Value, Is.EqualTo(30));
+        Assert.Equal(30, timeout.Value);
     }
 
-    [Test]
+    [Fact]
     public void EvaluateParameters_WithNullDefault_ValueIsNull()
     {
-        // Arrange
         var rawParameters = new List<PipelineParameterElement>
         {
             new()
@@ -274,36 +230,27 @@ public class ParameterEvaluatorTest
         };
         var parameterValues = new Dictionary<string, object>();
 
-        // Act
         var result = ParameterEvaluator.EvaluateParameters(rawParameters, parameterValues);
 
-        // Assert
         var optionalField = result.First();
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(optionalField.Value, Is.Null);
-            Assert.That(optionalField.DefaultValue, Is.Null);
-        }
+        Assert.Null(optionalField.Value);
+        Assert.Null(optionalField.DefaultValue);
     }
 
-    [Test]
+    [Fact]
     public void EvaluateParameters_WithEmptyParameterList_ReturnsEmpty()
     {
-        // Arrange
         var rawParameters = new List<PipelineParameterElement>();
         var parameterValues = new Dictionary<string, object>();
 
-        // Act
         var result = ParameterEvaluator.EvaluateParameters(rawParameters, parameterValues);
 
-        // Assert
-        Assert.That(result, Is.Empty);
+        Assert.Empty(result);
     }
 
-    [Test]
+    [Fact]
     public void EvaluateParameters_PreservesDisplayName()
     {
-        // Arrange
         var rawParameters = new List<PipelineParameterElement>
         {
             new()
@@ -316,11 +263,9 @@ public class ParameterEvaluatorTest
         };
         var parameterValues = new Dictionary<string, object>();
 
-        // Act
         var result = ParameterEvaluator.EvaluateParameters(rawParameters, parameterValues);
 
-        // Assert
         var projectName = result.First();
-        Assert.That(projectName.DisplayName, Is.EqualTo("Project Name"));
+        Assert.Equal("Project Name", projectName.DisplayName);
     }
 }

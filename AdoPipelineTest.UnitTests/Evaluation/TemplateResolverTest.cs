@@ -1,12 +1,13 @@
-using NUnit.Framework;
-﻿using AdoPipelineTest.Evaluation;
+using Xunit;
+using AdoPipelineTest.Evaluation;
 using AdoPipelineTest.Parsing.Ast;
+using Assert = Xunit.Assert;
 
 namespace AdoPipelineTest.UnitTests.Evaluation;
 
 public class TemplateResolverTest
 {
-    [Test]
+    [Fact]
     public void ResolveSteps_LoadsTemplateFileAndReturnsSteps()
     {
         var stepTemplate = new TemplateStepElement
@@ -17,18 +18,15 @@ public class TemplateResolverTest
 
         var result = TemplateResolver.ResolveStepTemplate(stepTemplate);
 
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result, Has.Count.EqualTo(2));
+        Assert.NotNull(result);
+        Assert.Equal(2, result.Count);
 
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(result[0], Is.Not.Null);
-            Assert.That(result[0].DisplayName, Is.Null);
-            Assert.That(result[0], Is.InstanceOf<TaskStepElement>());
+        Assert.NotNull(result[0]);
+        Assert.Null(result[0].DisplayName);
+        Assert.IsType<TaskStepElement>(result[0]);
 
-            Assert.That(result[1], Is.Not.Null);
-            Assert.That(result[1].DisplayName, Is.EqualTo("Publish Build Output"));
-            Assert.That(result[1], Is.InstanceOf<TaskStepElement>());
-        }
+        Assert.NotNull(result[1]);
+        Assert.Equal("Publish Build Output", result[1].DisplayName);
+        Assert.IsType<TaskStepElement>(result[1]);
     }
 }

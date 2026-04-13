@@ -1,12 +1,12 @@
-using NUnit.Framework;
 using AdoPipelineTest.Model;
 using AdoPipelineTest.Nunit.Constraints;
+using Xunit;
 
 namespace AdoPipelineTest.UnitTests.Nunit.Constraints;
 
 public class VmImageConstraintTest
 {
-    [Test]
+    [Fact]
     public void ApplyTo_AgentPool_MatchingVmImage_ReturnsSuccess()
     {
         var agentPool = new PipelineAgentPool
@@ -17,10 +17,10 @@ public class VmImageConstraintTest
         var constraint = new VmImageConstraint("ubuntu-latest");
         var result = constraint.ApplyTo(agentPool);
         
-        Assert.That(result.IsSuccess, Is.True);
+        Assert.True(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_AgentPool_DifferentVmImage_ReturnsFailure()
     {
         var agentPool = new PipelineAgentPool
@@ -31,10 +31,10 @@ public class VmImageConstraintTest
         var constraint = new VmImageConstraint("ubuntu-latest");
         var result = constraint.ApplyTo(agentPool);
         
-        Assert.That(result.IsSuccess, Is.False);
+        Assert.False(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_AgentPool_NullVmImage_ReturnsFailure()
     {
         var agentPool = new PipelineAgentPool
@@ -45,30 +45,31 @@ public class VmImageConstraintTest
         var constraint = new VmImageConstraint("ubuntu-latest");
         var result = constraint.ApplyTo(agentPool);
         
-        Assert.That(result.IsSuccess, Is.False);
+        Assert.False(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_NotAgentPool_ReturnsFailure()
     {
         var constraint = new VmImageConstraint("ubuntu-latest");
         var result = constraint.ApplyTo("not an agent pool");
         
-        Assert.That(result.IsSuccess, Is.False);
+        Assert.False(result.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void Description_ReturnsCorrectMessage()
     {
         var constraint = new VmImageConstraint("ubuntu-latest");
-        Assert.That(constraint.Description, Is.EqualTo("VM Image is ubuntu-latest"));
+        Assert.Equal("VM Image is ubuntu-latest", constraint.Description);
     }
 
-    [TestCase("ubuntu-22.04")]
-    [TestCase("ubuntu-20.04")]
-    [TestCase("windows-2022")]
-    [TestCase("windows-latest")]
-    [TestCase("macOS-14")]
+    [Theory]
+    [InlineData("ubuntu-22.04")]
+    [InlineData("ubuntu-20.04")]
+    [InlineData("windows-2022")]
+    [InlineData("windows-latest")]
+    [InlineData("macOS-14")]
     public void ApplyTo_VariousVmImages_HandlesCorrectly(string vmImage)
     {
         var agentPool = new PipelineAgentPool
@@ -79,6 +80,6 @@ public class VmImageConstraintTest
         var constraint = new VmImageConstraint(vmImage);
         var result = constraint.ApplyTo(agentPool);
         
-        Assert.That(result.IsSuccess, Is.True);
+        Assert.True(result.IsSuccess);
     }
 }

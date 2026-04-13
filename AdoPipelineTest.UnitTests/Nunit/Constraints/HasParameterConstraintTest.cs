@@ -1,12 +1,12 @@
-using NUnit.Framework;
 using AdoPipelineTest.Model;
 using AdoPipelineTest.Nunit.Constraints;
+using Xunit;
 
 namespace AdoPipelineTest.UnitTests.Nunit.Constraints;
 
 public class HasParameterConstraintTest
 {
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineTestResult_HasParameter_ReturnsSuccess()
     {
         var result = new PipelineTestResult
@@ -20,10 +20,10 @@ public class HasParameterConstraintTest
         var constraint = new HasParameterConstraint("environment");
         var res = constraint.ApplyTo(result);
         
-        Assert.That(res.IsSuccess, Is.True);
+        Assert.True(res.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineTestResult_ParameterNotFound_ReturnsFailure()
     {
         var result = new PipelineTestResult
@@ -37,10 +37,10 @@ public class HasParameterConstraintTest
         var constraint = new HasParameterConstraint("region");
         var res = constraint.ApplyTo(result);
         
-        Assert.That(res.IsSuccess, Is.False);
+        Assert.False(res.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_PipelineTestResult_EmptyParameters_ReturnsFailure()
     {
         var result = new PipelineTestResult
@@ -51,22 +51,22 @@ public class HasParameterConstraintTest
         var constraint = new HasParameterConstraint("environment");
         var res = constraint.ApplyTo(result);
         
-        Assert.That(res.IsSuccess, Is.False);
+        Assert.False(res.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void ApplyTo_NotPipelineTestResult_ReturnsFailure()
     {
         var constraint = new HasParameterConstraint("environment");
         var res = constraint.ApplyTo("not a result");
         
-        Assert.That(res.IsSuccess, Is.False);
+        Assert.False(res.IsSuccess);
     }
 
-    [Test]
+    [Fact]
     public void Description_ReturnsCorrectMessage()
     {
         var constraint = new HasParameterConstraint("environment");
-        Assert.That(constraint.Description, Is.EqualTo("Pipeline has parameter 'environment'"));
+        Assert.Equal("Pipeline has parameter 'environment'", constraint.Description);
     }
 }
