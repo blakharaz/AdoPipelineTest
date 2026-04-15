@@ -1,0 +1,31 @@
+parameters:
+  - name: configuration
+    type: string
+    default: 'Release'
+  - name: runTests
+    type: boolean
+    default: true
+
+steps:
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'restore'
+      projects: '**/*.csproj'
+    displayName: 'Restore NuGet packages'
+
+  - template: build-step-template.yaml
+    parameters:
+      configuration: ${{ parameters.configuration }}
+
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'test'
+      projects: '**/*Tests.csproj'
+    displayName: 'Run Unit Tests'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: 'drop'
+    displayName: 'Publish Artifacts'
+

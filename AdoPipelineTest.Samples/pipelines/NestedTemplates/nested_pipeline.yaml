@@ -1,0 +1,27 @@
+trigger:
+  - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+  dotnetVersion: '8.0.x'
+
+stages:
+  - stage: Build
+    displayName: 'Build Stage'
+    jobs:
+      - job: BuildJob
+        displayName: 'Build .NET Project with Nested Templates'
+        steps:
+          - task: UseDotNet@2
+            inputs:
+              version: $(dotnetVersion)
+            displayName: 'Install .NET SDK'
+
+          - template: nested_pipeline_templates/build-and-test-template.yaml
+            parameters:
+              configuration: $(buildConfiguration)
+              runTests: true
+

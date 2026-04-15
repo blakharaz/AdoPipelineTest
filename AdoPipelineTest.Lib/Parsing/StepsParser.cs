@@ -257,18 +257,33 @@ internal static class StepsParser
 
         if (stepMappingNode.TryGetChild<YamlScalarNode>("template", out var templateNode))
         {
-            return ParseTemplateStep(templateNode, pipelinePath);
+            return ParseTemplateStep(templateNode, pipelinePath, stepMappingNode);
         }
-        
-        throw new InvalidDataException("unknown step type"); 
+throw new InvalidPipelineException($"unknown step type", pipelinePath, stepNode);
     }
 
-    private static TemplateStepElement ParseTemplateStep(YamlScalarNode templateNode, string pipelinePath)
+    private static TemplateStepElement ParseTemplateStep(YamlScalarNode templateNode, string pipelinePath, YamlMappingNode stepMappingNode)
     {
+        var parameters = new Dictionary<string, string>();
+        
+        if (stepMappingNode.TryGetChild<YamlMappingNode>("parameters", out var parametersNode))
+        {
+            foreach (var kvp in parametersNode.Children)
+            {
+                var key = kvp.Key is YamlScalarNode keyNode ? keyNode.Value : null;
+                var value = kvp.Value is YamlScalarNode valueNode ? valueNode.Value : null;
+                if (key != null && value != null)
+                {
+                    parameters[key] = value;
+                }
+            }
+        }
+        
         return new TemplateStepElement
         {
             Template = templateNode.Value ?? throw new InvalidDataException("template node has no value"), 
-            ReferencedBy = pipelinePath
+            ReferencedBy = pipelinePath,
+            Parameters = parameters
         };
     }
 

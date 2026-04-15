@@ -1,0 +1,9 @@
+stages:
+  - stage: Build
+    jobs:
+      - job: BuildJob
+        steps:
+          - template: templates/build-template.yaml
+            parameters:
+              projectName: 'MyProject.csproj'
+              configuration: 'Release'
