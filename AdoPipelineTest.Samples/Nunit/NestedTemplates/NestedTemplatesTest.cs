@@ -1,4 +1,6 @@
 using AdoPipelineTest.Model.Steps;
+using NUnit.Framework;
+using Assert = NUnit.Framework.Assert;
 
 namespace AdoPipelineTest.Samples.Nunit.NestedTemplates;
 
@@ -7,10 +9,15 @@ using Is = AdoPipelineTest.Nunit.Is;
 [TestFixture]
 public class NestedTemplatesTest
 {
+    private static PipelineTester CreatePipelineTester()
+    {
+        return new PipelineTester().WithPipeline("pipelines/NestedTemplates/nested_pipeline.yaml");
+    }
+
     [Test]
     public void VerifyBasics()
     {
-        var result = new PipelineTester().WithPipeline("Nunit/NestedTemplates/nested_pipeline.yaml").Run();
+        var result = CreatePipelineTester().Run();
         
         Assert.That(result, Is.Not.Null);
         using (Assert.EnterMultipleScope())
@@ -28,7 +35,7 @@ public class NestedTemplatesTest
     [Test]
     public void VerifyStep1_InstallDotNetSdk()
     {
-        var result = new PipelineTester().WithPipeline("Nunit/NestedTemplates/nested_pipeline.yaml").Run();
+        var result = CreatePipelineTester().Run();
         
         Assert.That(result, Is.Not.Null);
 
@@ -48,7 +55,7 @@ public class NestedTemplatesTest
     [Test]
     public void VerifyStep2_RestoreNuGetPackages()
     {
-        var result = new PipelineTester().WithPipeline("Nunit/NestedTemplates/nested_pipeline.yaml").Run();
+        var result = CreatePipelineTester().Run();
         
         Assert.That(result, Is.Not.Null);
         var steps = result.Stages[0].Jobs[0].Steps;
@@ -67,7 +74,7 @@ public class NestedTemplatesTest
     [Test]
     public void VerifyStep3_BuildDotNetProject()
     {
-        var result = new PipelineTester().WithPipeline("Nunit/NestedTemplates/nested_pipeline.yaml").Run();
+        var result = CreatePipelineTester().Run();
         
         Assert.That(result, Is.Not.Null);
         var steps = result.Stages[0].Jobs[0].Steps;
@@ -86,7 +93,7 @@ public class NestedTemplatesTest
     [Test]
     public void VerifyStep4_PublishBuildOutput()
     {
-        var result = new PipelineTester().WithPipeline("Nunit/NestedTemplates/nested_pipeline.yaml").Run();
+        var result = CreatePipelineTester().Run();
         
         Assert.That(result, Is.Not.Null);
         var steps = result.Stages[0].Jobs[0].Steps;
@@ -105,7 +112,7 @@ public class NestedTemplatesTest
     [Test]
     public void VerifyStep5_RunUnitTests()
     {
-        var result = new PipelineTester().WithPipeline("Nunit/NestedTemplates/nested_pipeline.yaml").Run();
+        var result = CreatePipelineTester().Run();
         
         Assert.That(result, Is.Not.Null);
         var steps = result.Stages[0].Jobs[0].Steps;
@@ -124,7 +131,7 @@ public class NestedTemplatesTest
     [Test]
     public void VerifyStep6_PublishArtifacts()
     {
-        var result = new PipelineTester().WithPipeline("Nunit/NestedTemplates/nested_pipeline.yaml").Run();
+        var result = CreatePipelineTester().Run();
         
         Assert.That(result, Is.Not.Null);
         var steps = result.Stages[0].Jobs[0].Steps;

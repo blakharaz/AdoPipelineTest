@@ -13,7 +13,7 @@ steps:
       projects: '**/*.csproj'
     displayName: 'Restore NuGet packages'
 
-  - template: build-step-template.yml
+  - template: build-step-template.yaml
     parameters:
       configuration: ${{ parameters.configuration }}
 

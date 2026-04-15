@@ -37,43 +37,10 @@
       <ProjectReference Include="..\AdoPipelineTest.FluentAssertions\AdoPipelineTest.FluentAssertions.csproj" />
     </ItemGroup>
 
-<ItemGroup>
+    <ItemGroup>
       <Content Include="pipelines\**\*.yaml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
-      <None Update="SimplePipeline\simple_nodejs_project.yaml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Nunit\SimplePipeline\simple_dotnet_pipeline.yaml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Nunit\SimplePipeline\simple_nodejs_pipeline.yaml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Nunit\SimplePipeline\simple_job_pipeline.yaml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Nunit\SimplePipeline\simple_stage_pipeline.yaml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Nunit\SimpleTemplates\simple_pipeline_with_step_template.yaml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Nunit\SimpleTemplates\build-template.yml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Nunit\Variables\pipeline_with_variables.yaml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Nunit\NestedTemplates\nested_pipeline.yaml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Nunit\NestedTemplates\nested_pipeline_templates\build-and-test-template.yml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Nunit\NestedTemplates\nested_pipeline_templates\build-step-template.yml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
     </ItemGroup>
 
 </Project>

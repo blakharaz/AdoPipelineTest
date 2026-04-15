@@ -20,7 +20,7 @@ stages:
               version: $(dotnetVersion)
             displayName: 'Install .NET SDK'
 
-          - template: nested_pipeline_templates/build-and-test-template.yml
+          - template: nested_pipeline_templates/build-and-test-template.yaml
             parameters:
               configuration: $(buildConfiguration)
               runTests: true
