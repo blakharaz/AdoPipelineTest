@@ -305,17 +305,40 @@ internal static partial class ExpressionEvaluator
         
         return dict.ToDictionary(entry => entry.Key, entry => EvaluateStringNullable(entry.Value, parameters, variables));
     }
+
+    internal static IDictionary<string, string> EvaluateDictionaryValues(IDictionary<string, string>? dict, Dictionary<string, object?> parameters, Dictionary<string, object?> variables, Dictionary<string, string> runtimeVariables)
+    {
+        if (dict == null || dict.Count == 0)
+        {
+            return new Dictionary<string, string>();
+        }
+        
+        return dict.ToDictionary(entry => entry.Key, entry => EvaluateStringNullable(entry.Value, parameters, variables, runtimeVariables));
+    }
     
     internal static string EvaluateString(string str, Dictionary<string, object?> parameters, Dictionary<string, object?> variables)
     {
         var nullableParams = parameters.Cast<KeyValuePair<string, object?>>().ToDictionary(x => x.Key, x => x.Value);
         return EvaluateStringNullable(str, nullableParams, variables);
     }
+
+    internal static string EvaluateString(string str, Dictionary<string, object?> parameters, Dictionary<string, object?> variables, Dictionary<string, string> runtimeVariables)
+    {
+        var nullableParams = parameters.Cast<KeyValuePair<string, object?>>().ToDictionary(x => x.Key, x => x.Value);
+        return EvaluateStringNullable(str, nullableParams, variables, runtimeVariables);
+    }
     
     private static string EvaluateStringNullable(string str, Dictionary<string, object?> parameters, Dictionary<string, object?> variables)
     {
         var strWithEvaluatedParameters = EvaluateCompileTimeExpressionsNullable(str, parameters);
         return EvaluateVariables(strWithEvaluatedParameters, variables);
+    }
+
+    private static string EvaluateStringNullable(string str, Dictionary<string, object?> parameters, Dictionary<string, object?> variables, Dictionary<string, string> runtimeVariables)
+    {
+        var strWithEvaluatedParameters = EvaluateCompileTimeExpressionsNullable(str, parameters);
+        var strWithVariables = EvaluateVariables(strWithEvaluatedParameters, variables);
+        return EvaluateRuntimeVariables(strWithVariables, runtimeVariables);
     }
 
     internal static string EvaluateCompileTimeExpressions(string str, Dictionary<string, object?> parameters)
@@ -363,6 +386,18 @@ internal static partial class ExpressionEvaluator
         foreach (var entry in variables)
         {
             result = result.Replace($"$({entry.Key})", entry.Value?.ToString() ?? string.Empty);
+        }
+
+        return result;
+    }
+
+    internal static string EvaluateRuntimeVariables(string str, Dictionary<string, string> runtimeVariables)
+    {
+        var result = str;
+
+        foreach (var entry in runtimeVariables)
+        {
+            result = result.Replace($"$({entry.Key})", entry.Value);
         }
 
         return result;
