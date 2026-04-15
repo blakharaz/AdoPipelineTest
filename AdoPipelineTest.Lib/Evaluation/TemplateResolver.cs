@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using AdoPipelineTest.Parsing;
 using AdoPipelineTest.Parsing.Ast;
 using AdoPipelineTest.Utils;
@@ -5,7 +6,7 @@ using YamlDotNet.RepresentationModel;
 
 namespace AdoPipelineTest.Evaluation;
 
-internal static class TemplateResolver
+internal static partial class TemplateResolver
 {
     internal static IList<PipelineStepElement> ResolveStepTemplate(TemplateStepElement stepTemplate)
     {
@@ -17,9 +18,10 @@ internal static class TemplateResolver
         }
 
         var fileContent = File.ReadAllText(templatePath);
+        var processedContent = SubstituteTemplateParameters(fileContent, stepTemplate.Parameters);
         
         var yamlStream = new YamlDotNet.RepresentationModel.YamlStream();
-        using (var reader = new StringReader(fileContent))
+        using (var reader = new StringReader(processedContent))
         {
             yamlStream.Load(reader);
         }
@@ -36,6 +38,31 @@ internal static class TemplateResolver
 
         return StepsParser.ParseSteps(stepsNode, templatePath);
     }
+
+    private static string SubstituteTemplateParameters(string content, Dictionary<string, string> parameters)
+    {
+        if (parameters.Count == 0)
+        {
+            return content;
+        }
+
+        var parameterRegex = TemplateParameterRegex();
+        
+        return parameterRegex.Replace(content, match =>
+        {
+            var parameterName = match.Groups[1].Value;
+            
+            if (parameters.TryGetValue(parameterName, out var value))
+            {
+                return value;
+            }
+            
+            return match.Value;
+        });
+    }
+
+    [GeneratedRegex(@"\$\{\{\s*parameters\.([a-zA-Z_][a-zA-Z0-9_]*)\s*\}\}")]
+    private static partial Regex TemplateParameterRegex();
 
     internal static PipelineStageElement ResolveStage(PipelineStageElement stageWithTemplates)
     {

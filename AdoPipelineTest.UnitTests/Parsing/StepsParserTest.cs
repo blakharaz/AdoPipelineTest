@@ -1,6 +1,7 @@
 using Xunit;
 using AdoPipelineTest.Model;
 using AdoPipelineTest.Parsing;
+using AdoPipelineTest.Parsing.Ast;
 using Assert = Xunit.Assert;
 
 namespace AdoPipelineTest.UnitTests.Parsing;
@@ -43,5 +44,41 @@ public class StepsParserTest
         var releaseJob = deployStage.Jobs[0];
         Assert.Equal("Release", releaseJob.Name);
         Assert.Contains("Package", releaseJob.DependsOn);
+    }
+
+    [Fact]
+    public void Parse_PipelineWithTemplateStepWithParameters_CapturesParameters()
+    {
+        var result = PipelineParser.Parse("test_data/pipeline_parser/pipeline_with_template_step_with_parameters.yaml");
+        
+        Assert.Single(result.Stages);
+        var stage = result.Stages[0];
+        Assert.Single(stage.Jobs);
+        var job = stage.Jobs[0];
+        
+        var templateStep = job.Steps.OfType<TemplateStepElement>().FirstOrDefault();
+        Assert.NotNull(templateStep);
+        Assert.Equal("templates/build-template.yaml", templateStep.Template);
+        Assert.NotNull(templateStep.ReferencedBy);
+        Assert.Equal(2, templateStep.Parameters.Count);
+        Assert.Equal("MyProject.csproj", templateStep.Parameters["projectName"]);
+        Assert.Equal("Release", templateStep.Parameters["configuration"]);
+    }
+
+    [Fact]
+    public void Parse_PipelineWithTemplateStepWithoutParameters_HasEmptyParameters()
+    {
+        var result = PipelineParser.Parse("test_data/pipeline_parser/pipeline_with_template_step_without_parameters.yaml");
+        
+        Assert.Single(result.Stages);
+        var stage = result.Stages[0];
+        Assert.Single(stage.Jobs);
+        var job = stage.Jobs[0];
+        
+        var templateStep = job.Steps.OfType<TemplateStepElement>().FirstOrDefault();
+        Assert.NotNull(templateStep);
+        Assert.Equal("templates/simple-template.yaml", templateStep.Template);
+        Assert.NotNull(templateStep.ReferencedBy);
+        Assert.Empty(templateStep.Parameters);
     }
 }
