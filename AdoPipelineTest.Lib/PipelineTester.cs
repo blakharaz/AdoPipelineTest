@@ -1,4 +1,4 @@
-﻿using AdoPipelineTest.Evaluation;
+using AdoPipelineTest.Evaluation;
 using AdoPipelineTest.Model;
 using AdoPipelineTest.Parsing;
 using AdoPipelineTest.Parsing.Ast;
@@ -9,6 +9,7 @@ public class PipelineTester
 {
     private readonly Dictionary<string, object?> _parameters = [];
     private Dictionary<string, object?> _variables = [];
+    private Dictionary<string, string> _runtimeVariables = [];
     private string? _pipelinePath;
 
     public PipelineTester WithPipeline(string pipelinePath)
@@ -38,6 +39,12 @@ public class PipelineTester
         return this;
     }
 
+    public PipelineTester WithRuntimeVariables(IDictionary<string, string> runtimeVariables)
+    {
+        _runtimeVariables = new Dictionary<string, string>(runtimeVariables);
+        return this;
+    }
+
     public PipelineTestResult Run()
     {
         if (string.IsNullOrWhiteSpace(_pipelinePath))
@@ -60,7 +67,7 @@ public class PipelineTester
         var mergedVariables = MergeVariables(parseResult.Variables, _variables);
 
         var stagesWithResolvedTemplates = parseResult.Stages.Select(TemplateResolver.ResolveStage);
-        var evaluatedStages = stagesWithResolvedTemplates.Select(stage => PipelineEvaluator.EvaluateStage(stage, parameters.ToDictionary(item => item.Name, item => item.Value), mergedVariables!)).ToList();
+        var evaluatedStages = stagesWithResolvedTemplates.Select(stage => PipelineEvaluator.EvaluateStage(stage, parameters.ToDictionary(item => item.Name, item => item.Value), mergedVariables!, _runtimeVariables)).ToList();
         
         return new PipelineTestResult
         {

@@ -85,4 +85,90 @@ public class PipelineTesterVariablesTest
         Assert.NotNull(variable);
         Assert.Null(variable!.DefaultValue);
     }
+
+    [Fact]
+    public void Run_ReplacesRuntimeVariables_InScriptSteps()
+    {
+        var runtimeVars = new Dictionary<string, string>
+        {
+            ["Build.BuildNumber"] = "12345"
+        };
+
+        var result = new PipelineTester()
+            .WithPipeline("test_data/pipeline_parser/pipeline_with_runtime_expressions.yaml")
+            .WithRuntimeVariables(runtimeVars)
+            .Run();
+
+        Assert.Single(result.Stages);
+        var steps = result.Stages[0].Jobs[0].Steps;
+        
+        var step1 = steps[0] as ScriptStep;
+        Assert.NotNull(step1);
+        Assert.Contains("12345", step1!.Script);
+    }
+
+    [Fact]
+    public void Run_ReplacesMultipleRuntimeVariables()
+    {
+        var runtimeVars = new Dictionary<string, string>
+        {
+            ["Build.BuildNumber"] = "2024.001",
+            ["System.StageName"] = "Build",
+            ["Agent.Name"] = "Agent01"
+        };
+
+        var result = new PipelineTester()
+            .WithPipeline("test_data/pipeline_parser/pipeline_with_runtime_expressions.yaml")
+            .WithRuntimeVariables(runtimeVars)
+            .Run();
+
+        var steps = result.Stages[0].Jobs[0].Steps;
+        
+        var step1 = steps[0] as ScriptStep;
+        Assert.NotNull(step1);
+        Assert.Contains("2024.001", step1!.Script);
+        
+        var step2 = steps[1] as ScriptStep;
+        Assert.NotNull(step2);
+        Assert.Contains("Build", step2!.Script);
+        
+        var step3 = steps[2] as ScriptStep;
+        Assert.NotNull(step3);
+        Assert.Contains("Agent01", step3!.Script);
+    }
+
+    [Fact]
+    public void Run_LeavesUnresolvedRuntimeVariables_Unchanged()
+    {
+        var runtimeVars = new Dictionary<string, string>();
+
+        var result = new PipelineTester()
+            .WithPipeline("test_data/pipeline_parser/pipeline_with_runtime_expressions.yaml")
+            .WithRuntimeVariables(runtimeVars)
+            .Run();
+
+        var steps = result.Stages[0].Jobs[0].Steps;
+        
+        var step1 = steps[0] as ScriptStep;
+        Assert.NotNull(step1);
+        Assert.Contains("$(Build.BuildNumber)", step1!.Script);
+    }
+
+    [Fact]
+    public void Run_ResolvesCompileTimeParameters_BeforeRuntimeVariables()
+    {
+        var yamlPath = "test_data/pipeline_parser/pipeline_with_parameters.yaml";
+        var runtimeVars = new Dictionary<string, string>
+        {
+            ["Build.Id"] = "999"
+        };
+
+        var result = new PipelineTester()
+            .WithPipeline(yamlPath)
+            .WithParameter("targetFile", "test.txt")
+            .WithRuntimeVariables(runtimeVars)
+            .Run();
+
+        Assert.Single(result.Stages);
+    }
 }

@@ -1,0 +1,17 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  jobs:
+  - job: BuildJob
+    steps:
+    - script: echo "Build $(Build.BuildNumber)"
+      displayName: "Show Build Number"
+    - script: echo "Running on $(System.StageName)"
+      displayName: "Show Stage Name"
+    - script: echo "Agent $(Agent.Name)"
+      displayName: "Show Agent Name"
