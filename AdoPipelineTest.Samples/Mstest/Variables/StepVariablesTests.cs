@@ -1,4 +1,3 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using AdoPipelineTest.Mstest;
 using AdoPipelineTest.Model.Steps;
 
@@ -37,7 +36,7 @@ public class StepVariablesTests
         Assert.IsNotNull(buildStep);
         Assert.AreEqual("Build", buildStep.DisplayName);
 
-        var arguments = buildStep.Inputs?["arguments"]?.ToString();
+        var arguments = buildStep.Inputs["arguments"];
         Assert.Contains("Release", arguments);
     }
 
@@ -54,7 +53,7 @@ public class StepVariablesTests
         Assert.IsNotNull(testStep);
         Assert.AreEqual("Test", testStep.DisplayName);
 
-        var arguments = testStep.Inputs?["arguments"]?.ToString();
+        var arguments = testStep.Inputs["arguments"];
         Assert.Contains("Release", arguments);
     }
 
@@ -99,7 +98,7 @@ public class StepVariablesTests
         Assert.IsNotNull(buildStep);
         Assert.AreEqual("Build", buildStep.DisplayName);
 
-        var arguments = buildStep.Inputs["arguments"]?.ToString();
+        var arguments = buildStep.Inputs["arguments"];
         Assert.Contains("Debug", arguments);
         Assert.DoesNotContain("Release", arguments);
     }
@@ -119,8 +118,8 @@ public class StepVariablesTests
         Assert.IsNotNull(buildStep);
         Assert.IsNotNull(testStep);
 
-        var buildArguments = buildStep!.Inputs?["arguments"]?.ToString();
-        var testArguments = testStep!.Inputs?["arguments"]?.ToString();
+        var buildArguments = buildStep.Inputs["arguments"];
+        var testArguments = testStep.Inputs["arguments"];
 
         Assert.Contains("Debug", buildArguments);
         Assert.Contains("Debug", testArguments);
@@ -136,7 +135,7 @@ public class StepVariablesTests
         var steps = result.Stages[0].Jobs[0].Steps;
         var buildStep = steps[2] as TaskStep;
 
-        var arguments = buildStep!.Inputs?["arguments"]?.ToString();
+        var arguments = buildStep!.Inputs["arguments"];
         Assert.Contains("Release", arguments);
     }
 
@@ -151,7 +150,7 @@ public class StepVariablesTests
         var steps = result.Stages[0].Jobs[0].Steps;
         var buildStep = steps[2] as TaskStep;
 
-        var arguments = buildStep!.Inputs?["arguments"]?.ToString();
+        var arguments = buildStep!.Inputs["arguments"];
         Assert.Contains("Release", arguments);
     }
 
