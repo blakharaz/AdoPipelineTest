@@ -8,9 +8,8 @@ public static class BoolExpressionGrammar
     private static Parser<Expression> ExprRef => Parse.Ref(() => InnerExpression);
 
     private static Parser<Expression> TemplateExpression =>
-        from l in Parse.String("${{").Token()
-        from e in ExprRef
-        from r in Parse.String("}}").Token()
+        from e in Parse.String("${{").Token().Then(_ => ExprRef)
+        from _ in Parse.String("}}").Token()
         select e;
 
     // N-ary args helper (0+ args)
@@ -22,30 +21,26 @@ public static class BoolExpressionGrammar
     // Arity-specific function parsers
     private static Parser<FunctionExpression> UnaryFunction(string name) =>
         from n in Parse.IgnoreCase(name).Token()
-        from l in Parse.Char('(').Token()
-        from arg in ExprRef.Once()
-        from r in Parse.Char(')').Token()
+        from arg in Parse.Char('(').Token().Then(_ => ExprRef.Once())
+        from _ in Parse.Char(')').Token()
         select new FunctionExpression(n, arg.ToList());
 
     private static Parser<FunctionExpression> BinaryFunction(string name) =>
         from n in Parse.IgnoreCase(name).Token()
-        from l in Parse.Char('(').Token()
-        from args in NaryArgs(2, 2)
-        from r in Parse.Char(')').Token()
+        from args in Parse.Char('(').Token().Then(_ => NaryArgs(2, 2))
+        from _ in Parse.Char(')').Token()
         select new FunctionExpression(n, args.ToList());
 
     private static Parser<FunctionExpression> NaryFunction(string name, int minArgs, int? maxArgs = null) =>
         from n in Parse.IgnoreCase(name).Token()
-        from l in Parse.Char('(').Token()
-        from args in NaryArgs(minArgs, maxArgs.GetValueOrDefault(int.MaxValue))
-        from r in Parse.Char(')').Token()
+        from args in Parse.Char('(').Token().Then(_ => NaryArgs(minArgs, maxArgs.GetValueOrDefault(int.MaxValue)))
+        from _ in Parse.Char(')').Token()
         select new FunctionExpression(n, args.ToList());
 
 
     private static Parser<FunctionExpression> NullaryFunction(string name) =>
         from n in Parse.String(name).Token()
-        from l in Parse.Char('(').Token()
-        from r in Parse.Char(')').Token()
+        from _ in Parse.Char('(').Token().Then(_ => Parse.Char(')').Token())
         select new FunctionExpression(n, Array.Empty<Expression>());
 
     // ADO boolean functions by arity group
@@ -84,9 +79,8 @@ public static class BoolExpressionGrammar
         BinaryFunctions.Or(UnaryFunctions).Or(NaryFunctions).Or(NullaryFunctions);
 
     private static Parser<Expression> Parens =>
-        from l in Parse.Char('(').Token()
-        from e in ExprRef
-        from r in Parse.Char(')').Token()
+        from e in Parse.Char('(').Token().Then(_ => ExprRef)
+        from _ in Parse.Char(')').Token()
         select e;
 
     private static readonly Parser<Expression> InnerExpression =

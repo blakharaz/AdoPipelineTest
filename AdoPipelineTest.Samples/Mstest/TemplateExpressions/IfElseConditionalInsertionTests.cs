@@ -19,10 +19,10 @@ public class IfElseConditionalInsertionTests
 
         Assert.IsNotNull(result);
         result.HasStageCount(1);
-        Assert.AreEqual(1, result.Stages[0].Jobs.Count);
+        Assert.HasCount(1, result.Stages[0].Jobs);
 
         var steps = result.Stages[0].Jobs[0].Steps;
-        Assert.AreEqual(1, steps.Count);
+        Assert.HasCount(1, steps);
 
         var firstStep = steps[0] as TaskStep;
         Assert.IsNotNull(firstStep);
@@ -39,10 +39,10 @@ public class IfElseConditionalInsertionTests
 
         Assert.IsNotNull(result);
         result.HasStageCount(1);
-        Assert.AreEqual(1, result.Stages[0].Jobs.Count);
+        Assert.HasCount(1, result.Stages[0].Jobs);
 
         var steps = result.Stages[0].Jobs[0].Steps;
-        Assert.AreEqual(3, steps.Count);
+        Assert.HasCount(3, steps);
 
         var firstStep = steps[0] as TaskStep;
         Assert.IsNotNull(firstStep);
@@ -67,9 +67,9 @@ public class IfElseConditionalInsertionTests
 
         Assert.IsNotNull(result);
         result.HasStageCount(1);
-        Assert.AreEqual(1, result.Stages[0].Jobs.Count);
+        Assert.HasCount(1, result.Stages[0].Jobs);
 
         var steps = result.Stages[0].Jobs[0].Steps;
-        Assert.AreEqual(1, steps.Count);
+        Assert.HasCount(1, steps);
     }
 }

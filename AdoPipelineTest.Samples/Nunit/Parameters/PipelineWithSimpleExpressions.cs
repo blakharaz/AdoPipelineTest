@@ -47,8 +47,11 @@ public class PipelineWithSimpleExpressions
         // Verify the Build task (Step 2) uses the passed parameter
         var buildStep = steps[1] as TaskStep;
         Assert.That(buildStep, Is.Not.Null);
-        Assert.That(buildStep.TaskName, Is.EqualTo("DotNetCoreCLI@2"));
-        Assert.That(buildStep.Inputs["arguments"], Is.EqualTo("--configuration Debug"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(buildStep.TaskName, Is.EqualTo("DotNetCoreCLI@2"));
+            Assert.That(buildStep.Inputs["arguments"], Is.EqualTo("--configuration Debug"));
+        }
 
         // Verify the Summary script (Step 4) contains the expected values
         var summaryStep = steps[3] as ScriptStep;
