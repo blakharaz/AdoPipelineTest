@@ -3,7 +3,7 @@ using YamlDotNet.RepresentationModel;
 
 namespace AdoPipelineTest.Parsing;
 
-internal class PipelineParser
+internal static class PipelineParser
 {
     internal static PipelineSyntaxTree Parse(string yamlPath)
     {
@@ -39,8 +39,7 @@ internal class PipelineParser
             Stages = stages
         };
     }
-    
-    
+
     private static IList<PipelineStageElement> ParseStages(YamlMappingNode rootNode, string pipelinePath)
     {
         if (rootNode.Children.TryGetValue("steps", out var stepsInRoot) && stepsInRoot is YamlSequenceNode stepsInRootSequence)
