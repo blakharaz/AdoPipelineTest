@@ -49,7 +49,7 @@ public class PipelineWithParameters
             Assert.That(parameters["projectName"].Value, Is.EqualTo("MySampleProject"));
             
             // Boolean parameter
-            Assert.That(parameters["enableTests"].Value, Is.EqualTo(true));
+            Assert.That(parameters["enableTests"].Value, Is.True);
             
             // Number parameter
             Assert.That(parameters["timeoutMinutes"].Value, Is.EqualTo(30));
@@ -85,7 +85,7 @@ public class PipelineWithParameters
         using (Assert.EnterMultipleScope())
         {
             Assert.That(parameters["projectName"].Value, Is.EqualTo("CustomProject"));
-            Assert.That(parameters["enableTests"].Value, Is.EqualTo(false));
+            Assert.That(parameters["enableTests"].Value, Is.False);
             Assert.That(parameters["buildConfiguration"].Value, Is.EqualTo("Debug"));
         }
     }

@@ -59,8 +59,11 @@ public class SimplePipelineWithStepTemplateTest
         Assert.That(firstStep, Is.TypeOf<TaskStep>());
         
         var taskStep = (TaskStep)firstStep;
-        Assert.That(taskStep.DisplayName, Is.EqualTo("Install .NET SDK"));
-        Assert.That(taskStep.TaskName, Is.EqualTo("UseDotNet@2"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(taskStep.DisplayName, Is.EqualTo("Install .NET SDK"));
+            Assert.That(taskStep.TaskName, Is.EqualTo("UseDotNet@2"));
+        }
     }
 
     [Test]
@@ -72,8 +75,11 @@ public class SimplePipelineWithStepTemplateTest
         Assert.That(secondStep, Is.TypeOf<TaskStep>());
         
         var taskStep = (TaskStep)secondStep;
-        Assert.That(taskStep.DisplayName, Is.EqualTo("Restore NuGet packages"));
-        Assert.That(taskStep.TaskName, Is.EqualTo("DotNetCoreCLI@2"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(taskStep.DisplayName, Is.EqualTo("Restore NuGet packages"));
+            Assert.That(taskStep.TaskName, Is.EqualTo("DotNetCoreCLI@2"));
+        }
     }
 
     [Test]
@@ -85,8 +91,11 @@ public class SimplePipelineWithStepTemplateTest
         Assert.That(thirdStep, Is.TypeOf<TaskStep>());
         
         var taskStep = (TaskStep)thirdStep;
-        Assert.That(taskStep.DisplayName, Is.EqualTo("Build .NET Project"));
-        Assert.That(taskStep.TaskName, Is.EqualTo("DotNetCoreCLI@2"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(taskStep.DisplayName, Is.EqualTo("Build .NET Project"));
+            Assert.That(taskStep.TaskName, Is.EqualTo("DotNetCoreCLI@2"));
+        }
     }
 
     [Test]
@@ -98,8 +107,11 @@ public class SimplePipelineWithStepTemplateTest
         Assert.That(fourthStep, Is.TypeOf<TaskStep>());
         
         var taskStep = (TaskStep)fourthStep;
-        Assert.That(taskStep.DisplayName, Is.EqualTo("Publish Build Output"));
-        Assert.That(taskStep.TaskName, Is.EqualTo("DotNetCoreCLI@2"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(taskStep.DisplayName, Is.EqualTo("Publish Build Output"));
+            Assert.That(taskStep.TaskName, Is.EqualTo("DotNetCoreCLI@2"));
+        }
     }
 
     [Test]
@@ -111,8 +123,11 @@ public class SimplePipelineWithStepTemplateTest
         Assert.That(fifthStep, Is.TypeOf<TaskStep>());
         
         var taskStep = (TaskStep)fifthStep;
-        Assert.That(taskStep.DisplayName, Is.EqualTo("Run Unit Tests"));
-        Assert.That(taskStep.TaskName, Is.EqualTo("DotNetCoreCLI@2"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(taskStep.DisplayName, Is.EqualTo("Run Unit Tests"));
+            Assert.That(taskStep.TaskName, Is.EqualTo("DotNetCoreCLI@2"));
+        }
     }
 
     [Test]
@@ -124,8 +139,11 @@ public class SimplePipelineWithStepTemplateTest
         Assert.That(sixthStep, Is.TypeOf<TaskStep>());
         
         var taskStep = (TaskStep)sixthStep;
-        Assert.That(taskStep.DisplayName, Is.EqualTo("Publish Artifacts"));
-        Assert.That(taskStep.TaskName, Is.EqualTo("PublishBuildArtifacts@1"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(taskStep.DisplayName, Is.EqualTo("Publish Artifacts"));
+            Assert.That(taskStep.TaskName, Is.EqualTo("PublishBuildArtifacts@1"));
+        }
     }
 
     [Test]
