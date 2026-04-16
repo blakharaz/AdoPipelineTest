@@ -26,7 +26,7 @@ public class SimplePipelineWithStepTemplateTests
     {
         var result = CreateTester().Run();
         var buildStage = result.Stages[0];
-        Assert.AreEqual(1, buildStage.Jobs.Count);
+        Assert.HasCount(1, buildStage.Jobs);
     }
 
     [TestMethod]
@@ -42,7 +42,7 @@ public class SimplePipelineWithStepTemplateTests
     {
         var result = CreateTester().Run();
         var buildJob = result.Stages[0].Jobs[0];
-        Assert.AreEqual(6, buildJob.Steps.Count);
+        Assert.HasCount(6, buildJob.Steps);
     }
 
     [TestMethod]

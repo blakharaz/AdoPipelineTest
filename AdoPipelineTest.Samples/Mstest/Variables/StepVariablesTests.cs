@@ -18,10 +18,10 @@ public class StepVariablesTests
 
         Assert.IsNotNull(result);
         result.HasStageCount(1);
-        Assert.AreEqual(1, result.Stages[0].Jobs.Count);
+        Assert.HasCount(1, result.Stages[0].Jobs);
 
         var steps = result.Stages[0].Jobs[0].Steps;
-        Assert.AreEqual(4, steps.Count);
+        Assert.HasCount(4, steps);
     }
 
     [TestMethod]
@@ -38,7 +38,7 @@ public class StepVariablesTests
         Assert.AreEqual("Build", buildStep.DisplayName);
 
         var arguments = buildStep.Inputs?["arguments"]?.ToString();
-        StringAssert.Contains(arguments, "Release");
+        Assert.Contains("Release", arguments);
     }
 
     [TestMethod]
@@ -55,7 +55,7 @@ public class StepVariablesTests
         Assert.AreEqual("Test", testStep.DisplayName);
 
         var arguments = testStep.Inputs?["arguments"]?.ToString();
-        StringAssert.Contains(arguments, "Release");
+        Assert.Contains("Release", arguments);
     }
 
     [TestMethod]
@@ -100,8 +100,8 @@ public class StepVariablesTests
         Assert.AreEqual("Build", buildStep.DisplayName);
 
         var arguments = buildStep.Inputs["arguments"]?.ToString();
-        StringAssert.Contains(arguments, "Debug");
-        Assert.IsFalse(arguments.Contains("Release"));
+        Assert.Contains("Debug", arguments);
+        Assert.DoesNotContain("Release", arguments);
     }
 
     [TestMethod]
@@ -122,8 +122,8 @@ public class StepVariablesTests
         var buildArguments = buildStep!.Inputs?["arguments"]?.ToString();
         var testArguments = testStep!.Inputs?["arguments"]?.ToString();
 
-        StringAssert.Contains(buildArguments, "Debug");
-        StringAssert.Contains(testArguments, "Debug");
+        Assert.Contains("Debug", buildArguments);
+        Assert.Contains("Debug", testArguments);
     }
 
     [TestMethod]
@@ -137,7 +137,7 @@ public class StepVariablesTests
         var buildStep = steps[2] as TaskStep;
 
         var arguments = buildStep!.Inputs?["arguments"]?.ToString();
-        StringAssert.Contains(arguments, "Release");
+        Assert.Contains("Release", arguments);
     }
 
     [TestMethod]
@@ -152,7 +152,7 @@ public class StepVariablesTests
         var buildStep = steps[2] as TaskStep;
 
         var arguments = buildStep!.Inputs?["arguments"]?.ToString();
-        StringAssert.Contains(arguments, "Release");
+        Assert.Contains("Release", arguments);
     }
 
     [TestMethod]

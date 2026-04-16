@@ -22,7 +22,7 @@ public class PipelineWithSimpleExpressionsTests
         result.HasStageCount(1);
         var job = result.Stages[0].Jobs[0];
         Assert.AreEqual("Build and Test Job", job.DisplayName);
-        Assert.AreEqual(4, job.Steps.Count);
+        Assert.HasCount(4, job.Steps);
     }
 
     [TestMethod]
@@ -43,6 +43,6 @@ public class PipelineWithSimpleExpressionsTests
 
         var summaryStep = steps[3] as ScriptStep;
         Assert.IsNotNull(summaryStep);
-        StringAssert.Contains(summaryStep.Script, "Configuration: Debug");
+        Assert.Contains("Configuration: Debug", summaryStep.Script);
     }
 }

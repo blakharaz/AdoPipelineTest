@@ -22,7 +22,7 @@ public class PipelineWithParametersTests
         result.HasStageCount(1);
         var job = result.Stages[0].Jobs[0];
         Assert.AreEqual("Build and Test Job", job.DisplayName);
-        Assert.AreEqual(2, job.Steps.Count);
+        Assert.HasCount(2, job.Steps);
     }
 
     [TestMethod]
@@ -43,7 +43,7 @@ public class PipelineWithParametersTests
         Assert.AreEqual("$(Build.ArtifactStagingDirectory)", parameters["outputDirectory"].Value);
         Assert.IsInstanceOfType<Dictionary<object, object>>(parameters["buildSettings"].Value);
         var settingsDict = (Dictionary<object, object>)parameters["buildSettings"].Value!;
-        Assert.AreEqual(0, settingsDict.Count);
+        Assert.IsEmpty(settingsDict);
     }
 
     [TestMethod]

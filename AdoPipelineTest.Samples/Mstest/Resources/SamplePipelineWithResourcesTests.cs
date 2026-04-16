@@ -24,7 +24,7 @@ public class SamplePipelineWithResourcesTests
         var deployJob = result.Stages[1].Jobs[0];
         Assert.IsNotNull(deployJob);
 
-        Assert.AreEqual(2, buildJob.Steps.Count);
-        Assert.AreEqual(1, deployJob.Steps.Count);
+        Assert.HasCount(2, buildJob.Steps);
+        Assert.HasCount(1, deployJob.Steps);
     }
 }
