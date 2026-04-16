@@ -175,7 +175,7 @@ internal static class StepsParser
     
     private static string TrimTrailingColon(string value)
     {
-        return value.EndsWith(":") ? value[..^1] : value;
+        return value.EndsWith(':') ? value[..^1] : value;
     }
 
     private static ConditionalStepExpression ParseConditionalStep(
@@ -259,7 +259,8 @@ internal static class StepsParser
         {
             return ParseTemplateStep(templateNode, pipelinePath, stepMappingNode);
         }
-throw new InvalidPipelineException($"unknown step type", pipelinePath, stepNode);
+
+        throw new InvalidPipelineException($"unknown step type", pipelinePath, stepNode);
     }
 
     private static TemplateStepElement ParseTemplateStep(YamlScalarNode templateNode, string pipelinePath, YamlMappingNode stepMappingNode)
