@@ -13,8 +13,7 @@ public static class StringExpressionGrammar
     private static Parser<Expression> ExprRef = Parse.Ref(() => Expr);
 
     private static Parser<TemplateExpression> TemplateExpression =>
-        from l in Parse.String("${{").Token()
-        from e in ExprRef.Many()
+        from e in Parse.String("${{").Token().Then(_ => ExprRef.Many())
         from r in Parse.String("}}").Token()
         select new TemplateExpression { Children = e.ToList() };
     
@@ -27,22 +26,19 @@ public static class StringExpressionGrammar
     // Arity-specific function parsers
     private static Parser<FunctionExpression> UnaryFunction(string name) =>
         from n in Parse.IgnoreCase(name).Token()
-        from l in Parse.Char('(').Token()
-        from arg in ExprRef.Once()
+        from arg in Parse.Char('(').Token().Then(_ => ExprRef.Once())
         from r in Parse.Char(')').Token()
         select new FunctionExpression(n, arg.ToList());
 
     private static Parser<FunctionExpression> BinaryFunction(string name) =>
         from n in Parse.IgnoreCase(name).Token()
-        from l in Parse.Char('(').Token()
-        from args in NaryArgs(2, 2)
+        from args in Parse.Char('(').Token().Then(_ => NaryArgs(2, 2))
         from r in Parse.Char(')').Token()
         select new FunctionExpression(n, args.ToList());
 
     private static Parser<FunctionExpression> NaryFunction(string name, int minArgs, int? maxArgs = null) =>
         from n in Parse.IgnoreCase(name).Token()
-        from l in Parse.Char('(').Token()
-        from args in NaryArgs(minArgs, maxArgs.GetValueOrDefault(int.MaxValue))
+        from args in Parse.Char('(').Token().Then(_ => NaryArgs(minArgs, maxArgs.GetValueOrDefault(int.MaxValue)))
         from r in Parse.Char(')').Token()
         select new FunctionExpression(n, args.ToList());
 
@@ -67,8 +63,7 @@ public static class StringExpressionGrammar
         BinaryFunctions.Or(UnaryFunctions).Or(NaryFunctions);
 
     private static Parser<Expression> Parens =>
-        from l in Parse.Char('(').Token()
-        from e in ExprRef
+        from e in Parse.Char('(').Token().Then(_ => ExprRef)
         from r in Parse.Char(')').Token()
         select e;
 

@@ -15,38 +15,30 @@ internal static class CommonGrammar
             .Or(Parse.IgnoreCase("false").Token().Select(Expression (_) => new BoolLiteral{Value = false}));
     
     internal static Parser<Expression> ParameterReference =>
-        from open in Parse.String("parameters.")
+        from _ in Parse.String("parameters.")
         from parameterName in CommonGrammar.Identifier
         select new ParameterExpression(parameterName);
 
     internal static Parser<Expression> VariableReferenceTemplateExpression =>
-        from open in Parse.String("variables.")
+        from _ in Parse.String("variables.")
         from variableName in CommonGrammar.Identifier
         select new VariableExpression(variableName);
 
     internal static Parser<Expression> VariableReferenceRuntime2Expression =>
-        from open in Parse.String("variables['")
-        from variableName in CommonGrammar.Identifier
-        from close in Parse.String("']")
-        select new VariableExpression(variableName);
+        from _ in Parse.String("variables['").Then(_ => CommonGrammar.Identifier).Then(_ => Parse.String("']"))
+        select new VariableExpression(_);
 
     internal static Parser<Expression> VariableReferenceRuntimeExpression =>
-        from open in Parse.String("$[variables.")
-        from variableName in CommonGrammar.Identifier
-        from close in Parse.Char(']')
-        select new VariableExpression(variableName);
+        from _ in Parse.String("$[variables.").Then(_ => CommonGrammar.Identifier).Then(_ => Parse.String("]"))
+        select new VariableExpression(_);
 
     internal static Parser<Expression> VariableReferenceMacroExpression =>
-        from open in Parse.String("$(")
-        from variableName in CommonGrammar.Identifier
-        from close in Parse.Char(')')
-        select new VariableExpression(variableName);
+        from _ in Parse.String("$(").Then(_ => CommonGrammar.Identifier).Then(_ => Parse.String(")"))
+        select new VariableExpression(_);
 
     internal static Parser<Expression> StringLiteralSingleQuote =>
-        from open in Parse.Char('\'')
-        from content in Parse.CharExcept('\'').Many().Text()
-        from close in Parse.Char('\'')
-        select new StringLiteral {Value = content};
+        from _ in Parse.Char('\'').Then(_ => Parse.CharExcept('\'').Many().Text()).Then(_ => Parse.Char('\'').Select(c => c.ToString()))
+        select new StringLiteral {Value = _};
 
     internal static Parser<Expression> StringLiteralDoubleQuote =>
         from open in Parse.Char('"')
